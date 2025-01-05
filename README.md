@@ -1,2 +1,2 @@
 # mzhelp
-help tools for managerzone.com
+Help tools for managerzone.com
