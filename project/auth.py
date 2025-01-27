@@ -24,7 +24,7 @@ def login_post():
     # check if the user actually exists
     # take the user-supplied password, hash it, and compare it to the hashed password in the database
     if not user or not check_password_hash(user.password, password):
-        flash("Verifique seus dados e tente de novo.")
+        flash("Check data and try again.")
         flash("alert-danger")
         return redirect(
             url_for("auth.login")
@@ -53,26 +53,26 @@ def recoverlogin_post():
     email = request.form.get("email")
     
     if "@" not in email:
-        flash("Entrar E-mail válido")
+        flash("It's not valid E-mail")
         flash("alert-danger")
-        return redirect(url_for("auth.signup"))
+        return redirect(url_for("auth.recoverlogin"))
 
     user = User.query.filter_by(
         email=email
     ).first()  
 
     if ( not user ):  
-        flash("E-mail não existe no banco de dados.")
+        flash("E-mail do not exist in database.")
         flash("alert-danger")
     else:
         password = os.urandom(5).hex()
         if recover_email(user, password):
             user.password = generate_password_hash(password, method="pbkdf2:sha256")
             db.session.commit()
-            flash("E-mail de recuperação enviado.")
+            flash("Recover E-mail sended.")
             flash("alert-success")
         else:     
-            flash("Falha ao enviar email de recuperação. Contatar administrador.")
+            flash("Fali to send recover email. Contact administrator.")
             flash("alert-danger")
 
     return redirect(url_for("auth.login"))

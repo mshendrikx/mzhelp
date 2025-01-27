@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container border">
+    <br>
+    <form action="{{ url_for('auth.recoverlogin') }}" method="POST">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-3 text-white">
+                    <label for="email">E-mail:</label>
+                </div>
+                <div class="col-9 text-white">
+                    <input type="text" class="form-control" id="email" name="email" required>
+                </div>
+            </div>
+        <br>
+        <button class="btn btn-outline-primary">Send</button>
+        <br>
+    </form>    
+</div>
+{% endblock %}
