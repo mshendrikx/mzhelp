@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    {% if user.name %}
+    <h3 class="title">
+        Hello, {{ current_user.name }} !
+    </h3>
+    {% else %}
+    <h3 class="title">
+        Login !
+    </h3>
+    {% endif %}
+</div>
+
+{% endblock %}

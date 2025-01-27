@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-3">
+    <form method="POST" action="/login">
+        <div class="mb-3 mt-3">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <div class="mb-3">
+            <label class="checkbox">
+                <input type="checkbox" name="remember" checked>
+                stay conected
+            </label>
+        </div>
+        <button type="submit" class="btn btn-outline-primary">Login</button>
+    </form>
+    <br>
+    <a href="{{ url_for('auth.recoverlogin') }}">Passord Recover</a>
+</div>
+
+{% endblock %}
