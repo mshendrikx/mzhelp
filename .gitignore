@@ -1,6 +1,7 @@
 # Project MZHELP
 test*
 downloaded_files
+task*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

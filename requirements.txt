@@ -1,3 +1,6 @@
 seleniumbase
-pyautogui
 python-dotenv
+flask
+flask-login
+flask-sqlalchemy
+flask_basicauth
