@@ -4,3 +4,4 @@ flask
 flask-login
 flask-sqlalchemy
 flask_basicauth
+pymysql

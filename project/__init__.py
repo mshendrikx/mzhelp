@@ -10,6 +10,8 @@ db = SQLAlchemy()
 
 def create_app():
     
+    app = Flask(__name__)
+    
     mariadb_pass = os.environ.get("MZDBPASS")
     mariadb_host = os.environ.get("MZDBHOST")
     mariadb_database = os.environ.get("MZDBNAME")
@@ -32,12 +34,13 @@ def create_app():
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
 
+    from .models import User, Mzcontrol
+           
     with app.app_context():
 
         # Create tables        
         db.create_all()
-
-        from .models import User, Mzcontrol      
+  
         mzcontrol = Mzcontrol.query.first()
 
         if not mzcontrol:
