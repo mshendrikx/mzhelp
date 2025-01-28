@@ -4,9 +4,13 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
+from crontab import CronTab
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
 
 def create_app():
     
@@ -33,13 +37,26 @@ def create_app():
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
+    
+    # Cron control
+    
+    cron = CronTab(user=True)
+    
+    job = cron.find_comment('mzcontrol')
+    if not list(job):
+        command = 'python3 ' + parent_dir + '/' + 'control.py'
+        job = cron.new(command=command, comment='mzcontrol')
+        job.setall('0 0 * * *') 
+        job.enable(False)
+    
+    cron.write()
 
-    from .models import User, Mzcontrol
-           
     with app.app_context():
 
         # Create tables        
         db.create_all()
+        
+        from .models import User, Mzcontrol
   
         mzcontrol = Mzcontrol.query.first()
 
@@ -62,6 +79,8 @@ def create_app():
                 mzpass=os.environ.get("MZPASS"),
             )
             db.session.add(new_user)       
+            
+        db.session.commit()
 
     @login_manager.user_loader
     def load_user(userid):

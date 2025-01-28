@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container border">
+    <br>
+    <table class="table table-sm" id="sortable-table">
+        <thead>
+            <tr>
+                <th>Update Data</th>
+                <th>Run</th>
+                <th>Job</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for update in updates %}
+            <tr>
+                <td>{{ update.name }}</td>
+                <td>
+                    <a class="clickable-image" id="{{ update.id }}"
+                        href="{{ url_for('main.run_update', updateid=update.id) }}">
+                        <img src="{{ url_for('static', filename='images/icon-play.png') }}" height="24" width="24">
+                    </a>
+                </td>
+                <td>
+                    <a class="clickable-image" id="{{ update.id }}"
+                        href="{{ url_for('main.change_update', updateid=update.id) }}">
+                        <img src="{{ url_for('static', filename='images/icon-addlist.png') }}" height="24" width="24">
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+</div>
+{% endblock %}
