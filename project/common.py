@@ -7,7 +7,9 @@ from email.mime.text import MIMEText
 from .models import User, Updates, Mzcontrol, Player, Countries
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import  scoped_session, sessionmaker
+
+from . import db
 
 def get_db():
     
@@ -17,11 +19,18 @@ def get_db():
     
     sql_text = "mysql+pymysql://root:" + mariadb_pass + "@" + mariadb_host + "/" + mariadb_database
     
+    # Create the SQLAlchemy engine
     engine = create_engine(sql_text)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    db = SessionLocal()
     
-    return db
+    # Create a session factory
+    session_factory = sessionmaker(bind=engine)
+    Session = scoped_session(session_factory)
+    
+    # Bind the Flask-SQLAlchemy models to the new engine
+    db.Model.metadata.bind = engine
+    session = Session()
+    
+    return session
 
 def only_numerics(seq):
     seq_type= type(seq)

@@ -2,7 +2,7 @@
 FROM debian:bullseye-slim
 
 # Update package lists
-RUN apt-get update && apt-get install -y python3 python3-pip wget chromium
+RUN apt-get update && apt-get install -y python3 python3-pip wget chromium cron
 
 WORKDIR /app
 
