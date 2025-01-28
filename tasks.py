@@ -35,5 +35,4 @@ def get_team_players_data(user, password):
         for player_element in players_table:
             breakpoint
 
-
         breakpoint
