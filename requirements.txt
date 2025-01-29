@@ -7,4 +7,3 @@ flask_basicauth
 pymysql
 python-crontab
 beautifulsoup4
-html5lib
