@@ -13,10 +13,10 @@ class User(UserMixin, db.Model):
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    country = db.Column(db.Integer)
+    country = db.Column(db.Integer, nullable=False, index=True)
     age = db.Column(db.Integer)
     season = db.Column(db.Integer)
-    teamid = db.Column(db.Integer)
+    teamid = db.Column(db.Integer, nullable=False, index=True)
     national = db.Column(db.Integer)
     transferage = db.Column(db.Integer)
     totalskill = db.Column(db.Integer)
@@ -63,6 +63,9 @@ class Player(db.Model):
     playsscout = db.Column(db.Integer)
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
+    trainingdate = db.Column(db.String(10))
+    trainingsday = db.Column(db.String(10))
+    trainingdata = db.Column(db.Text, nullable=True)
 
 class Mzcontrol(db.Model):
     id = db.Column(db.String(100), primary_key=True)

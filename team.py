@@ -1,12 +1,12 @@
 import os
 
 from seleniumbase import SB
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
+#from selenium.webdriver.support.ui import WebDriverWait
+#from selenium.webdriver.common.by import By
+#from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from project.models import Player, User
-from project.common import get_db, only_numerics
+from project.common import get_db, only_numerics, countries_data
 
 from dotenv import load_dotenv
 
@@ -39,10 +39,11 @@ for user in users:
         sb.open("https://www.managerzone.com/?p=players")
 
         players_container = sb.find_element("#players_container")
-        soup = BeautifulSoup(players_container.get_attribute("outerHTML"), 'html.parser')
+        soup = BeautifulSoup(players_container.get_attribute("outerHTML"), 'lxml')
         players_soup = soup.find_all(class_="playerContainer")
 
         players = []        
+        countries = countries_data(index=1)
         for player_soup in players_soup:
             player = Player()
             player.teamid = teamid
@@ -50,9 +51,14 @@ for user in users:
             player.id = int(header.find(class_="player_id_span").text)
             player.name = header.find(class_="player_name").text
             container = player_soup.div.div
-            player_info = container.find(class_="dg_playerview_info")
-            player_info = player_info.find("tbody")
+            playerview_info = container.find(class_="dg_playerview_info")
+            player_info = playerview_info.find("tbody")
             player_chars = player_info.find_all("tr")
+            scout_report = playerview_info.find(title="Scout report")
+            if scout_report == None:
+                player.starhigh = 0
+                player.starlow = 0
+                player.startraining = 0            
             player.salary = 0
             for player_char in player_chars:
                 if 'Age' in player_char.text:
@@ -72,7 +78,11 @@ for user in users:
                 elif 'Birth' in player_char.text:
                     player.season = int(only_numerics(player_char.td.text))
                 elif 'Nationality' in player_char.text:
-                    breakpoint
+                    player.country = countries[player_char.td.span.text].id
+                    if len(player_char.find_all("a")) == 0:
+                        player.national = 0
+                    else:
+                        player.national = 1
                 elif 'Value' in player_char.text:
                     player.value = int(only_numerics(player_char.td.text))
                 elif 'Salary' in player_char.text:
@@ -184,124 +194,45 @@ for user in users:
             players.append(player)
         
         for player in players:
-            url = 'https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid=' + str(player.id) + '&sport=soccer'
-            sb.open(url)
-            soup = BeautifulSoup(sb.driver.page_source, 'html.parser')
-            scouts_dd = soup.find_all("dd")
-            count = 0
-            for scout_dd in scouts_dd:
-                stars = len(scout_dd.find_all(class_="fa fa-star fa-2x lit"))
-                if count != 2:
-                    if count == 0:
-                        player.starhigh = stars
+            if player.startraining == None:
+                url = 'https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid=' + str(player.id) + '&sport=soccer'
+                sb.open(url)
+                soup = BeautifulSoup(sb.driver.page_source, 'html.parser')
+                scouts_dd = soup.find_all("dd")
+                count = 0
+                for scout_dd in scouts_dd:
+                    stars = len(scout_dd.find_all(class_="fa fa-star fa-2x lit"))
+                    if count != 2:
+                        if count == 0:
+                            player.starhigh = stars
+                        else:
+                            player.starlow = stars
+                        if 'Speed' in scout_dd.text:
+                            player.speedscout = stars
+                        if 'Stamina' in scout_dd.text:
+                            player.staminascout = stars
+                        if 'Intelligence' in scout_dd.text:
+                            player.intelligencescout = stars
+                        if 'Passing' in scout_dd.text:
+                            player.passingscout = stars
+                        if 'Shooting' in scout_dd.text:
+                            player.shootingscout = stars
+                        if 'Heading' in scout_dd.text:
+                            player.headingscout = stars
+                        if 'Keeping' in scout_dd.text:
+                            player.keepingscout = stars
+                        if 'Control' in scout_dd.text:
+                            player.controlscout = stars
+                        if 'Tackling' in scout_dd.text:
+                            player.tacklingscout = stars
+                        if 'Aerial' in scout_dd.text:
+                            player.aerialscout = stars
+                        if 'Plays' in scout_dd.text:
+                            player.playsscout = stars
                     else:
-                        player.starlow = stars
-                    if 'Speed' in scout_dd.text:
-                        player.speedscout = stars
-                    if 'Stamina' in scout_dd.text:
-                        player.staminascout = stars
-                    if 'Intelligence' in scout_dd.text:
-                        player.intelligencescout = stars
-                    if 'Passing' in scout_dd.text:
-                        player.passingscout = stars
-                    if 'Shooting' in scout_dd.text:
-                        player.shootingscout = stars
-                    if 'Heading' in scout_dd.text:
-                        player.headingscout = stars
-                    if 'Keeping' in scout_dd.text:
-                        player.keepingscout = stars
-                    if 'Control' in scout_dd.text:
-                        player.controlscout = stars
-                    if 'Tackling' in scout_dd.text:
-                        player.tacklingscout = stars
-                    if 'Aerial' in scout_dd.text:
-                        player.aerialscout = stars
-                    if 'Plays' in scout_dd.text:
-                        player.playsscout = stars
-                else:
-                    player.startraining = stars
+                        player.startraining = stars
                 
-#                match count:
-#                    case: 0
-#                    case: 1
-#                    case: 2
-                count += 1
-                
+                    count += 1
+            session.add(player)
             
-        breakpoint
-       
-
-                
-#        for element in elements:
-#            player_info = element.find_element(By.CLASS_NAME, "dg_playerview_info")
-#            soup = BeautifulSoup(player_info.get_attribute("outerHTML"), 'html5lib')
-#            tables = soup= soup.find_all("table")
-#            breakpoint
-
-#            container_id = element.get_attribute('id')
-#            player_xpath = '//*[@id="' + container_id + '"]'
-#            player = Player()
-
-
-
-
-#        for player_element in players_table:
-#            player = Player()
-#            player_xpath = '//*[@id="thePlayers_' + str(player_seq) + '"]'
-#            player.id = int(only_numerics(player_element.find_element(By.CLASS_NAME, 'player_id_span').text))
-#            player.name = player_element.find_element(By.CLASS_NAME, 'player_name').text            
-#            player.country = 
-#            xpath = player_xpath + '/div/div[1]/div[1]/table[1]/tbody/tr[1]/td[1]/strong'
-#            player.age = int(only_numerics(player_element.find_element(By.XPATH, xpath).text))
-#            xpath = player_xpath + '/div/div[1]/div[1]/table[1]/tbody/tr[3]/td/strong'
-#            player.season = int(only_numerics(player_element.find_element(By.XPATH, xpath).text))
-#            player.teamid = teamid
-#            player.national = 
-#            player.transferage = 
-#            player.totalskill = 
-#            player.height = 
-#            player.weight = 
-#            player.foot = 
-#            player.starhigh = 
-#            player.starlow = 
-#            player.startraining = 
-#            player.value = 
-#            player.salary = 
-#            player.speed = 
-#            player.speedmax = 
-#            player.speedscout = 
-#            player.stamina = 
-#            player.staminamax = 
-#            player.staminascout = 
-#            player.intelligence = 
-#            player.intelligencemax = 
-#            player.intelligencescout = 
-#            player.passing = 
-#            player.passingmax = 
-#            player.passingscout = 
-#            player.shooting = 
-#            player.shootingmax = 
-#            player.shootingscout = 
-#            player.heading = 
-#            player.headingmax = 
-#            player.headingscout = 
-#            player.keeping = 
-#            player.keepingmax = 
-#            player.keepingscout = 
-#            player.control = 
-#            player.controlmax = 
-#            player.controlscout = 
-#            player.tackling = 
-#            player.tacklingmax = 
-#            player.tacklingscout = 
-#            player.aerial = 
-#            player.aerialmax = 
-#            player.aerialscout = 
-#            player.plays = 
-#            player.playsmax = 
-#            player.playsscout = 
-#            player.experience = 
-#            player.form = 
-#
-#            #session.add(player)
-#        breakpoint
+        session.commit()    

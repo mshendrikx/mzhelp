@@ -36,6 +36,22 @@ def only_numerics(seq):
     seq_type= type(seq)
     return seq_type().join(filter(seq_type.isdigit, seq))
 
+def countries_data(index=0):
+
+    #index=0: Indexed by id
+    #index=1: Indexed by name    
+
+    session = get_db()
+    countries = session.query(Countries).all()
+    countries_list = {}
+    for country in countries:
+        if index == 0:
+            countries_list[country.id] = country
+        elif index == 1:
+            countries_list[country.name] = country
+            
+    return countries_list            
+    
 def recover_email(user, password):
 
     # Example usage with a custom sender name
