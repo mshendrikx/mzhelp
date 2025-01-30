@@ -63,10 +63,14 @@ class Player(db.Model):
     playsscout = db.Column(db.Integer)
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
+
+
+class PlayerTraining(db.Model):
+    id = db.Column(db.Integer, primary_key=True)    
     trainingdate = db.Column(db.String(10))
     trainingsday = db.Column(db.String(10))
     trainingdata = db.Column(db.Text, nullable=True)
-
+    
 class Mzcontrol(db.Model):
     id = db.Column(db.String(100), primary_key=True)
     season = db.Column(db.Integer)
@@ -80,7 +84,7 @@ class Countries(db.Model):
     
 class Tranfers(db.Model):
     playerid = db.Column(db.Integer, primary_key=True)
-    transferdate = db.Column(db.Integer, primary_key=True)
+    transferdate = db.Column(db.String(10), primary_key=True)
     deadline = db.Column(db.BigInteger)
     askingprice = db.Column(db.Integer)
     actualprice  = db.Column(db.Integer)
@@ -90,15 +94,4 @@ class Bids(db.Model):
     playerid = db.Column(db.Integer, primary_key=True)
     transferdate = db.Column(db.Integer, primary_key=True)
     maxbid = db.Column(db.Integer)    
-    active = db.Column(db.Integer)
-    
-class Updates(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    minute = db.Column(db.String(100))
-    hour = db.Column(db.String(100))
-    dayofmonth = db.Column(db.String(100))
-    month = db.Column(db.String(100))
-    dayofweek = db.Column(db.String(100))
-    function = db.Column(db.String(100))
     active = db.Column(db.Integer)

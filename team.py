@@ -1,12 +1,13 @@
 import os
 
 from seleniumbase import SB
-#from selenium.webdriver.support.ui import WebDriverWait
-#from selenium.webdriver.common.by import By
-#from selenium.webdriver.support import expected_conditions as EC
+
+# from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.common.by import By
+# from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from project.models import Player, User
-from project.common import get_db, only_numerics, countries_data
+from project.common import get_db, only_numerics, countries_data, get_utc_string
 
 from dotenv import load_dotenv
 
@@ -19,30 +20,30 @@ users = session.query(User).filter(User.id > 1).all()
 for user in users:
 
     with SB(uc=True) as sb:
-        
+
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
         sb.type('input[id="login_username"]', user.mzuser)
         sb.type('input[id="login_password"]', user.mzpass)
-        sb.click('a[id="login"]')   
-        sb.open("https://www.managerzone.com/?p=team") 
+        sb.click('a[id="login"]')
+        sb.open("https://www.managerzone.com/?p=team")
         text = sb.get_text('//*[@id="infoAboutTeam"]/dd[1]/span[3]')
         teamid = int(only_numerics(text))
 
         players = session.query(Player).filter_by(teamid=teamid)
-        
+
         for player in players:
             player.teamid = 0
-            
+
         session.commit()
-        
+
         sb.open("https://www.managerzone.com/?p=players")
 
         players_container = sb.find_element("#players_container")
-        soup = BeautifulSoup(players_container.get_attribute("outerHTML"), 'lxml')
+        soup = BeautifulSoup(players_container.get_attribute("outerHTML"), "lxml")
         players_soup = soup.find_all(class_="playerContainer")
 
-        players = []        
+        players = []
         countries = countries_data(index=1)
         for player_soup in players_soup:
             player = Player()
@@ -58,36 +59,41 @@ for user in users:
             if scout_report == None:
                 player.starhigh = 0
                 player.starlow = 0
-                player.startraining = 0            
+                player.startraining = 0
+            training_graph = playerview_info.find(
+                class_="player_icon_placeholder training_graphs soccer"
+            )
+            if training_graph != None:
+                utc_string = get_utc_string()
             player.salary = 0
             for player_char in player_chars:
-                if 'Age' in player_char.text:
+                if "Age" in player_char.text:
                     tds = player_char.find_all("td")
                     player.age = int(only_numerics(tds[0].text))
                     player.transferage = player.age
-                    if 'Left' in tds[1].text:
+                    if "Left" in tds[1].text:
                         player.foot = 0
-                    elif 'Right' in tds[1].text:
+                    elif "Right" in tds[1].text:
                         player.foot = 1
                     else:
                         player.foot = 2
-                elif 'Height' in player_char.text:
+                elif "Height" in player_char.text:
                     tds = player_char.find_all("td")
                     player.height = int(only_numerics(tds[0].text))
                     player.weight = int(only_numerics(tds[1].text))
-                elif 'Birth' in player_char.text:
+                elif "Birth" in player_char.text:
                     player.season = int(only_numerics(player_char.td.text))
-                elif 'Nationality' in player_char.text:
+                elif "Nationality" in player_char.text:
                     player.country = countries[player_char.td.span.text].id
                     if len(player_char.find_all("a")) == 0:
                         player.national = 0
                     else:
                         player.national = 1
-                elif 'Value' in player_char.text:
+                elif "Value" in player_char.text:
                     player.value = int(only_numerics(player_char.td.text))
-                elif 'Salary' in player_char.text:
+                elif "Salary" in player_char.text:
                     player.salary = int(only_numerics(player_char.td.text))
-                elif 'Balls' in player_char.text:
+                elif "Balls" in player_char.text:
                     player.totalskill = int(only_numerics(player_char.td.text))
             player_skills = container.find(class_="skills-container floatLeft clearfix")
             player_skills = player_skills.find("tbody")
@@ -102,7 +108,7 @@ for user in users:
                         if maxed:
                             player.speedmax = 1
                         else:
-                            player.speedmax = 0                            
+                            player.speedmax = 0
                     case 1:
                         player.staminascout = 0
                         player.stamina = int(only_numerics(player_skill.text))
@@ -110,7 +116,7 @@ for user in users:
                         if maxed:
                             player.staminamax = 1
                         else:
-                            player.staminamax = 0                            
+                            player.staminamax = 0
                     case 2:
                         player.intelligencescout = 0
                         player.intelligence = int(only_numerics(player_skill.text))
@@ -118,7 +124,7 @@ for user in users:
                         if maxed:
                             player.intelligencemax = 1
                         else:
-                            player.intelligencemax = 0                            
+                            player.intelligencemax = 0
                     case 3:
                         player.passingscout = 0
                         player.passing = int(only_numerics(player_skill.text))
@@ -126,15 +132,15 @@ for user in users:
                         if maxed:
                             player.passingmax = 1
                         else:
-                            player.passingmax = 0                            
-                    case 4:                       
+                            player.passingmax = 0
+                    case 4:
                         player.shootingscout = 0
                         player.shooting = int(only_numerics(player_skill.text))
                         maxed = player_skill.find(class_="maxed")
                         if maxed:
                             player.shootingmax = 1
                         else:
-                            player.shootingmax = 0                            
+                            player.shootingmax = 0
                     case 5:
                         player.headingscout = 0
                         player.heading = int(only_numerics(player_skill.text))
@@ -142,7 +148,7 @@ for user in users:
                         if maxed:
                             player.headingmax = 1
                         else:
-                            player.headingmax = 0                            
+                            player.headingmax = 0
                     case 6:
                         player.keepingscout = 0
                         player.keeping = int(only_numerics(player_skill.text))
@@ -150,7 +156,7 @@ for user in users:
                         if maxed:
                             player.keepingmax = 1
                         else:
-                            player.keepingmax = 0                            
+                            player.keepingmax = 0
                     case 7:
                         player.controlscout = 0
                         player.control = int(only_numerics(player_skill.text))
@@ -158,7 +164,7 @@ for user in users:
                         if maxed:
                             player.controlmax = 1
                         else:
-                            player.controlmax = 0                            
+                            player.controlmax = 0
                     case 8:
                         player.tacklingscout = 0
                         player.tackling = int(only_numerics(player_skill.text))
@@ -166,7 +172,7 @@ for user in users:
                         if maxed:
                             player.tacklingmax = 1
                         else:
-                            player.tacklingmax = 0                            
+                            player.tacklingmax = 0
                     case 9:
                         player.aerialscout = 0
                         player.aerial = int(only_numerics(player_skill.text))
@@ -174,7 +180,7 @@ for user in users:
                         if maxed:
                             player.aerialmax = 1
                         else:
-                            player.aerialmax = 0                            
+                            player.aerialmax = 0
                     case 10:
                         player.playsscout = 0
                         player.plays = int(only_numerics(player_skill.text))
@@ -182,22 +188,25 @@ for user in users:
                         if maxed:
                             player.playsmax = 1
                         else:
-                            player.playsmax = 0                            
+                            player.playsmax = 0
                     case 11:
                         player.experience = int(only_numerics(player_skill.text))
                     case 12:
                         player.form = int(only_numerics(player_skill.text))
-                
+
                 count += 1
-                
-            
+
             players.append(player)
-        
+
         for player in players:
             if player.startraining == None:
-                url = 'https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid=' + str(player.id) + '&sport=soccer'
+                url = (
+                    "https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid="
+                    + str(player.id)
+                    + "&sport=soccer"
+                )
                 sb.open(url)
-                soup = BeautifulSoup(sb.driver.page_source, 'html.parser')
+                soup = BeautifulSoup(sb.driver.page_source, "html.parser")
                 scouts_dd = soup.find_all("dd")
                 count = 0
                 for scout_dd in scouts_dd:
@@ -207,32 +216,32 @@ for user in users:
                             player.starhigh = stars
                         else:
                             player.starlow = stars
-                        if 'Speed' in scout_dd.text:
+                        if "Speed" in scout_dd.text:
                             player.speedscout = stars
-                        if 'Stamina' in scout_dd.text:
+                        if "Stamina" in scout_dd.text:
                             player.staminascout = stars
-                        if 'Intelligence' in scout_dd.text:
+                        if "Intelligence" in scout_dd.text:
                             player.intelligencescout = stars
-                        if 'Passing' in scout_dd.text:
+                        if "Passing" in scout_dd.text:
                             player.passingscout = stars
-                        if 'Shooting' in scout_dd.text:
+                        if "Shooting" in scout_dd.text:
                             player.shootingscout = stars
-                        if 'Heading' in scout_dd.text:
+                        if "Heading" in scout_dd.text:
                             player.headingscout = stars
-                        if 'Keeping' in scout_dd.text:
+                        if "Keeping" in scout_dd.text:
                             player.keepingscout = stars
-                        if 'Control' in scout_dd.text:
+                        if "Control" in scout_dd.text:
                             player.controlscout = stars
-                        if 'Tackling' in scout_dd.text:
+                        if "Tackling" in scout_dd.text:
                             player.tacklingscout = stars
-                        if 'Aerial' in scout_dd.text:
+                        if "Aerial" in scout_dd.text:
                             player.aerialscout = stars
-                        if 'Plays' in scout_dd.text:
+                        if "Plays" in scout_dd.text:
                             player.playsscout = stars
                     else:
                         player.startraining = stars
-                
+
                     count += 1
             session.add(player)
-            
-        session.commit()    
+
+        session.commit()

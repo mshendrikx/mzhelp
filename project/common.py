@@ -1,12 +1,13 @@
 
 import os
 import smtplib
+import datetime
 
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from .models import User, Updates, Mzcontrol, Player, Countries
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+#from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import  scoped_session, sessionmaker
 
 from . import db
@@ -51,6 +52,12 @@ def countries_data(index=0):
             countries_list[country.name] = country
             
     return countries_list            
+
+def get_utc_string():
+
+    # Get the current UTC time
+    utc_now = datetime.datetime.now(datetime.timezone.utc)
+    return utc_now.strftime("%Y-%m-%d %H:%M:%S")
     
 def recover_email(user, password):
 
