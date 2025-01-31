@@ -68,6 +68,7 @@ for user in users:
                 player.teamid = 0
                 session.add(player)
                 session.commit()               
+            player.date = utc_string
             player.teamid = teamid                      
             player.name = header.find(class_="player_name").text
             container = player_soup.div.div
@@ -239,7 +240,6 @@ for user in users:
 
         for player_training in players_training:
             player_training.trainingdate = utc_string
-            player_training.trainingsday = mz_day
             url = (
                 "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
                 + str(player_training.id)

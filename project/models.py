@@ -2,14 +2,16 @@ from flask_login import UserMixin
 from sqlalchemy.dialects.mysql import LONGTEXT
 from . import db
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
     password = db.Column(db.String(1000))
-    admin = db.Column(db.String(1))    
-    mzuser = db.Column(db.String(100))  
-    mzpass = db.Column(db.String(1000)) 
+    admin = db.Column(db.String(1))
+    mzuser = db.Column(db.String(100))
+    mzpass = db.Column(db.String(1000))
+
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -64,35 +66,39 @@ class Player(db.Model):
     playsscout = db.Column(db.Integer)
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
+    date = db.Column(db.String(10))
 
 
 class PlayerTraining(db.Model):
-    id = db.Column(db.Integer, primary_key=True)    
+    id = db.Column(db.Integer, primary_key=True)
     trainingdate = db.Column(db.String(10))
-    trainingsday = db.Column(db.String(10))
     trainingdata = db.Column(LONGTEXT, nullable=True)
-    
+
+
 class Mzcontrol(db.Model):
     id = db.Column(db.String(100), primary_key=True)
     season = db.Column(db.Integer)
     deadline = db.Column(db.BigInteger)
-    
+
+
 class Countries(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    flag = db.Column(db.String(1024))  
+    flag = db.Column(db.String(1024))
     ages = db.Column(db.Integer)
-    
+
+
 class Tranfers(db.Model):
     playerid = db.Column(db.Integer, primary_key=True)
     transferdate = db.Column(db.String(10), primary_key=True)
     deadline = db.Column(db.BigInteger)
     askingprice = db.Column(db.Integer)
-    actualprice  = db.Column(db.Integer)
-    
+    actualprice = db.Column(db.Integer)
+
+
 class Bids(db.Model):
     userid = db.Column(db.Integer, primary_key=True)
     playerid = db.Column(db.Integer, primary_key=True)
     transferdate = db.Column(db.Integer, primary_key=True)
-    maxbid = db.Column(db.Integer)    
+    maxbid = db.Column(db.Integer)
     active = db.Column(db.Integer)
