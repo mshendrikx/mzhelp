@@ -6,8 +6,16 @@ from seleniumbase import SB
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-from project.models import Player, User
-from project.common import get_db, only_numerics, countries_data, get_utc_string
+from project.models import Player, PlayerTraining, User
+from project.common import (
+    get_db,
+    only_numerics,
+    countries_data,
+    get_utc_string,
+    get_mz_day,
+    format_training_data,
+    set_player_scout,
+)
 
 from dotenv import load_dotenv
 
@@ -16,6 +24,9 @@ load_dotenv()
 session = get_db()
 
 users = session.query(User).filter(User.id > 1).all()
+
+utc_string = get_utc_string(format="%Y-%m-%d")
+mz_day = get_mz_day(date=utc_string)
 
 for user in users:
 
@@ -44,12 +55,20 @@ for user in users:
         players_soup = soup.find_all(class_="playerContainer")
 
         players = []
+        players_training = []
         countries = countries_data(index=1)
         for player_soup in players_soup:
-            player = Player()
-            player.teamid = teamid
-            header = player_soup.h2
-            player.id = int(header.find(class_="player_id_span").text)
+            header = player_soup.h2  
+            player_id = int(header.find(class_="player_id_span").text)
+            player = session.query(Player).filter_by(id=player_id).first()
+            if not player:
+                player = Player()
+                player.id = player_id
+                player.country = 0
+                player.teamid = 0
+                session.add(player)
+                session.commit()               
+            player.teamid = teamid                      
             player.name = header.find(class_="player_name").text
             container = player_soup.div.div
             playerview_info = container.find(class_="dg_playerview_info")
@@ -64,7 +83,12 @@ for user in users:
                 class_="player_icon_placeholder training_graphs soccer"
             )
             if training_graph != None:
-                utc_string = get_utc_string()
+                player_training = session.query(PlayerTraining).filter_by(id=player.id).first()
+                if not player_training:
+                    player_training = PlayerTraining()
+                    player_training.id = player.id
+                    session.commit()
+                    players_training.append(player_training)
             player.salary = 0
             for player_char in player_chars:
                 if "Age" in player_char.text:
@@ -195,9 +219,10 @@ for user in users:
                         player.form = int(only_numerics(player_skill.text))
 
                 count += 1
-
+            session.commit()
             players.append(player)
 
+        # Scout Data
         for player in players:
             if player.startraining == None:
                 url = (
@@ -206,42 +231,21 @@ for user in users:
                     + "&sport=soccer"
                 )
                 sb.open(url)
-                soup = BeautifulSoup(sb.driver.page_source, "html.parser")
-                scouts_dd = soup.find_all("dd")
-                count = 0
-                for scout_dd in scouts_dd:
-                    stars = len(scout_dd.find_all(class_="fa fa-star fa-2x lit"))
-                    if count != 2:
-                        if count == 0:
-                            player.starhigh = stars
-                        else:
-                            player.starlow = stars
-                        if "Speed" in scout_dd.text:
-                            player.speedscout = stars
-                        if "Stamina" in scout_dd.text:
-                            player.staminascout = stars
-                        if "Intelligence" in scout_dd.text:
-                            player.intelligencescout = stars
-                        if "Passing" in scout_dd.text:
-                            player.passingscout = stars
-                        if "Shooting" in scout_dd.text:
-                            player.shootingscout = stars
-                        if "Heading" in scout_dd.text:
-                            player.headingscout = stars
-                        if "Keeping" in scout_dd.text:
-                            player.keepingscout = stars
-                        if "Control" in scout_dd.text:
-                            player.controlscout = stars
-                        if "Tackling" in scout_dd.text:
-                            player.tacklingscout = stars
-                        if "Aerial" in scout_dd.text:
-                            player.aerialscout = stars
-                        if "Plays" in scout_dd.text:
-                            player.playsscout = stars
-                    else:
-                        player.startraining = stars
+                player = set_player_scout(
+                    scout_page=sb.driver.page_source, player=player
+                )
 
-                    count += 1
             session.add(player)
+
+        for player_training in players_training:
+            player_training.trainingdate = utc_string
+            player_training.trainingsday = mz_day
+            url = (
+                "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
+                + str(player_training.id)
+            )
+            sb.open(url)
+            player_training.trainingdata = format_training_data(sb.driver.page_source)
+            session.add(player_training)
 
         session.commit()

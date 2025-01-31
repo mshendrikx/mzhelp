@@ -1,4 +1,5 @@
 from flask_login import UserMixin
+from sqlalchemy.dialects.mysql import LONGTEXT
 from . import db
 
 class User(UserMixin, db.Model):
@@ -69,7 +70,7 @@ class PlayerTraining(db.Model):
     id = db.Column(db.Integer, primary_key=True)    
     trainingdate = db.Column(db.String(10))
     trainingsday = db.Column(db.String(10))
-    trainingdata = db.Column(db.Text, nullable=True)
+    trainingdata = db.Column(LONGTEXT, nullable=True)
     
 class Mzcontrol(db.Model):
     id = db.Column(db.String(100), primary_key=True)

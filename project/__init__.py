@@ -54,10 +54,11 @@ def create_app():
     with app.app_context():
 
         # Create tables        
-        db.create_all()
+        from .models import User, Player, PlayerTraining, Mzcontrol, Countries, Tranfers, Bids
         
-        from .models import User, Mzcontrol
-  
+        db.create_all()
+        db.session.commit()
+        
         mzcontrol = Mzcontrol.query.first()
 
         if not mzcontrol:
