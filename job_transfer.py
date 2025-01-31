@@ -1,6 +1,7 @@
 import os
 
 from seleniumbase import SB
+from selenium.webdriver.support.ui import Select
 
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.common.by import By
@@ -58,6 +59,15 @@ with SB(uc=True) as sb:
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
     sb.type('input[id="login_password"]', os.environ.get("MZPASS"))
     sb.click('a[id="login"]')
+    sb.open("https://www.managerzone.com/ajax.php?p=settings&sub=profile-change&sport=soccer")
+    
+    #Get Time Zone
+    sb.wait_for_element('//*[@id="profile"]/div[4]/div/select')
+    select_element = sb.find_element('//*[@id="profile"]/div[4]/div/select')
+    select = Select(select_element)
+    selected_option = select.first_selected_option
+    time_zone = selected_option.text
+    
     sb.open("https://www.managerzone.com/?p=transfer")
     sb.wait_for_element('//*[@id="players_container"]')
     utc_string = get_utc_string(format="%Y-%m-%d")

@@ -2,11 +2,12 @@ import os
 import smtplib
 import json
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from .models import User, Mzcontrol, Player, Countries
 from sqlalchemy import create_engine
+from zoneinfo import ZoneInfo
 
 # from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -148,6 +149,24 @@ def format_training_data(trainig_page):
     json_string = json.dumps(json_data[index]["data"])
 
     return json_string
+
+
+def deadline_input(deadline, type, timezone):
+
+    deadline_dt = datetime.strptime(deadline, "%d/%m/%Y %I:%M%p")
+    zone_info_tz = ZoneInfo(timezone)
+    deadline_dt = deadline_dt.replace(tzinfo=zone_info_tz)
+    deadline_dt = deadline_dt.astimezone(ZoneInfo("UTC"))
+
+    if type == 0:
+        # Convert to int
+        result = int(deadline_dt.strftime("%Y%m%d%H%M"))
+    if type == 1:
+        # Convert to int plus 1 day
+        deadline_dt = deadline_dt + timedelta(days=1)
+        result = int(deadline_dt.strftime("%Y%m%d%H%M"))
+
+    return result
 
 
 def recover_email(user, password):
