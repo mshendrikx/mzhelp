@@ -168,6 +168,13 @@ def deadline_input(deadline, type, timezone):
 
     return result
 
+def deadline_output(deadline, timezone):
+    
+    deadline_dt = datetime.strptime(str(deadline), "%Y/%m/%d%H%M")
+    deadline_dt = deadline_dt.replace(tzinfo=ZoneInfo("UTC"))
+    deadline_dt = deadline_dt.astimezone(ZoneInfo(timezone))
+    
+    return deadline_dt.strftime("%d-%m-%Y %H:%M")
 
 def recover_email(user, password):
 
