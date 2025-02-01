@@ -70,32 +70,6 @@ def countries_data(index=0):
     return countries_list
 
 
-def get_utc_string(format="%Y-%m-%d %H:%M:%S"):
-
-    # Get the current UTC time
-    utc_now = datetime.now(timezone.utc)
-    return utc_now.strftime(format)
-
-
-def get_mz_day(date=""):
-
-    if date == "":
-        date_dt = datetime.strptime(
-            get_utc_string(format="%Y-%m-%d"), "%Y-%m-%d"
-        ).date()
-    else:
-        date_dt = datetime.strptime(date, "%Y-%m-%d").date()
-
-    dif_days = date_dt - FIRST_DAY
-    dif_days = dif_days.days
-
-    year, day = divmod(dif_days, 91)
-    year += 1
-    day += 1
-
-    return str(year) + "-" + str(day)
-
-
 def set_player_scout(scout_page, player):
 
     soup = BeautifulSoup(scout_page, "lxml")
@@ -151,30 +125,60 @@ def format_training_data(trainig_page):
     return json_string
 
 
-def deadline_input(deadline, type, timezone):
+def get_utc_string(format="%Y-%m-%d %H:%M:%S"):
 
-    deadline_dt = datetime.strptime(deadline, "%d/%m/%Y %I:%M%p")
+    # Get the current UTC time
+    utc_now = datetime.now(timezone.utc)
+    return utc_now.strftime(format)
+
+
+def get_mz_day(date=""):
+
+    if date == "":
+        date_dt = datetime.strptime(
+            get_utc_string(format="%Y-%m-%d"), "%Y-%m-%d"
+        ).date()
+    else:
+        date_dt = datetime.strptime(date, "%Y-%m-%d").date()
+
+    dif_days = date_dt - FIRST_DAY
+    dif_days = dif_days.days
+
+    year, day = divmod(dif_days, 91)
+    year += 1
+    day += 1
+
+    return str(year) + "-" + str(day)
+
+
+def utc_input():
+
+    utc_now = datetime.now(timezone.utc)
+
+    return int(utc_now.strftime("%Y%m%d%H%M"))
+
+
+def date_input(date, days, timezone):
+
+    deadline_dt = datetime.strptime(date, "%d/%m/%Y %I:%M%p")
     zone_info_tz = ZoneInfo(timezone)
     deadline_dt = deadline_dt.replace(tzinfo=zone_info_tz)
     deadline_dt = deadline_dt.astimezone(ZoneInfo("UTC"))
 
-    if type == 0:
-        # Convert to int
-        result = int(deadline_dt.strftime("%Y%m%d%H%M"))
-    if type == 1:
-        # Convert to int plus 1 day
-        deadline_dt = deadline_dt + timedelta(days=1)
-        result = int(deadline_dt.strftime("%Y%m%d%H%M"))
+    if days > 0:
+        deadline_dt = deadline_dt + timedelta(days=days)
 
-    return result
+    return int(deadline_dt.strftime("%Y%m%d%H%M"))
 
-def deadline_output(deadline, timezone):
-    
-    deadline_dt = datetime.strptime(str(deadline), "%Y/%m/%d%H%M")
+
+def date_output(date, timezone):
+
+    deadline_dt = datetime.strptime(str(date), "%Y/%m/%d%H%M")
     deadline_dt = deadline_dt.replace(tzinfo=ZoneInfo("UTC"))
     deadline_dt = deadline_dt.astimezone(ZoneInfo(timezone))
-    
+
     return deadline_dt.strftime("%d-%m-%Y %H:%M")
+
 
 def recover_email(user, password):
 

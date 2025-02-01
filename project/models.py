@@ -16,12 +16,13 @@ class User(UserMixin, db.Model):
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
+    number = db.Column(db.Integer)
     country = db.Column(db.Integer, nullable=False, index=True)
     age = db.Column(db.Integer)
+    transferage = db.Column(db.Integer)
     season = db.Column(db.Integer)
     teamid = db.Column(db.Integer, nullable=False, index=True)
     national = db.Column(db.Integer)
-    transferage = db.Column(db.Integer)
     totalskill = db.Column(db.Integer)
     height = db.Column(db.Integer)
     weight = db.Column(db.Integer)
@@ -31,6 +32,7 @@ class Player(db.Model):
     startraining = db.Column(db.Integer)
     value = db.Column(db.Integer)
     salary = db.Column(db.Integer)
+    retiring = db.Column(db.Integer)
     speed = db.Column(db.Integer)
     speedmax = db.Column(db.Integer)
     speedscout = db.Column(db.Integer)
@@ -66,12 +68,12 @@ class Player(db.Model):
     playsscout = db.Column(db.Integer)
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
-    date = db.Column(db.String(10))
+    changedat = db.Column(db.Integer)
 
 
 class PlayerTraining(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    trainingdate = db.Column(db.String(10))
+    trainingdate = db.Column(db.Integer)
     trainingdata = db.Column(LONGTEXT, nullable=True)
 
 
@@ -90,8 +92,7 @@ class Countries(db.Model):
 
 class Tranfers(db.Model):
     playerid = db.Column(db.Integer, primary_key=True)
-    transferdate = db.Column(db.String(10), primary_key=True)
-    deadline = db.Column(db.BigInteger)
+    deadline = db.Column(db.Integer)
     askingprice = db.Column(db.Integer)
     actualprice = db.Column(db.Integer)
 

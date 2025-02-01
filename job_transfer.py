@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import Select
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
-from project.models import Player, PlayerTraining, Countries, Tranfers
+from project.models import Player, PlayerTraining, Countries, Tranfers, Mzcontrol
 from project.common import (
     get_db,
     only_numerics,
@@ -16,6 +16,8 @@ from project.common import (
     get_mz_day,
     format_training_data,
     set_player_scout,
+    utc_input,
+    date_input
 )
 
 from dotenv import load_dotenv
@@ -26,32 +28,34 @@ session = get_db()
 
 utc_string = get_utc_string(format="%Y-%m-%d")
 
+
 def get_transfer_searches(countries):
-    
+
     searches = []
-    for country in countries:        
+    for country in countries:
         if country.ages > 18:
             age = 19
             while age <= country.ages:
                 search = []
                 search.append(str(country.id))
                 search.append(str(age))
-                search.append(str(age))   
+                search.append(str(age))
                 age += 1
                 searches.append(search)
             search = []
             search.append(str(country.id))
             search.append(str(age))
-            search.append('37')
-            searches.append(search)                          
+            search.append("37")
+            searches.append(search)
         else:
             search = []
             search.append(str(country.id))
-            search.append('19')
-            search.append('37')
+            search.append("19")
+            search.append("37")
             searches.append(search)
-            
+
     return searches
+
 
 with SB(uc=True) as sb:
     sb.open("https://www.managerzone.com/")
@@ -59,27 +63,37 @@ with SB(uc=True) as sb:
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
     sb.type('input[id="login_password"]', os.environ.get("MZPASS"))
     sb.click('a[id="login"]')
-    sb.open("https://www.managerzone.com/ajax.php?p=settings&sub=profile-change&sport=soccer")
-    
-    #Get Time Zone
+    sb.open(
+        "https://www.managerzone.com/ajax.php?p=settings&sub=profile-change&sport=soccer"
+    )
+
+    # Get Time Zone
     sb.wait_for_element('//*[@id="profile"]/div[4]/div/select')
     select_element = sb.find_element('//*[@id="profile"]/div[4]/div/select')
     select = Select(select_element)
     selected_option = select.first_selected_option
     time_zone = selected_option.text
-    
+
     sb.open("https://www.managerzone.com/?p=transfer")
     sb.wait_for_element('//*[@id="players_container"]')
     utc_string = get_utc_string(format="%Y-%m-%d")
-    
+
     searches = get_transfer_searches(session.query(Countries).all())
     pages_soup = []
+
+    # update control table with deadline
+    mzcontrol = session.query(Mzcontrol).first()
+    deadline_control = mzcontrol.deadline
+    utc_string = get_utc_string(format="%d/%m/%Y %I:%M%p")    
+    mzcontrol.deadline = date_input(utc_string, 1, "UTC")
+    session.commit()
+
     for search in searches:
         sb.click_xpath('//*[@id="resetb"]')
-        sb.select_option_by_value('//*[@id="deadline"]', '3')
-        sb.select_option_by_value('//*[@id="nationality"]', search[0]) 
+        sb.select_option_by_value('//*[@id="deadline"]', "3")
+        sb.select_option_by_value('//*[@id="nationality"]', search[0])
         sb.type('input[id="agea"]', search[1])
-        sb.type('input[id="ageb"]', search[2])        
+        sb.type('input[id="ageb"]', search[2])
         sb.click_xpath('//*[@id="searchb"]')
         next_link = True
         while next_link:
@@ -88,20 +102,22 @@ with SB(uc=True) as sb:
             soup = BeautifulSoup(players_container.get_attribute("outerHTML"), "lxml")
             pages_soup.append(soup)
             try:
-                button_next = sb.find_element("div.transferSearchPages a:contains('Next')", timeout=2)
+                button_next = sb.find_element(
+                    "div.transferSearchPages a:contains('Next')", timeout=2
+                )
                 button_next.click()
             except:
                 next_link = False
             break
         break
-    
+
     for page_soup in pages_soup:
         players_soup = page_soup.find_all(class_="playerContainer")
         players = []
         players_training = []
         countries = countries_data(index=1)
         for player_soup in players_soup:
-            header = player_soup.h2  
+            header = player_soup.h2
             player_id = int(header.find(class_="player_id_span").text)
             player = session.query(Player).filter_by(id=player_id).first()
             if not player:
@@ -109,9 +125,11 @@ with SB(uc=True) as sb:
                 player.id = player_id
                 player.country = 0
                 player.teamid = 0
+                player.number = 0
+                player.retiring = 0
                 session.add(player)
-                session.commit()               
-            player.date = utc_string
+                # session.commit()
+            player.changedat = utc_input()
             player.name = header.find(class_="player_name").text
             float_left = player_soup.find(class_="floatLeft")
             float_left = float_left.table.tbody
@@ -129,7 +147,9 @@ with SB(uc=True) as sb:
                 class_="fa-regular fa-chart-line-up training-graphs-icon"
             )
             if training_graph != None:
-                player_training = session.query(PlayerTraining).filter_by(id=player.id).first()
+                player_training = (
+                    session.query(PlayerTraining).filter_by(id=player.id).first()
+                )
                 if not player_training:
                     player_training = PlayerTraining()
                     player_training.id = player.id
@@ -155,11 +175,11 @@ with SB(uc=True) as sb:
                     player.season = int(only_numerics(player_char.text))
                 elif "Balls" in player_char.text:
                     player.totalskill = int(only_numerics(player_char.text))
-            
+
             money_info = float_right[0].find_all("span")
             player.value = int(only_numerics(money_info[0].text))
             player.salary = int(only_numerics(money_info[1].text))
-            
+
             count = 0
             for player_skill in player_skills:
                 match count:
@@ -202,14 +222,12 @@ with SB(uc=True) as sb:
                         player.form = int(only_numerics(player_skill.text))
 
                 count += 1
-            
-            #transfer_info = float_right[0].find_all("strong")
-            #player.value = int(only_numerics(money_info[0].text))
-            #player.salary = int(only_numerics(money_info[1].text))
-            
+
+            # transfer_info = float_right[0].find_all("strong")
+            # player.value = int(only_numerics(money_info[0].text))
+            # player.salary = int(only_numerics(money_info[1].text))
+
             session.commit()
             players.append(player)
-
-
 
     breakpoint

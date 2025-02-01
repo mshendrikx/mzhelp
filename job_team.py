@@ -15,6 +15,7 @@ from project.common import (
     get_mz_day,
     format_training_data,
     set_player_scout,
+    utc_input,
 )
 
 from dotenv import load_dotenv
@@ -24,9 +25,6 @@ load_dotenv()
 session = get_db()
 
 users = session.query(User).filter(User.id > 1).all()
-
-utc_string = get_utc_string(format="%Y-%m-%d")
-mz_day = get_mz_day(date=utc_string)
 
 for user in users:
 
@@ -68,9 +66,14 @@ for user in users:
                 player.teamid = 0
                 session.add(player)
                 session.commit()               
-            player.date = utc_string
+            player.changedat = utc_input()
             player.teamid = teamid                      
             player.name = header.find(class_="player_name").text
+            player.number = int(header.a.text.split(".")[0])
+            if player_soup.find(class_="dg_playerview_retire") != None:
+                player.retiring = 1
+            else:
+                player.retiring = 0
             container = player_soup.div.div
             playerview_info = container.find(class_="dg_playerview_info")
             player_info = playerview_info.find("tbody")
@@ -239,7 +242,7 @@ for user in users:
             session.add(player)
 
         for player_training in players_training:
-            player_training.trainingdate = utc_string
+            player_training.trainingdate = utc_input()
             url = (
                 "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
                 + str(player_training.id)
