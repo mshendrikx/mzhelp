@@ -91,7 +91,8 @@ class Countries(db.Model):
 
 
 class Tranfers(db.Model):
-    playerid = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    playerid = db.Column(db.Integer, nullable=False, index=True)
     deadline = db.Column(db.Integer)
     askingprice = db.Column(db.Integer)
     actualprice = db.Column(db.Integer)
@@ -99,7 +100,7 @@ class Tranfers(db.Model):
 
 class Bids(db.Model):
     userid = db.Column(db.Integer, primary_key=True)
-    playerid = db.Column(db.Integer, primary_key=True)
-    transferdate = db.Column(db.Integer, primary_key=True)
+    transferid = db.Column(db.Integer, primary_key=True)
     maxbid = db.Column(db.Integer)
+    finalvalue = db.Column(db.Integer)
     active = db.Column(db.Integer)
