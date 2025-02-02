@@ -2,10 +2,6 @@ import os
 
 from seleniumbase import SB
 from selenium.webdriver.support.ui import Select
-
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 from project.models import Player, PlayerTraining, Countries, Tranfers, Mzcontrol
 from project.common import (
@@ -13,11 +9,11 @@ from project.common import (
     only_numerics,
     countries_data,
     get_utc_string,
-    get_mz_day,
     format_training_data,
     set_player_scout,
     utc_input,
-    date_input
+    date_input,
+    get_player_maxs,
 )
 
 from dotenv import load_dotenv
@@ -84,7 +80,7 @@ with SB(uc=True) as sb:
     # update control table with deadline
     mzcontrol = session.query(Mzcontrol).first()
     deadline_control = mzcontrol.deadline
-    utc_string = get_utc_string(format="%d/%m/%Y %I:%M%p")    
+    utc_string = get_utc_string(format="%d/%m/%Y %I:%M%p")
     mzcontrol.deadline = date_input(utc_string, 1, "UTC")
     session.commit()
 
@@ -110,19 +106,19 @@ with SB(uc=True) as sb:
                 next_link = False
             break
         break
-    
+
     countries = countries_data(index=1)
     utc_now = utc_input()
     transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
     players_db = []
     for transfer_db in transfers_db:
         players_db.append(transfer_db.playerid)
-        
+
     for page_soup in pages_soup:
         players_soup = page_soup.find_all(class_="playerContainer")
         players = []
         players_training = []
-        
+
         for player_soup in players_soup:
             header = player_soup.h2
             player_id = int(header.find(class_="player_id_span").text)
@@ -157,12 +153,12 @@ with SB(uc=True) as sb:
                 player.starhigh = 0
                 player.starlow = 0
                 player.startraining = 0
-            
+
             if training_graph == None:
                 player.traininginfo = 0
             else:
                 player.traininginfo = 1
-                            
+
             player.salary = 0
             for player_char in player_chars:
                 if "Age" in player_char.text:
@@ -230,7 +226,16 @@ with SB(uc=True) as sb:
                         player.form = int(only_numerics(player_skill.text))
 
                 count += 1
-
+            strongs = float_right[0].find_all("strong")
+            transfer = Tranfers()
+            transfer.playerid = player.id
+            transfer.deadline = date_input(strongs[1].text, 0, time_zone)
+            transfer.askingprice = int(only_numerics(strongs[2].text))
+            strongs = float_right[1].find_all("strong")
+            transfer.actualprice = int(only_numerics(strongs[0].text))
+            if transfer.actualprice < transfer.askingprice:
+                transfer.actualprice = transfer.askingprice
+            session.add(transfer)
             session.commit()
             players.append(player)
 
@@ -246,7 +251,7 @@ with SB(uc=True) as sb:
                 player = set_player_scout(
                     scout_page=sb.driver.page_source, player=player
                 )
-                
+
             if player.traininginfo == 1:
                 player_training = (
                     session.query(PlayerTraining).filter_by(id=player.id).first()
@@ -254,15 +259,84 @@ with SB(uc=True) as sb:
                 if not player_training:
                     player_training = PlayerTraining()
                     player_training.id = player.id
-                player_training.trainingdate = utc_input()                
+                    session.add(player_training)
+                player_training.trainingdate = utc_input()
                 url = (
                     "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
                     + str(player_training.id)
                 )
                 sb.open(url)
-                player_training.trainingdata = format_training_data(sb.driver.page_source)
-                session.add(player_training)
-            
-            session.commit()
+                player_training.trainingdata = format_training_data(
+                    sb.driver.page_source
+                )
+                maxs = get_player_maxs(player_training.trainingdata)
 
-    breakpoint
+                if 1 in maxs:
+                    player.speedmax = 1
+                else:
+                    player.speedmax = 0
+                if 2 in maxs:
+                    player.staminamax = 1
+                else:
+                    player.staminamax = 0
+                if 3 in maxs:
+                    player.intelligencemax = 1
+                else:
+                    player.intelligencemax = 0
+                if 4 in maxs:
+                    player.passingmax = 1
+                else:
+                    player.passingmax = 0
+                if 5 in maxs:
+                    player.shootingmax = 1
+                else:
+                    player.shootingmax = 0
+                if 6 in maxs:
+                    player.headingmax = 1
+                else:
+                    player.headingmax = 0
+                if 7 in maxs:
+                    player.keepingmax = 1
+                else:
+                    player.keepingmax = 0
+                if 8 in maxs:
+                    player.controlmax = 1
+                else:
+                    player.controlmax = 0
+                if 9 in maxs:
+                    player.tacklingmax = 1
+                else:
+                    player.tacklingmax = 0
+                if 10 in maxs:
+                    player.aerialmax = 1
+                else:
+                    player.aerialmax = 0
+                if 11 in maxs:
+                    player.playsmax = 1
+                else:
+                    player.playsmax = 0
+            else:
+                if player.speedmax != 1:
+                    player.speedmax = 2
+                if player.staminamax != 1:
+                    player.staminamax = 2
+                if player.intelligencemax != 1:
+                    player.intelligencemax = 2
+                if player.passingmax != 1:
+                    player.passingmax = 2
+                if player.shootingmax != 1:
+                    player.shootingmax = 2
+                if player.headingmax != 1:
+                    player.headingmax = 2
+                if player.keepingmax != 1:
+                    player.keepingmax = 2
+                if player.controlmax != 1:
+                    player.controlmax = 2
+                if player.tacklingmax != 1:
+                    player.tacklingmax = 2
+                if player.aerialmax != 1:
+                    player.aerialmax = 2
+                if player.playsmax != 1:
+                    player.playsmax = 2
+
+            session.commit()
