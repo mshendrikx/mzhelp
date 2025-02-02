@@ -72,9 +72,9 @@ def create_app():
         user = User.query.filter_by(email="admin@mzapp.com").first()
         if not user:
             new_user = User(
-                email="admin@mzhelp.com",
-                name="Administrator",
-                password=generate_password_hash("Mzh3lp", method="pbkdf2:sha256"),
+                email=os.environ.get("ADMEMAIL"),
+                name=os.environ.get("ADMNAME"),
+                password=generate_password_hash(os.environ.get("ADMPASS"), method="pbkdf2:sha256"),
                 admin="X",
                 mzuser=os.environ.get("MZUSER"),
                 mzpass=os.environ.get("MZPASS"),

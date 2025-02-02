@@ -68,12 +68,13 @@ class Player(db.Model):
     playsscout = db.Column(db.Integer)
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
+    traininginfo = db.Column(db.Integer)
     changedat = db.Column(db.BigInteger)
 
 
 class PlayerTraining(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    trainingdate = db.Column(db.Integer)
+    trainingdate = db.Column(db.BigInteger)
     trainingdata = db.Column(LONGTEXT, nullable=True)
 
 
@@ -93,7 +94,7 @@ class Countries(db.Model):
 class Tranfers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     playerid = db.Column(db.Integer, nullable=False, index=True)
-    deadline = db.Column(db.BigInteger)
+    deadline = db.Column(db.BigInteger, nullable=False, index=True)
     askingprice = db.Column(db.Integer)
     actualprice = db.Column(db.Integer)
 

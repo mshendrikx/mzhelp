@@ -24,7 +24,7 @@ load_dotenv()
 
 session = get_db()
 
-users = session.query(User).filter(User.id > 1).all()
+users = session.query(User).all()
 
 for user in users:
 
@@ -87,12 +87,15 @@ for user in users:
                 class_="player_icon_placeholder training_graphs soccer"
             )
             if training_graph != None:
+                player.traininginfo = 1
                 player_training = session.query(PlayerTraining).filter_by(id=player.id).first()
                 if not player_training:
                     player_training = PlayerTraining()
                     player_training.id = player.id
                     session.commit()
                     players_training.append(player_training)
+            else:
+                player.traininginfo = 0
             player.salary = 0
             for player_char in player_chars:
                 if "Age" in player_char.text:
@@ -241,6 +244,7 @@ for user in users:
 
             session.add(player)
 
+        #Training Data
         for player_training in players_training:
             player_training.trainingdate = utc_input()
             url = (

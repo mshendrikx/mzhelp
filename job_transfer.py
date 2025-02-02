@@ -110,15 +110,24 @@ with SB(uc=True) as sb:
                 next_link = False
             break
         break
-
+    
+    countries = countries_data(index=1)
+    utc_now = utc_input()
+    transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
+    players_db = []
+    for transfer_db in transfers_db:
+        players_db.append(transfer_db.playerid)
+        
     for page_soup in pages_soup:
         players_soup = page_soup.find_all(class_="playerContainer")
         players = []
         players_training = []
-        countries = countries_data(index=1)
+        
         for player_soup in players_soup:
             header = player_soup.h2
             player_id = int(header.find(class_="player_id_span").text)
+            if player_id in players_db:
+                continue
             player = session.query(Player).filter_by(id=player_id).first()
             if not player:
                 player = Player()
@@ -127,9 +136,11 @@ with SB(uc=True) as sb:
                 player.teamid = 0
                 player.number = 0
                 player.retiring = 0
+                player.national = 0
                 session.add(player)
-                # session.commit()
+
             player.changedat = utc_input()
+            player.country = countries[header.div.img.get("title")].id
             player.name = header.find(class_="player_name").text
             float_left = player_soup.find(class_="floatLeft")
             float_left = float_left.table.tbody
@@ -139,22 +150,19 @@ with SB(uc=True) as sb:
             float_right = player_soup.find(class_="floatRight transfer-control-area")
             float_right = float_right.find_all(class_="box_dark")
             scout_report = float_right[1].find(title="Scout report")
+            training_graph = float_right[1].find(
+                class_="fa-regular fa-chart-line-up training-graphs-icon"
+            )
             if scout_report == None:
                 player.starhigh = 0
                 player.starlow = 0
                 player.startraining = 0
-            training_graph = float_right[1].find(
-                class_="fa-regular fa-chart-line-up training-graphs-icon"
-            )
-            if training_graph != None:
-                player_training = (
-                    session.query(PlayerTraining).filter_by(id=player.id).first()
-                )
-                if not player_training:
-                    player_training = PlayerTraining()
-                    player_training.id = player.id
-                    session.commit()
-                    players_training.append(player_training)
+            
+            if training_graph == None:
+                player.traininginfo = 0
+            else:
+                player.traininginfo = 1
+                            
             player.salary = 0
             for player_char in player_chars:
                 if "Age" in player_char.text:
@@ -223,11 +231,38 @@ with SB(uc=True) as sb:
 
                 count += 1
 
-            # transfer_info = float_right[0].find_all("strong")
-            # player.value = int(only_numerics(money_info[0].text))
-            # player.salary = int(only_numerics(money_info[1].text))
-
             session.commit()
             players.append(player)
+
+        # Scout and Training Data
+        for player in players:
+            if player.startraining == None:
+                url = (
+                    "https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid="
+                    + str(player.id)
+                    + "&sport=soccer"
+                )
+                sb.open(url)
+                player = set_player_scout(
+                    scout_page=sb.driver.page_source, player=player
+                )
+                
+            if player.traininginfo == 1:
+                player_training = (
+                    session.query(PlayerTraining).filter_by(id=player.id).first()
+                )
+                if not player_training:
+                    player_training = PlayerTraining()
+                    player_training.id = player.id
+                player_training.trainingdate = utc_input()                
+                url = (
+                    "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
+                    + str(player_training.id)
+                )
+                sb.open(url)
+                player_training.trainingdata = format_training_data(sb.driver.page_source)
+                session.add(player_training)
+            
+            session.commit()
 
     breakpoint
