@@ -167,12 +167,14 @@ with SB(uc=True) as sb:
     logging.info("Start basic player data")
     player = None
     players = []
+    reuse_players = []
     for page_soup in pages_soup:
         players_soup = page_soup.find_all(class_="playerContainer")
 
         for player_soup in players_soup:
             try:
                 header = player_soup.h2
+                player_id = 0
                 player_id = int(header.find(class_="player_id_span").text)
                 if player_id in players_db or player_id in players:
                     continue
@@ -300,22 +302,17 @@ with SB(uc=True) as sb:
                 session.add(transfer)
                 count_transfer += 1
                 players.append(player.id)
+                reuse_players.append(player)
                 session.commit()
             except Exception as e:
                 logging.error(e)
+    del page_soup
     logging.info("End basic player data")
     # Scout and Training Data
     logging.info("Start scout and training data")
-    del player_id
-    for player_id in players:
+    for player in reuse_players:
         message = "Extra data Player: " + str(player_id)
         logging.info(message)
-        del player
-        player = session.query(Player).filter_by(id=player_id).first()
-        if not player:
-            message = "Error player not found: " + str(player_id)
-            logging.error(message)
-            continue
         try:
             if player.scoutinfo == 1 and player.starhigh == 0:
                 url = (
@@ -328,7 +325,6 @@ with SB(uc=True) as sb:
                 player = set_player_scout(
                     scout_page=sb.driver.page_source, player=player
                 )
-                session.commit()
 
         except Exception as e:
             message = "Error scout report: " + str(player.id) + " " + player.name
@@ -337,7 +333,7 @@ with SB(uc=True) as sb:
 
         try:
             add_training = False
-            if player.traininginfo == 1:                
+            if player.traininginfo == 1:
                 player_training = (
                     session.query(PlayerTraining).filter_by(id=player.id).first()
                 )
@@ -425,13 +421,13 @@ with SB(uc=True) as sb:
                     player.playsmax = 2
             if add_training:
                 session.add(player_training)
-            session.commit()
 
         except Exception as e:
             message = "Error training report: " + str(player.id) + " " + player.name
             logging.error(message)
             logging.error(e)
-        
+
+        session.commit()
 
     logging.info("End scout and training data")
 
