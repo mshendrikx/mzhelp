@@ -111,7 +111,7 @@ def set_player_scout(scout_page, player):
     return player
 
 
-def format_training_data(trainig_page):
+def process_training_data(trainig_page):
 
     soup_data = BeautifulSoup(trainig_page, "lxml")
     text = soup_data.html.body.text
@@ -122,7 +122,16 @@ def format_training_data(trainig_page):
     index = len(json_data) - 1
     json_string = json.dumps(json_data[index]["data"])
 
-    return json_string
+    training = json_data[index]["data"]
+    maxed_array = []
+    for row in training:
+        try:
+            if row["name"] == "Maxed":
+                maxed_array.append(int(row["y"]))
+        except:
+            continue
+
+    return json_string, maxed_array
 
 
 def get_player_maxs(training_data):

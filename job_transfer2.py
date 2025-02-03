@@ -12,7 +12,7 @@ from project.common import (
     only_numerics,
     countries_data,
     get_utc_string,
-    format_training_data,
+    process_training_data,
     set_player_scout,
     utc_input,
     date_input,
@@ -303,9 +303,12 @@ with SB(uc=True) as sb:
                 count_transfer += 1
                 players.append(player.id)
                 reuse_players.append(player)
-                session.commit()
+
             except Exception as e:
                 logging.error(e)
+
+        session.commit()
+
     del page_soup
     logging.info("End basic player data")
     # Scout and Training Data
@@ -314,7 +317,13 @@ with SB(uc=True) as sb:
     count_players = 0
     for player in reuse_players:
         count_players += 1
-        message = str(count_players) + ". Extra data Player: " + str(player_id)
+        message = (
+            str(count_players)
+            + ". Extra data Player: "
+            + str(player.id)
+            + " "
+            + player.name
+        )
         logging.info(message)
         try:
             if player.scoutinfo == 1 and player.starhigh == 0:
@@ -324,7 +333,7 @@ with SB(uc=True) as sb:
                     + "&sport=soccer"
                 )
                 sb.open(url)
-                sb.wait_for_element(".paper-container", timeout=2)
+                sb.wait_for_element(".paper-container", timeout=1)
                 player = set_player_scout(
                     scout_page=sb.driver.page_source, player=player
                 )
@@ -350,11 +359,11 @@ with SB(uc=True) as sb:
                     + str(player_training.id)
                 )
                 sb.open(url)
-                sb.wait_for_element("/html/body", timeout=2)
-                player_training.trainingdata = format_training_data(
+                sb.wait_for_element("/html/body", timeout=1)
+                player_training.trainingdata, maxs = process_training_data(
                     sb.driver.page_source
                 )
-                maxs = get_player_maxs(player_training.trainingdata)
+                
                 if 1 in maxs:
                     player.speedmax = 1
                 else:
