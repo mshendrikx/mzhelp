@@ -1,5 +1,7 @@
 import os
+import logging
 
+from pathlib import Path
 from seleniumbase import SB
 from selenium.webdriver.support.ui import Select
 from bs4 import BeautifulSoup
@@ -53,7 +55,28 @@ def get_transfer_searches(countries):
     return searches
 
 
+# Get the directory of the script
+script_dir = Path(__file__).parent
+# Define the logs directory (same level as the script)
+logs_dir = script_dir / "logs"
+# Create the logs directory if it doesn't exist
+logs_dir.mkdir(exist_ok=True)
+# Configure logging to save logs in the logs folder
+log_file = logs_dir / "job_transfer.log"  # Path to the log file
+logging.basicConfig(
+    level=logging.DEBUG,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",  # Define the log format
+    filename=str(log_file),  # Optional: Log to a file instead of the console
+    filemode="a",  # Optional: 'a' for append, 'w' for overwrite
+)
+
+logging.info("Starting the script")
+
+count_transfer = 0
+count_training = 0
+
 with SB(uc=True) as sb:
+
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
@@ -104,8 +127,6 @@ with SB(uc=True) as sb:
                 button_next.click()
             except:
                 next_link = False
-            break
-        break
 
     countries = countries_data(index=1)
     utc_now = utc_input()
@@ -157,6 +178,7 @@ with SB(uc=True) as sb:
             if training_graph == None:
                 player.traininginfo = 0
             else:
+                count_training += 1
                 player.traininginfo = 1
 
             player.salary = 0
@@ -236,18 +258,16 @@ with SB(uc=True) as sb:
             if transfer.actualprice < transfer.askingprice:
                 transfer.actualprice = transfer.askingprice
             session.add(transfer)
+            count_transfer += 1
             session.commit()
             players.append(player)
 
         # Scout and Training Data
         for player in players:
             if player.startraining == None:
-                url = (
-                    "https://www.managerzone.com/ajax.php?p=players&sub=scout_report&pid="
-                    + str(player.id)
-                    + "&sport=soccer"
-                )
+                url = "   " + str(player.id) + "&sport=soccer"
                 sb.open(url)
+                sb.wait_for_element(".paper-container")
                 player = set_player_scout(
                     scout_page=sb.driver.page_source, player=player
                 )
@@ -340,3 +360,7 @@ with SB(uc=True) as sb:
                     player.playsmax = 2
 
             session.commit()
+
+    text = "Trainings: " + str(count_training) + " Transfers: " + str(count_transfer)
+    logging.info("Starting the script")
+    logging.info("Script finished")
