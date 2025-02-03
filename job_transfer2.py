@@ -309,9 +309,12 @@ with SB(uc=True) as sb:
     del page_soup
     logging.info("End basic player data")
     # Scout and Training Data
-    logging.info("Start scout and training data")
+    message = "Start scout and training data, players: " + str(len(reuse_players))
+    logging.info(message)
+    count_players = 0
     for player in reuse_players:
-        message = "Extra data Player: " + str(player_id)
+        count_players += 1
+        message = str(count_players) + ". Extra data Player: " + str(player_id)
         logging.info(message)
         try:
             if player.scoutinfo == 1 and player.starhigh == 0:
