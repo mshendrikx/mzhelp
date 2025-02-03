@@ -69,6 +69,7 @@ class Player(db.Model):
     experience = db.Column(db.Integer)
     form = db.Column(db.Integer)
     traininginfo = db.Column(db.Integer)
+    scoutinfo = db.Column(db.Integer)
     changedat = db.Column(db.BigInteger)
 
 
