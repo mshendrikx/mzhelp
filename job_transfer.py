@@ -16,7 +16,6 @@ from project.common import (
     set_player_scout,
     utc_input,
     date_input,
-    get_player_maxs,
 )
 
 from dotenv import load_dotenv
@@ -160,6 +159,7 @@ with SB(uc=True) as sb:
     countries = countries_data(index=1)
     utc_now = utc_input()
     transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
+    session.query(Tranfers).filter(Tranfers.deadline < utc_now).delete()   
     players_db = []
     for transfer_db in transfers_db:
         players_db.append(transfer_db.playerid)
