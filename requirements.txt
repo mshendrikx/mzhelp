@@ -9,3 +9,4 @@ python-crontab
 beautifulsoup4
 html5lib
 lxml
+mysql-connector

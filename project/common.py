@@ -181,9 +181,9 @@ def utc_input():
     return int(utc_now.strftime("%Y%m%d%H%M"))
 
 
-def date_input(date, days, timezone):
+def date_input(date, days=0, timezone="America/Sao_Paulo", format='%d/%m/%Y %I:%M%p'):
 
-    deadline_dt = datetime.strptime(date, "%d/%m/%Y %I:%M%p")
+    deadline_dt = datetime.strptime(date, format)
     zone_info_tz = ZoneInfo(timezone)
     deadline_dt = deadline_dt.replace(tzinfo=zone_info_tz)
     deadline_dt = deadline_dt.astimezone(ZoneInfo("UTC"))

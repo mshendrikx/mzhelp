@@ -3,6 +3,7 @@ test*
 downloaded_files
 task*
 debug.py
+mznew*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
