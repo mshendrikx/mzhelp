@@ -49,3 +49,9 @@ def profile_post():
     db.session.commit()
 
     return redirect(url_for("main.profile"))
+
+@main.route("/configuration")
+@login_required
+def configuration():
+
+    return render_template("configuration.html", current_user=current_user)

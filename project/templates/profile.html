@@ -3,7 +3,7 @@
 {% block content %}
 <div class="container mt-3">
     <h3 class="title">
-        Bem vindo, {{ current_user.name }} !
+        Welcome, {{ current_user.name }} !
     </h3>
     <br>
 </div>
@@ -13,7 +13,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-3 text-white">
-                    <label for="name">Nome:</label>
+                    <label for="name">Name:</label>
                 </div>
                 <div class="col-9 text-white">
                     <input type="text" class="form-control" id="name" name="name" value="{{ current_user.name }}"
@@ -39,7 +39,7 @@
             </div>
             <div class="row">
                 <div class="col-3 text-white">
-                    <label for="repass">Repetir Password:</label>
+                    <label for="repass">Re-type Password:</label>
                 </div>
                 <div class="col-9 text-white">
                     <input type="password" class="form-control" id="repass" name="repass">
@@ -47,7 +47,7 @@
             </div>
         </div>
         <br>
-        <button class="btn btn-outline-primary">Gravar</button>
+        <button class="btn btn-outline-primary">Save</button>
     </form>
     <br>
 </div>
