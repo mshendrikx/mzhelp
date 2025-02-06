@@ -69,7 +69,7 @@ def create_app():
             )
             db.session.add(new_mzcontrol)
         # add admin user to the database
-        user = User.query.filter_by(email="admin@mzapp.com").first()
+        user = User.query.filter_by(id=1).first()
         if not user:
             new_user = User(
                 email=os.environ.get("ADMEMAIL"),
