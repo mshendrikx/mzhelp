@@ -44,10 +44,17 @@ def create_app():
     
     job = cron.find_comment('mzcontrol')
     if not list(job):
-        command = 'python3 ' + parent_dir + '/' + 'control.py'
+        command = 'python3 ' + parent_dir + '/' + 'job_control.py'
         job = cron.new(command=command, comment='mzcontrol')
         job.setall('0 0 * * *') 
         job.enable(False)
+        
+    job = cron.find_comment('transfer')
+    if not list(job):
+        command = 'python3 ' + parent_dir + '/' + 'job_transfer.py'
+        job = cron.new(command=command, comment='transfer')
+        job.setall('0 2,10,18 * * *') 
+        job.enable(False)    
     
     cron.write()
 
@@ -68,10 +75,12 @@ def create_app():
                 deadline=0,
             )
             db.session.add(new_mzcontrol)
+            
         # add admin user to the database
         user = User.query.filter_by(id=1).first()
         if not user:
             new_user = User(
+                id=1,
                 email=os.environ.get("ADMEMAIL"),
                 name=os.environ.get("ADMNAME"),
                 password=generate_password_hash(os.environ.get("ADMPASS"), method="pbkdf2:sha256"),

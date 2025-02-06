@@ -4,6 +4,8 @@ downloaded_files
 task*
 debug.py
 mznew*
+build.sh
+logs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
