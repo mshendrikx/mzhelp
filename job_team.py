@@ -28,7 +28,11 @@ users = session.query(User).all()
 
 for user in users:
 
-    with SB(uc=True, servername="selenium-hub", port="4444") as sb:
+    with SB(
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST"),
+        port=os.environ.get("SELENIUM_HUB_PORT"),
+    ) as sb:
 
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
@@ -56,7 +60,7 @@ for user in users:
         players_training = []
         countries = countries_data(index=1)
         for player_soup in players_soup:
-            header = player_soup.h2  
+            header = player_soup.h2
             player_id = int(header.find(class_="player_id_span").text)
             player = session.query(Player).filter_by(id=player_id).first()
             if not player:
@@ -65,9 +69,9 @@ for user in users:
                 player.country = 0
                 player.teamid = 0
                 session.add(player)
-                session.commit()               
+                session.commit()
             player.changedat = utc_input()
-            player.teamid = teamid                      
+            player.teamid = teamid
             player.name = header.find(class_="player_name").text
             player.number = int(header.a.text.split(".")[0])
             if player_soup.find(class_="dg_playerview_retire") != None:
@@ -88,7 +92,9 @@ for user in users:
             )
             if training_graph != None:
                 player.traininginfo = 1
-                player_training = session.query(PlayerTraining).filter_by(id=player.id).first()
+                player_training = (
+                    session.query(PlayerTraining).filter_by(id=player.id).first()
+                )
                 if not player_training:
                     player_training = PlayerTraining()
                     player_training.id = player.id
@@ -244,7 +250,7 @@ for user in users:
 
             session.add(player)
 
-        #Training Data
+        # Training Data
         for player_training in players_training:
             player_training.trainingdate = utc_input()
             url = (

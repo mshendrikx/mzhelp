@@ -76,7 +76,11 @@ logging.info("Starting the script")
 count_transfer = 0
 count_training = 0
 
-with SB(uc=True, servername="selenium-hub", port="4444") as sb:
+with SB(
+    uc=True,
+    servername=os.environ.get("SELENIUM_HUB_HOST"),
+    port=os.environ.get("SELENIUM_HUB_PORT"),
+) as sb:
 
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
@@ -159,7 +163,7 @@ with SB(uc=True, servername="selenium-hub", port="4444") as sb:
     countries = countries_data(index=1)
     utc_now = utc_input()
     transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
-    session.query(Tranfers).filter(Tranfers.deadline < utc_now).delete()   
+    session.query(Tranfers).filter(Tranfers.deadline < utc_now).delete()
     players_db = []
     for transfer_db in transfers_db:
         players_db.append(transfer_db.playerid)
@@ -363,7 +367,7 @@ with SB(uc=True, servername="selenium-hub", port="4444") as sb:
                 player_training.trainingdata, maxs = process_training_data(
                     sb.driver.page_source
                 )
-                
+
                 if 1 in maxs:
                     player.speedmax = 1
                 else:
