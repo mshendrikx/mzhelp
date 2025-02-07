@@ -1,14 +1,41 @@
 # Use Debian bullseye-slim base image
-FROM debian:bullseye-slim
+FROM debian:stable-slim
 
-# Update package lists
-RUN apt-get update && apt-get install -y python3 python3-pip wget chromium cron libxml2-dev libxslt-dev nano
+# Install necessary dependencies
+RUN apt-get update && \
+    apt-get install -y \
+    wget \
+    python3 \
+    python3-pip \
+    curl \
+    nano \
+    cron \
+    unzip \
+    chromium \
+    chromium-driver \
+    libxml2-dev \ 
+    libxslt-dev \
+    libgconf-2-4 \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libxtst6 \
+    fonts-liberation \
+    libappindicator3-1 \
+    xdg-utils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify Chromium installation
+RUN chromium --version
+
+# Verify ChromeDriver installation
+RUN chromedriver --version
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt --break-system-packages
 
 COPY . .
 

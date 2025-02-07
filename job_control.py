@@ -1,9 +1,6 @@
 import os
 
 from seleniumbase import SB
-#from selenium.webdriver.support.ui import WebDriverWait
-#from selenium.webdriver.common.by import By
-#from selenium.webdriver.support import expected_conditions as EC
 from dotenv import load_dotenv
 from project.common import get_db, only_numerics
 from project.models import Mzcontrol
@@ -11,13 +8,16 @@ from bs4 import BeautifulSoup
 
 from project.models import Countries
 
+HUB_URL = "http://selenium-hub:4444/wd/hub"
+
 load_dotenv()
 
 session = get_db()
 
 with SB(uc=True) as sb:
-
+    
     # Determine Season
+    sb.driver_path = "/usr/bin/chromedriver"
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
