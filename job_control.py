@@ -1,5 +1,6 @@
 import os
 
+from selenium import webdriver
 from seleniumbase import SB
 from dotenv import load_dotenv
 from project.common import get_db, only_numerics
@@ -8,16 +9,11 @@ from bs4 import BeautifulSoup
 
 from project.models import Countries
 
-HUB_URL = "http://selenium-hub:4444/wd/hub"
-
 load_dotenv()
 
 session = get_db()
 
-with SB(uc=True) as sb:
-    
-    # Determine Season
-    sb.driver_path = "/usr/bin/chromedriver"
+with SB(uc=True, servername="selenium-hub", port="4444") as sb:
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))

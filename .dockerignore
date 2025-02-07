@@ -1,7 +1,6 @@
 .venv
 .env
 *.sh
-test*
 temp*
 debug.py
 build.sh

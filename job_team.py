@@ -28,7 +28,7 @@ users = session.query(User).all()
 
 for user in users:
 
-    with SB(uc=True) as sb:
+    with SB(uc=True, servername="selenium-hub", port="4444") as sb:
 
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
