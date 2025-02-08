@@ -1,10 +1,8 @@
 import os
+import logging
 
 from seleniumbase import SB
-
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support import expected_conditions as EC
+from pathlib import Path
 from bs4 import BeautifulSoup
 from project.models import Player, PlayerTraining, User
 from project.common import (
@@ -24,16 +22,38 @@ load_dotenv()
 
 session = get_db()
 
+utc_string = get_utc_string(format="%Y%m%d%H%M")
+log_file_name = "job_team_" + utc_string + ".log"
+
+# Get the directory of the script
+script_dir = Path(__file__).parent
+# Define the logs directory (same level as the script)
+logs_dir = script_dir / "logs"
+# Create the logs directory if it doesn't exist
+logs_dir.mkdir(exist_ok=True)
+# Configure logging to save logs in the logs folder
+log_file = logs_dir / log_file_name  # Path to the log file
+logging.basicConfig(
+    level=logging.INFO,  # Set the logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",  # Define the log format
+    filename=str(log_file),  # Optional: Log to a file instead of the console
+    filemode="a",  # Optional: 'a' for append, 'w' for overwrite
+)
+
+logging.info("Starting the script")
+
 users = session.query(User).all()
 
 for user in users:
-
+    logging.info(f"Processing user: {user.mzuser}")
     with SB(
-        uc=True,
+        headless=True,
+        #uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST"),
         port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
-
+        
+        logging.info("Login to ManagerZone")
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
         sb.type('input[id="login_username"]', user.mzuser)
@@ -262,3 +282,5 @@ for user in users:
             session.add(player_training)
 
         session.commit()
+
+logging.info("Finishing the script")

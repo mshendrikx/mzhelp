@@ -20,7 +20,7 @@ from project.common import (
 
 from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 
 def get_transfer_searches(countries):
 
@@ -76,8 +76,7 @@ count_transfer = 0
 count_training = 0
 
 with SB(
-    headless=True,
-    #uc=True,
+    uc=True,
     servername=os.environ.get("SELENIUM_HUB_HOST"),
     port=os.environ.get("SELENIUM_HUB_PORT"),
 ) as sb:
@@ -87,9 +86,8 @@ with SB(
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
     sb.type('input[id="login_password"]', os.environ.get("MZPASS"))
     sb.click('a[id="login"]')
-    sb.wait_for_element('//*[@id="header-username"]')
     sb.open(
-        "https://www.managerzone.com/?p=profile&sub=change"
+        "https://www.managerzone.com/ajax.php?p=settings&sub=profile-change&sport=soccer"
     )
 
     # Get Time Zone

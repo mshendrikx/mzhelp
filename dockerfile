@@ -11,25 +11,18 @@ RUN apt-get update && \
     nano \
     cron \
     unzip \
-    chromium \
-    chromium-driver \
+#    chromium \
+#    chromium-driver \
     libxml2-dev \ 
     libxslt-dev \
-    libgconf-2-4 \
-    libnss3 \
-    libxss1 \
-    libasound2 \
-    libxtst6 \
-    fonts-liberation \
-    libappindicator3-1 \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify Chromium installation
-RUN chromium --version
+#RUN chromium --version
 
 # Verify ChromeDriver installation
-RUN chromedriver --version
+#RUN chromedriver --version
 
 WORKDIR /app
 

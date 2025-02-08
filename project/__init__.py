@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -39,7 +40,11 @@ def create_app():
     login_manager.init_app(app)
     
     # Cron control
-    
+    try:
+        subprocess.run(["service", "cron", "start"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(e)
+        
     cron = CronTab(user=True)
     
     job = cron.find_comment('mzcontrol')
@@ -49,13 +54,20 @@ def create_app():
         job.setall('0 0 * * *') 
         job.enable(False)
         
-    job = cron.find_comment('transfer')
+    job = cron.find_comment('mztransfer')
     if not list(job):
         command = 'python3 ' + parent_dir + '/' + 'job_transfer.py'
-        job = cron.new(command=command, comment='transfer')
+        job = cron.new(command=command, comment='mztransfer')
         job.setall('0 2,10,18 * * *') 
         job.enable(False)    
-    
+
+    job = cron.find_comment('mzteam')
+    if not list(job):
+        command = 'python3 ' + parent_dir + '/' + 'job_team.py'
+        job = cron.new(command=command, comment='mzteam')
+        job.setall('15 7 * * *') 
+        job.enable(False)    
+            
     cron.write()
 
     with app.app_context():
