@@ -27,8 +27,8 @@ try:
         headless=True,
         #browser="firefox",
         uc=True,
-        # servername=os.environ.get("SELENIUM_HUB_HOST"),
-        # port=os.environ.get("SELENIUM_HUB_PORT"),
+        servername=os.environ.get("SELENIUM_HUB_HOST"),
+        port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
         sb.open("https://www.uol.com.br/")
         logging.info("Suceess opening ManagerZone")
