@@ -30,6 +30,13 @@ RUN apt-get update && \
 #RUN apt-get update && apt-get install -y firefox-nightly \
 #    && rm -rf /var/lib/apt/lists/*
 
+# Create the new user and group
+#ARG APP_USER=mzhelp  
+#ARG APP_GROUP=mzhelp
+#RUN groupadd -g 1001 $APP_GROUP && \  
+#    useradd -u 1001 -g $APP_GROUP -ms /bin/bash $APP_USER && \
+#    chown -R $APP_USER:$APP_GROUP /home/$APP_USER
+
 WORKDIR /app
 
 #RUN wget https://github.com/mozilla/geckodriver/releases/download/v0.35.0/geckodriver-v0.35.0-linux-aarch64.tar.gz \
@@ -45,10 +52,17 @@ RUN cp /usr/bin/chromedriver /usr/local/lib/python3.11/dist-packages/seleniumbas
 
 COPY . .
 
-# Expose port 7010 for web traffic
-EXPOSE 7010
+#RUN chown -R $APP_USER:$APP_GROUP /app && \
+#    chmod -R 777 /var/run
+
+
+# Expose port 7020 for web traffic
+EXPOSE 7020
 
 ENV DISPLAY=:0
+
+# Switch to the non-root user
+#USER $APP_USER
 
 ENTRYPOINT ["cron", "-f"]
 

@@ -40,7 +40,7 @@ def create_app():
     login_manager.init_app(app)
         
     cron = CronTab(user=True)
-    
+  
     job = cron.find_comment('mzcontrol')
     if not list(job):
         command = 'python3 ' + parent_dir + '/' + 'job_control.py'
@@ -63,7 +63,7 @@ def create_app():
         job.enable(False)    
             
     cron.write()
-
+    
     with app.app_context():
 
         # Create tables        
