@@ -30,7 +30,7 @@ try:
         # servername=os.environ.get("SELENIUM_HUB_HOST"),
         # port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
-        sb.open("https://www.managerzone.com/")
+        sb.open("https://www.uol.com.br/")
         logging.info("Suceess opening ManagerZone")
 except Exception as e:
     logging.error(f"Error opening ManagerZone: {e}")

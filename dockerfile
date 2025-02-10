@@ -49,5 +49,7 @@ EXPOSE 7010
 
 ENV DISPLAY=:0
 
+ENTRYPOINT ["cron", "-f"]
+
 # Start pyhton app in the foreground
 CMD ["python3", "/app/app.py"]
