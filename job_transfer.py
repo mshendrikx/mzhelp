@@ -77,9 +77,9 @@ count_training = 0
 
 with SB(
     headless=True,
-    #uc=True,
-    servername=os.environ.get("SELENIUM_HUB_HOST"),
-    port=os.environ.get("SELENIUM_HUB_PORT"),
+    uc=True,
+    # servername=os.environ.get("SELENIUM_HUB_HOST"),
+    # port=os.environ.get("SELENIUM_HUB_PORT"),
 ) as sb:
 
     sb.open("https://www.managerzone.com/")
@@ -451,3 +451,4 @@ with SB(
     text = "Trainings: " + str(count_training) + " Transfers: " + str(count_transfer)
     logging.info(text)
     logging.info("Script finished")
+

@@ -48,9 +48,10 @@ for user in users:
     logging.info(f"Processing user: {user.mzuser}")
     with SB(
         headless=True,
-        #uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST"),
-        port=os.environ.get("SELENIUM_HUB_PORT"),
+        browser="firefox",
+        # uc=True,
+        # servername=os.environ.get("SELENIUM_HUB_HOST"),
+        # port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
         
         logging.info("Login to ManagerZone")

@@ -4,7 +4,7 @@ import os
 from seleniumbase import SB
 from pathlib import Path
 
-log_file_name = "cron_test.log"
+log_file_name = "cron_test1.log"
 # Get the directory of the script
 script_dir = Path(__file__).parent
 # Define the logs directory (same level as the script)
@@ -25,13 +25,14 @@ logging.info("Start Cron Test")
 try:
     with SB(
         headless=True,
-        #uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST"),
-        port=os.environ.get("SELENIUM_HUB_PORT"),
+        #browser="firefox",
+        uc=True,
+        # servername=os.environ.get("SELENIUM_HUB_HOST"),
+        # port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
         sb.open("https://www.managerzone.com/")
+        logging.info("Suceess opening ManagerZone")
 except Exception as e:
     logging.error(f"Error opening ManagerZone: {e}")
-    raise
 
 logging.info("Finish Cron Test")
