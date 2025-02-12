@@ -106,3 +106,12 @@ class Bids(db.Model):
     maxbid = db.Column(db.Integer)
     finalvalue = db.Column(db.Integer)
     active = db.Column(db.Integer)
+    
+class Jobs(db.Model):
+    id = db.Column(db.String(100), primary_key=True)
+    minute = db.Column(db.String(100))
+    hour = db.Column(db.String(100))
+    day = db.Column(db.String(100))
+    month = db.Column(db.String(100))
+    weekday = db.Column(db.String(100))
+    enabled = db.Column(db.Integer)

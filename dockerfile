@@ -55,16 +55,15 @@ COPY . .
 #RUN chown -R $APP_USER:$APP_GROUP /app && \
 #    chmod -R 777 /var/run
 
-
-# Expose port 7020 for web traffic
-EXPOSE 7020
-
 ENV DISPLAY=:0
 
 # Switch to the non-root user
 #USER $APP_USER
 
-ENTRYPOINT ["cron", "-f"]
+# Expose port 7020 for web traffic
+#ENTRYPOINT ["cron", "-f"]
+
+EXPOSE 7020
 
 # Start pyhton app in the foreground
 CMD ["python3", "/app/app.py"]

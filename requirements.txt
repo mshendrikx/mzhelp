@@ -10,3 +10,4 @@ beautifulsoup4
 html5lib
 lxml
 mysql-connector
+Flask-APScheduler
