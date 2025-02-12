@@ -4,11 +4,14 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
-from apscheduler.schedulers.background import BackgroundScheduler
+from flask_apscheduler import APScheduler
+from apscheduler.triggers.cron import CronTrigger
 
+# from .jobs import job_control
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
+scheduler = APScheduler()
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -24,6 +27,8 @@ def create_app():
 
     app = Flask(__name__)
 
+    app.config["SCHEDULER_API_ENABLED"] = False
+    app.config["SCHEDULER_TIMEZONE"] = "America/Sao_Paulo"
     app.config["SECRET_KEY"] = os.urandom(24).hex()
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "mysql+pymysql://root:"
@@ -35,9 +40,9 @@ def create_app():
     )
 
     db.init_app(app)
-
-    scheduler = BackgroundScheduler()
-
+    scheduler.init_app(app)
+    scheduler.start()
+    
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -84,7 +89,32 @@ def create_app():
                 mzpass=os.environ.get("MZPASS"),
             )
             db.session.add(new_user)
-
+    
+        from project.jobs import job_control, job_teams, job_transfers
+        jobs = Jobs.query.all()
+        for job in jobs:
+            if job.enabled == 1:
+                job_func = None
+                if job.id == 'job_control':
+                    job_func = job_control
+                if job.id == 'job_teams':
+                    job_func = job_teams
+                if job.id == 'job_transfers':
+                    job_func = job_transfers
+                if job_func:
+                    scheduler.add_job(
+                        id=job.id,
+                        func=job_func,
+                        trigger=CronTrigger(
+                            minute=job.minute,
+                            hour=job.hour,
+                            day=job.day,
+                            month=job.month,
+                            day_of_week=job.weekday,
+                        ),
+                        max_instances=1,
+                    )
+            
     @login_manager.user_loader
     def load_user(userid):
         # since the user_id is just the primary key of our user table, use it in the query for the user
@@ -99,7 +129,5 @@ def create_app():
     from .main import main as main_blueprint
 
     app.register_blueprint(main_blueprint)
-
-    app.scheduler = scheduler
 
     return app
