@@ -1,4 +1,5 @@
 import os
+import logging
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -28,7 +29,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config["SCHEDULER_API_ENABLED"] = False
-    app.config["SCHEDULER_TIMEZONE"] = "America/Sao_Paulo"
+    app.config["SCHEDULER_TIMEZONE"] = "UTC"
     app.config["SECRET_KEY"] = os.urandom(24).hex()
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         "mysql+pymysql://root:"
@@ -91,6 +92,11 @@ def create_app():
             db.session.add(new_user)
     
         from project.jobs import job_control, job_teams, job_transfers
+
+        # Add logging to debug
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+
         jobs = Jobs.query.all()
         for job in jobs:
             if job.enabled == 1:
@@ -114,7 +120,9 @@ def create_app():
                         ),
                         max_instances=1,
                     )
-            
+                else:
+                    logger.warning(f"Job function for {job.id} not found")
+
     @login_manager.user_loader
     def load_user(userid):
         # since the user_id is just the primary key of our user table, use it in the query for the user
