@@ -55,3 +55,13 @@ def profile_post():
 def configuration():
 
     return render_template("configuration.html", current_user=current_user)
+
+@main.route("/transfers")
+@login_required
+def transfers():
+    1 == 1
+
+@main.route("/transfers", methods=["POST"])
+@login_required
+def transfers_post():
+    1 == 1

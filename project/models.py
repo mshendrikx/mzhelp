@@ -98,6 +98,7 @@ class Tranfers(db.Model):
     deadline = db.Column(db.BigInteger, nullable=False, index=True)
     askingprice = db.Column(db.Integer)
     actualprice = db.Column(db.Integer)
+    active = db.Column(db.Integer, nullable=False, index=True)
 
 
 class Bids(db.Model):

@@ -164,7 +164,10 @@ with SB(
     countries = countries_data(index=1)
     utc_now = utc_input()
     transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
-    session.query(Tranfers).filter(Tranfers.deadline < utc_now).delete()
+    session.query(Tranfers).filter(Tranfers.deadline < utc_now, Tranfers.active == 1).update(
+        {"active": 0}
+    )
+    session.commit()
     players_db = []
     for transfer_db in transfers_db:
         players_db.append(transfer_db.playerid)
@@ -304,6 +307,7 @@ with SB(
                 transfer.actualprice = int(only_numerics(strongs[0].text))
                 if transfer.actualprice < transfer.askingprice:
                     transfer.actualprice = transfer.askingprice
+                transfer.active = 1
                 session.add(transfer)
                 count_transfer += 1
                 players.append(player.id)
