@@ -4,6 +4,9 @@ from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from . import db
 
+from .common import utc_input, countries_data
+from .models import Tranfers, Player
+
 main = Blueprint("main", __name__)
 
 @main.route("/")
@@ -59,7 +62,25 @@ def configuration():
 @main.route("/transfers")
 @login_required
 def transfers():
-    1 == 1
+    
+    utc_now = utc_input()
+    countries = countries_data(index=0)
+    transfers = []    
+    db_transfers = Tranfers.query.filter(Tranfers.deadline >= utc_now, Tranfers.active == 1).order_by(Tranfers.deadline).all()
+    count = 0
+    for db_transfer in db_transfers:
+        player = Player.query.filter_by(id=db_transfer.playerid).first()
+        if player:
+            transfer = []
+            transfer.append(db_transfer)
+            transfer.append(player)
+            transfer.append(countries[player.country])
+            transfers.append(transfer)
+            count += 1
+        if count == 4:
+            break
+               
+    return render_template("transfers.html", current_user=current_user, transfers=transfers)
 
 @main.route("/transfers", methods=["POST"])
 @login_required

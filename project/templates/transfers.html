@@ -1,24 +1,131 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container mt-3">
-    <form method="POST" action="{{ url_for('main.transfers') }}">
-        <div class="mb-3 mt-3">
-            <label for="email">Email:</label>
-            <input type="text" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password">Password:</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <div class="mb-3">
-            <label class="checkbox">
-                <input type="checkbox" name="remember" checked>
-                stay conected
-            </label>
-        </div>
-        <button type="submit" class="btn btn-outline-primary">Update</button>
-    </form>
+{% extends "base.html" %} {% block content %}
+<div class="table-responsive-lg">
+  <div class="col-12">
+    <table class="table" cellspacing="10" cellpadding="0" align="center">
+      <tbody>
+        <tr>
+          {% for transfer in transfers %}
+          <td class="col-3">
+            <div class="transfer" border="3" {% if transfer[1].retiring == 1 %}
+            style="background-image:url(/static/images/player_bg3.gif)" {% else
+            %} style="background-image:url(/static/images/player_bg2.gif)" {%
+            endif %}>
+            <div class="p_header">
+              <div class="col-12">
+                <table>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <img
+                        title="{{ transfer[2].name }}"
+                        src="data:image/gif;base64,{{ transfer[2].flag }}"
+                        width="18"
+                        height="12"
+                        border="0"
+                      />
+                    </td>
+                    <td class="col-10" align="center">
+                      <a
+                        class="black"
+                        href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
+                        >{{ transfer[1].name }}</a
+                      >
+                    </td>
+                    <td class="col-1" align="right">
+                        <font color="#000000">({{ transfer[1].transferage }})</font>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="p_main">
+              <div class="col-12">
+                <table>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].speedscout == 4 %}ff33cc{% elif transfer[1].speedscout == 3 %}009933{% elif transfer[1].speedscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].speedscout == 2 %}cccc00{% elif transfer[1].speedscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Speed</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].speed }}{% if transfer[1].speedmax == 0 %}o{% elif transfer[1].speedmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <a>({{ transfer[1].speed }})</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <a>Stamina</a>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].stamina }}{% if transfer[1].staminamax == 0 %}o{% elif transfer[1].staminamax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <a>({{ transfer[1].stamina }})</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <a>Intelligence</a>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].intelligence }}{% if transfer[1].intelligencemax == 0 %}o{% elif transfer[1].intelligencemax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <a>({{ transfer[1].intelligence }})</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <a>Passing</a>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].passing }}{% if transfer[1].passingmax == 0 %}o{% elif transfer[1].passingmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <a>({{ transfer[1].passing }})</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <a>Heading</a>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].heading }}{% if transfer[1].headingmax == 0 %}o{% elif transfer[1].headingmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <a>({{ transfer[1].heading }})</a>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+              <a>Main</a>
+            </div>
+            <div class="p_footer">
+              <a>Footer</a>
+            </div>
+          </td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% endblock %}

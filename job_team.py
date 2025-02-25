@@ -11,7 +11,7 @@ from project.common import (
     countries_data,
     get_utc_string,
     get_mz_day,
-    format_training_data,
+    process_training_data,
     set_player_scout,
     utc_input,
 )
@@ -279,7 +279,7 @@ for user in users:
                 + str(player_training.id)
             )
             sb.open(url)
-            player_training.trainingdata = format_training_data(sb.driver.page_source)
+            player_training.trainingdata = process_training_data(sb.driver.page_source)
             session.add(player_training)
 
         session.commit()
