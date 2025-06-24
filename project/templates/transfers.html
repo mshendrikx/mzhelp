@@ -1,16 +1,18 @@
 {% extends "base.html" %} {% block content %}
-<div class="table-responsive-lg">
+<div class="table-responsive-sm">
   <div class="col-12">
     <table class="table" cellspacing="10" cellpadding="0" align="center">
+      {% counter = 1 %}
       <tbody>
+        {% for transfer in transfers %} {% if counter == 1 %}
         <tr>
-          {% for transfer in transfers %}
+          {% endif %}
           <td class="col-3">
             <div class="transfer" border="3" {% if transfer[1].retiring == 1 %}
             style="background-image:url(/static/images/player_bg3.gif)" {% else
             %} style="background-image:url(/static/images/player_bg2.gif)" {%
             endif %}>
-            <div class="p_header">
+            <div class="p_header" style="border: 1px solid blue">
               <div class="col-12">
                 <table>
                   <tr>
@@ -25,19 +27,20 @@
                     </td>
                     <td class="col-10" align="center">
                       <a
-                        class="black"
                         href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
-                        >{{ transfer[1].name }}</a
+                        ><font color="blue">{{ transfer[1].name }}</font></a
                       >
                     </td>
                     <td class="col-1" align="right">
-                        <font color="#000000">({{ transfer[1].transferage }})</font>
+                      <font color="#000000"
+                        >({{ transfer[1].transferage }})</font
+                      >
                     </td>
                   </tr>
                 </table>
               </div>
             </div>
-            <div class="p_main">
+            <div class="p_main" style="border: 1px solid blue">
               <div class="col-12">
                 <table>
                   <tr>
@@ -54,12 +57,15 @@
                       />
                     </td>
                     <td class="col-1" align="right">
-                      <a>({{ transfer[1].speed }})</a>
+                      <font color="#000000">({{ transfer[1].speed }})</font>
                     </td>
                   </tr>
                   <tr>
                     <td class="col-1" align="left">
-                      <a>Stamina</a>
+                      <font
+                        color="#{% if transfer[1].staminascout == 4 %}ff33cc{% elif transfer[1].staminascout == 3 %}009933{% elif transfer[1].staminascout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].staminascout == 2 %}cccc00{% elif transfer[1].staminascout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Stamina</font
+                      >
                     </td>
                     <td class="col-1"></td>
                     <td class="col-9" align="left">
@@ -68,12 +74,15 @@
                       />
                     </td>
                     <td class="col-1" align="right">
-                      <a>({{ transfer[1].stamina }})</a>
+                      <font color="#000000">({{ transfer[1].stamina }})</font>
                     </td>
                   </tr>
                   <tr>
                     <td class="col-1" align="left">
-                      <a>Intelligence</a>
+                      <font
+                        color="#{% if transfer[1].intelligencescout == 4 %}ff33cc{% elif transfer[1].intelligencescout == 3 %}009933{% elif transfer[1].intelligencescout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].intelligencescout == 2 %}cccc00{% elif transfer[1].intelligencescout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Intelligence</font
+                      >
                     </td>
                     <td class="col-1"></td>
                     <td class="col-9" align="left">
@@ -82,12 +91,17 @@
                       />
                     </td>
                     <td class="col-1" align="right">
-                      <a>({{ transfer[1].intelligence }})</a>
+                      <font color="#000000"
+                        >({{ transfer[1].intelligence }})</font
+                      >
                     </td>
                   </tr>
                   <tr>
                     <td class="col-1" align="left">
-                      <a>Passing</a>
+                      <font
+                        color="#{% if transfer[1].passingscout == 4 %}ff33cc{% elif transfer[1].passingscout == 3 %}009933{% elif transfer[1].passingscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].passingscout == 2 %}cccc00{% elif transfer[1].passingscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Passing</font
+                      >
                     </td>
                     <td class="col-1"></td>
                     <td class="col-9" align="left">
@@ -96,12 +110,15 @@
                       />
                     </td>
                     <td class="col-1" align="right">
-                      <a>({{ transfer[1].passing }})</a>
+                      <font color="#000000">({{ transfer[1].passing }})</font>
                     </td>
                   </tr>
                   <tr>
                     <td class="col-1" align="left">
-                      <a>Heading</a>
+                      <font
+                        color="#{% if transfer[1].headingscout == 4 %}ff33cc{% elif transfer[1].headingscout == 3 %}009933{% elif transfer[1].headingscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].headingscout == 2 %}cccc00{% elif transfer[1].headingscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Heading</font
+                      >
                     </td>
                     <td class="col-1"></td>
                     <td class="col-9" align="left">
@@ -110,19 +127,135 @@
                       />
                     </td>
                     <td class="col-1" align="right">
-                      <a>({{ transfer[1].heading }})</a>
+                      <font color="#000000">({{ transfer[1].heading }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].keepingscout == 4 %}ff33cc{% elif transfer[1].keepingscout == 3 %}009933{% elif transfer[1].keepingscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].keepingscout == 2 %}cccc00{% elif transfer[1].keepingscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Keeping</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].keeping }}{% if transfer[1].keepingmax == 0 %}o{% elif transfer[1].keepingmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].keeping }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].controlscout == 4 %}ff33cc{% elif transfer[1].controlscout == 3 %}009933{% elif transfer[1].controlscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].controlscout == 2 %}cccc00{% elif transfer[1].controlscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Control</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].control }}{% if transfer[1].controlmax == 0 %}o{% elif transfer[1].controlmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].control }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].tacklingscout == 4 %}ff33cc{% elif transfer[1].tacklingscout == 3 %}009933{% elif transfer[1].tacklingscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].tacklingscout == 2 %}cccc00{% elif transfer[1].tacklingscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Tackling</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].tackling }}{% if transfer[1].tacklingmax == 0 %}o{% elif transfer[1].tacklingmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].tackling }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].aerialscout == 4 %}ff33cc{% elif transfer[1].aerialscout == 3 %}009933{% elif transfer[1].aerialscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].aerialscout == 2 %}cccc00{% elif transfer[1].aerialscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Aerial</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].aerial }}{% if transfer[1].aerialmax == 0 %}o{% elif transfer[1].aerialmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].aerial }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font
+                        color="#{% if transfer[1].playsscout == 4 %}ff33cc{% elif transfer[1].playsscout == 3 %}009933{% elif transfer[1].playsscout == 2 and transfer[1].starhigh == 2 %}ffcc00{% elif transfer[1].playsscout == 2 %}cccc00{% elif transfer[1].playsscout == 1 %}ff0000{% else %}000000{% endif %}"
+                        >Plays</font
+                      >
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].plays }}{% if transfer[1].playsmax == 0 %}o{% elif transfer[1].playsmax == 1 %}m{% endif %}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].plays }})</font>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font color="#000000">Experience</font>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].experience }}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000"
+                        >({{ transfer[1].experience }})</font
+                      >
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="col-1" align="left">
+                      <font color="#000000">Form</font>
+                    </td>
+                    <td class="col-1"></td>
+                    <td class="col-9" align="left">
+                      <img
+                        src="/static/images/ball{{ transfer[1].form }}.gif"
+                      />
+                    </td>
+                    <td class="col-1" align="right">
+                      <font color="#000000">({{ transfer[1].form }})</font>
                     </td>
                   </tr>
                 </table>
               </div>
-              <a>Main</a>
             </div>
-            <div class="p_footer">
+            <div class="p_footer" style="border: 1px solid blue">
               <a>Footer</a>
             </div>
           </td>
-          {% endfor %}
+          {% if counter == 1 %}
         </tr>
+        {% elif counter == 5 %} {% counter = 1 %} {% else %} {% counter += 1 %}
+        {% endif %} {% endfor %}
       </tbody>
     </table>
   </div>

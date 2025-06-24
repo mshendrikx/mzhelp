@@ -77,7 +77,7 @@ def transfers():
             transfer.append(countries[player.country])
             transfers.append(transfer)
             count += 1
-        if count == 4:
+        if count == 5:
             break
                
     return render_template("transfers.html", current_user=current_user, transfers=transfers)
