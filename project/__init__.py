@@ -1,5 +1,6 @@
 import os
 import logging
+import mysql.connector
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -24,6 +25,7 @@ def create_app():
 
     mariadb_pass = os.environ.get("MZDBPASS")
     mariadb_host = os.environ.get("MZDBHOST")
+    mariadb_port = os.environ.get("MZDBPORT")
     mariadb_database = os.environ.get("MZDBNAME")
 
     app = Flask(__name__)
@@ -36,10 +38,37 @@ def create_app():
         + mariadb_pass
         + "@"
         + mariadb_host
+        + ":"
+        + mariadb_port
         + "/"
         + mariadb_database
     )
+    
+    try:
+        conn = mysql.connector.connect(
+            host=mariadb_host,
+            port=mariadb_port,
+            user='root',
+            password=mariadb_pass
+        )
+        
+        cursor = conn.cursor()
+        
+        # Create database if it doesn't exist
+        cursor.execute(f"CREATE DATABASE IF NOT EXISTS {mariadb_database}")
+        print(f"Database '{mariadb_database}' created successfully (or already exists)")
+        
+        # Switch to the database
+        cursor.execute(f"USE {mariadb_database}")
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
 
+    except mysql.connector.Error as err:
+        print(f"Error: {err}")
+        return False
+    
     db.init_app(app)
     scheduler.init_app(app)
     scheduler.start()
