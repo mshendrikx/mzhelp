@@ -16,8 +16,8 @@ with SB(
     headless=True,
     #browser="firefox",
     uc=True,
-    # servername=os.environ.get("SELENIUM_HUB_HOST"),
-    # port=os.environ.get("SELENIUM_HUB_PORT"),
+    servername=os.environ.get("SELENIUM_HUB_HOST", None),
+    port=os.environ.get("SELENIUM_HUB_PORT", None),
 ) as sb:
     
     sb.open("https://www.managerzone.com/")

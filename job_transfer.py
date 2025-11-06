@@ -133,7 +133,11 @@ with SB(
                     soup = BeautifulSoup(
                         players_container.get_attribute("outerHTML"), "lxml"
                     )
-                    pages_soup.append(soup)
+                    page_soup = []
+                    page_soup.append(soup)
+                    page_soup.append(int(search[0]))
+                    
+                    pages_soup.append(page_soup)
                     try:
                         button_next = sb.find_element(
                             "div.transferSearchPages a:contains('Next')", timeout=2
@@ -177,7 +181,7 @@ with SB(
     players = []
     reuse_players = []
     for page_soup in pages_soup:
-        players_soup = page_soup.find_all(class_="playerContainer")
+        players_soup = page_soup[0].find_all(class_="playerContainer")
 
         for player_soup in players_soup:
             try:
@@ -205,10 +209,11 @@ with SB(
                     logging.info(message)
                     add_player = False
                 player.changedat = utc_input()
-                player.country = countries[header.div.img.get("title")].id
+                player.country = page_soup[1]
                 player.name = player_name
                 float_left = player_soup.find(class_="floatLeft")
                 float_left = float_left.table.tbody
+                scout_report = float_left.find(class_="scout_report_row box_dark")
                 float_left = float_left.find_all("tr")
                 player_chars = float_left[0].find_all("tr")
                 player_skills = float_left[8].find_all("tr")
@@ -216,7 +221,6 @@ with SB(
                     class_="floatRight transfer-control-area"
                 )
                 float_right = float_right.find_all(class_="box_dark")
-                scout_report = float_right[1].find(title="Scout report")
                 training_graph = float_right[1].find(
                     class_="fa-regular fa-chart-line-up training-graphs-icon"
                 )
