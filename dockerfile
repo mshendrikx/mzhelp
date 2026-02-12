@@ -44,7 +44,8 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip3 install -r requirements.txt --break-system-packages
+#RUN pip3 install -r requirements.txt --break-system-packages
+RUN pip3 install -r requirements.txt
 
 RUN cp /usr/bin/chromedriver /usr/local/lib/python3.11/dist-packages/seleniumbase/drivers 
 #    && mv geckodriver /usr/local/lib/python3.11/dist-packages/seleniumbase/drivers \
