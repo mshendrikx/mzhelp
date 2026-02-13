@@ -1,6 +1,7 @@
 import os
 import logging
 import time
+import asyncio
 
 from pathlib import Path
 from seleniumbase import SB
@@ -22,35 +23,147 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def get_transfer_searches(countries):
+async def process_lxml(lxml_data, coutry_id=0):
 
-    searches = []
-    for country in countries:
-        if country.ages > 18:
-            age = 19
-            while age <= country.ages:
-                search = []
-                search.append(str(country.id))
-                search.append(str(age))
-                search.append(str(age))
-                age += 1
-                searches.append(search)
-            search = []
-            search.append(str(country.id))
-            search.append(str(age))
-            search.append("37")
-            searches.append(search)
-        else:
-            search = []
-            search.append(str(country.id))
-            search.append("19")
-            search.append("37")
-            searches.append(search)
+    players_soup = lxml_data.find_all(class_="playerContainer")
+    for player_soup in players_soup:
+        try:
+            header = player_soup.h2
+            player_id = 0
+            player_id = int(header.find(class_="player_id_span").text)
+            if player_id in players_db or player_id in players:
+                continue
+            player_name = header.find(class_="player_name").text
+            del player
+            player = session.query(Player).filter_by(id=player_id).first()
+            if not player:
+                message = "Add player: " + str(player_id) + " " + player_name
+                logging.info(message)
+                player = Player()
+                player.id = player_id
+                player.country = 0
+                player.teamid = 0
+                player.number = 0
+                player.retiring = 0
+                player.national = 0
+                add_player = True
+            else:
+                message = "Modify player: " + str(player_id) + " " + player_name
+                logging.info(message)
+                add_player = False
+            player.changedat = utc_input()
+            player.country = coutry_id
+            player.name = player_name
+            float_left = player_soup.find(class_="floatLeft")
+            float_left = float_left.table.tbody
+            scout_report = float_left.find(class_="scout_report_row box_dark")
+            float_left = float_left.find_all("tr")
+            player_chars = float_left[0].find_all("tr")
+            player_skills = float_left[8].find_all("tr")
+            float_right = player_soup.find(
+                class_="floatRight transfer-control-area"
+            )
+            float_right = float_right.find_all(class_="box_dark")
+            training_graph = float_right[1].find(
+                class_="fa-regular fa-chart-line-up training-graphs-icon"
+            )
+            player.starhigh = 0
+            player.starlow = 0
+            player.startraining = 0
+            if scout_report == None:
+                player.scoutinfo = 0
+            else:
+                player.scoutinfo = 1
+            if training_graph == None:
+                player.traininginfo = 0
+            else:
+                count_training += 1
+                player.traininginfo = 1
+            player.salary = 0
+            for player_char in player_chars:
+                if "Age" in player_char.text:
+                    player.age = int(only_numerics(player_char.text))
+                    player.transferage = player.age
+                elif "Foot" in player_char.text:
+                    if "Left" in player_char.text:
+                        player.foot = 0
+                    elif "Right" in player_char.text:
+                        player.foot = 1
+                    else:
+                        player.foot = 2
+                elif "Height" in player_char.text:
+                    player.height = int(only_numerics(player_char.text))
+                elif "Weight" in player_char.text:
+                    player.weight = int(only_numerics(player_char.text))
+                elif "Born" in player_char.text:
+                    player.season = int(only_numerics(player_char.text))
+                elif "Balls" in player_char.text:
+                    player.totalskill = int(only_numerics(player_char.text))
+            money_info = float_right[0].find_all("span")
+            player.value = int(only_numerics(money_info[0].text))
+            player.salary = int(only_numerics(money_info[1].text))
+            count = 0
+            for player_skill in player_skills:
+                match count:
+                    case 0:
+                        player.speedscout = 0
+                        player.speed = int(only_numerics(player_skill.text))
+                    case 1:
+                        player.staminascout = 0
+                        player.stamina = int(only_numerics(player_skill.text))
+                    case 2:
+                        player.intelligencescout = 0
+                        player.intelligence = int(only_numerics(player_skill.text))
+                    case 3:
+                        player.passingscout = 0
+                        player.passing = int(only_numerics(player_skill.text))
+                    case 4:
+                        player.shootingscout = 0
+                        player.shooting = int(only_numerics(player_skill.text))
+                    case 5:
+                        player.headingscout = 0
+                        player.heading = int(only_numerics(player_skill.text))
+                    case 6:
+                        player.keepingscout = 0
+                        player.keeping = int(only_numerics(player_skill.text))
+                    case 7:
+                        player.controlscout = 0
+                        player.control = int(only_numerics(player_skill.text))
+                    case 8:
+                        player.tacklingscout = 0
+                        player.tackling = int(only_numerics(player_skill.text))
+                    case 9:
+                        player.aerialscout = 0
+                        player.aerial = int(only_numerics(player_skill.text))
+                    case 10:
+                        player.playsscout = 0
+                        player.plays = int(only_numerics(player_skill.text))
+                    case 11:
+                        player.experience = int(only_numerics(player_skill.text))
+                    case 12:
+                        player.form = int(only_numerics(player_skill.text))
+                count += 1
+            strongs = float_right[0].find_all("strong")
+            if add_player:
+                session.add(player)
+            transfer = Tranfers()
+            transfer.playerid = player.id
+            transfer.deadline = date_input(strongs[1].text, 0, time_zone)
+            transfer.askingprice = int(only_numerics(strongs[2].text))
+            strongs = float_right[1].find_all("strong")
+            transfer.actualprice = int(only_numerics(strongs[0].text))
+            if transfer.actualprice < transfer.askingprice:
+                transfer.actualprice = transfer.askingprice
+            transfer.active = 1
+            session.add(transfer)
+            count_transfer += 1
+            players.append(player.id)
+            reuse_players.append(player)
+        except Exception as e:
+            logging.error(e)
+            
+    session.commit()
 
-    return searches
-
-
-session = get_db()
 
 utc_string = get_utc_string(format="%Y%m%d%H%M")
 log_file_name = "job_transfer_" + utc_string + ".log"
@@ -82,6 +195,8 @@ with SB(
     port=os.environ.get("SELENIUM_HUB_PORT"),
 ) as sb:
 
+    session = get_db()    
+
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
@@ -103,7 +218,31 @@ with SB(
     sb.wait_for_element('//*[@id="players_container"]')
     utc_string = get_utc_string(format="%Y-%m-%d")
 
-    searches = get_transfer_searches(session.query(Countries).all())
+    countries = session.query(Countries).all()
+    
+    searches = []
+    for country in countries:
+        if country.ages > 18:
+            age = 19
+            while age <= country.ages:
+                search = []
+                search.append(str(country.id))
+                search.append(str(age))
+                search.append(str(age))
+                age += 1
+                searches.append(search)
+            search = []
+            search.append(str(country.id))
+            search.append(str(age))
+            search.append("37")
+            searches.append(search)
+        else:
+            search = []
+            search.append(str(country.id))
+            search.append("19")
+            search.append("37")
+            searches.append(search)
+    
     pages_soup = []
 
     # update control table with deadline
@@ -130,14 +269,12 @@ with SB(
                 try:
                     sb.wait_for_element('//*[@id="thePlayers_0"]', timeout=2)
                     players_container = sb.find_element("#players_container")
-                    soup = BeautifulSoup(
+                    lxml_data = BeautifulSoup(
                         players_container.get_attribute("outerHTML"), "lxml"
                     )
-                    page_soup = []
-                    page_soup.append(soup)
-                    page_soup.append(int(search[0]))
                     
-                    pages_soup.append(page_soup)
+                    asyncio.create_task(process_lxml(lxml_data=lxml_data, coutry_id=search[0]))
+                    
                     try:
                         button_next = sb.find_element(
                             "div.transferSearchPages a:contains('Next')", timeout=2
@@ -259,6 +396,21 @@ with SB(
                 money_info = float_right[0].find_all("span")
                 player.value = int(only_numerics(money_info[0].text))
                 player.salary = int(only_numerics(money_info[1].text))
+                
+                try:
+                    stars_data = player_skills[13]
+                    stars_data = stars_data.find_all(class_="scout_report_stars")
+                    star_high = stars_data[0].find_all("i")
+                    star_high = int(len(star_high))
+                    star_low = stars_data[1].find_all("i")
+                    star_low = int(len(star_low))
+                    star_trainning = stars_data[2].find_all("i")
+                    star_trainning = int(len(star_trainning))
+                except:
+                    star_high = 0
+                    star_low = 0
+                    star_trainning = 0
+
                 count = 0
                 for player_skill in player_skills:
                     match count:
@@ -300,6 +452,8 @@ with SB(
                         case 12:
                             player.form = int(only_numerics(player_skill.text))
                     count += 1
+                    if count == 13:
+                        break
                 strongs = float_right[0].find_all("strong")
                 if add_player:
                     session.add(player)
@@ -322,7 +476,8 @@ with SB(
 
         session.commit()
 
-    del page_soup
+    if page_soup:
+        del page_soup
     logging.info("End basic player data")
     # Scout and Training Data
     message = "Start scout and training data, players: " + str(len(reuse_players))

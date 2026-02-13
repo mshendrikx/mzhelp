@@ -10,8 +10,6 @@ from project.models import Countries
 
 load_dotenv()
 
-session = get_db()
-
 with SB(
     headless=True,
     #browser="firefox",
@@ -20,6 +18,7 @@ with SB(
     port=os.environ.get("SELENIUM_HUB_PORT", None),
 ) as sb:
     
+    session = get_db()
     sb.open("https://www.managerzone.com/")
     sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
     sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
@@ -31,7 +30,6 @@ with SB(
     except Exception as e:
         season = None
     if season != None:
-        session = get_db()
         control = session.query(Mzcontrol).first()
         if control:
             control.season = season

@@ -3,7 +3,7 @@ from sqlalchemy.dialects.mysql import LONGTEXT
 from . import db
 
 
-class User(UserMixin, db.Model):
+class Users(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     email = db.Column(db.String(100))
@@ -13,7 +13,7 @@ class User(UserMixin, db.Model):
     mzpass = db.Column(db.String(1000))
 
 
-class Player(db.Model):
+class Players(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     number = db.Column(db.Integer)
@@ -73,7 +73,7 @@ class Player(db.Model):
     changedat = db.Column(db.BigInteger)
 
 
-class PlayerTraining(db.Model):
+class PlayersTraining(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     trainingdate = db.Column(db.BigInteger)
     trainingdata = db.Column(LONGTEXT, nullable=True)
@@ -92,7 +92,7 @@ class Countries(db.Model):
     ages = db.Column(db.Integer)
 
 
-class Tranfers(db.Model):
+class Transfers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     playerid = db.Column(db.Integer, nullable=False, index=True)
     deadline = db.Column(db.BigInteger, nullable=False, index=True)
@@ -107,12 +107,3 @@ class Bids(db.Model):
     maxbid = db.Column(db.Integer)
     finalvalue = db.Column(db.Integer)
     active = db.Column(db.Integer)
-    
-class Jobs(db.Model):
-    id = db.Column(db.String(100), primary_key=True)
-    minute = db.Column(db.String(100))
-    hour = db.Column(db.String(100))
-    day = db.Column(db.String(100))
-    month = db.Column(db.String(100))
-    weekday = db.Column(db.String(100))
-    enabled = db.Column(db.Integer)

@@ -5,7 +5,7 @@ import json
 from datetime import datetime, timezone, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from .models import User, Mzcontrol, Player, Countries
+from .models import Users, Mzcontrol, Players, Countries
 from sqlalchemy import create_engine
 from zoneinfo import ZoneInfo
 
@@ -181,7 +181,7 @@ def utc_input():
     return int(utc_now.strftime("%Y%m%d%H%M"))
 
 
-def date_input(date, days=0, timezone="America/Sao_Paulo", format='%d/%m/%Y %I:%M%p'):
+def date_input(date, days=0, timezone="America/Sao_Paulo", format="%d/%m/%Y %I:%M%p"):
 
     deadline_dt = datetime.strptime(date, format)
     zone_info_tz = ZoneInfo(timezone)

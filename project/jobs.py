@@ -7,7 +7,7 @@ from selenium.webdriver.support.ui import Select
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pathlib import Path
-from project.models import Player, PlayerTraining, Countries, Tranfers, Mzcontrol, User
+from project.models import Players, PlayersTraining, Countries, Transfers, Mzcontrol, Users
 from project.common import (
     get_db,
     only_numerics,
@@ -65,55 +65,49 @@ def job_nations():
 
 def job_control():
 
-    session = get_db()
-
     with SB(
         headless=True,
-        # browser="firefox",
+        #browser="firefox",
         uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST"),
-        port=os.environ.get("SELENIUM_HUB_PORT"),
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
-
+        
+        session = get_db()
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
         sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
         sb.type('input[id="login_password"]', os.environ.get("MZPASS"))
-        sb.click('a[id="login"]')
+        sb.click('a[id="login"]')     
         try:
-            text = sb.get_text('//*[@id="header-stats-wrapper"]/h5[3]')
-            season = int(only_numerics(text.split("·")[0]))
+            text = sb.get_text('//*[@id="header-stats-wrapper"]/h5[3]')   
+            season = int(only_numerics(text.split('·')[0]))
         except Exception as e:
             season = None
         if season != None:
-            session = get_db()
             control = session.query(Mzcontrol).first()
             if control:
                 control.season = season
                 session.commit()
-
+        
         # Determine Countries
         sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
-
+        
         countries_sel = sb.find_element("#cid")
-        soup = BeautifulSoup(countries_sel.get_attribute("outerHTML"), "html.parser")
+        soup = BeautifulSoup(countries_sel.get_attribute("outerHTML"), 'html.parser')
         countries_sel = soup.find_all("option")
-
-        for country_sel in countries_sel:
+        
+        for country_sel in countries_sel:        
             country_id = int(country_sel.get("value"))
             sb.select_option_by_value('//*[@id="cid"]', country_sel.get("value"))
-            sb.wait_for_element(
-                '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img'
-            )
+            sb.wait_for_element('//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img')
             country_db = session.query(Countries).filter_by(id=country_id).first()
             if country_db:
                 continue
             country = Countries()
             country.id = country_id
             country.name = country_sel.text
-            flag_el = sb.get(
-                '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img'
-            )
+            flag_el = sb.get('//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img')
             country.flag = flag_el.screenshot_as_base64
             country.ages = 0
             session.add(country)
@@ -261,8 +255,8 @@ def job_transfers():
 
         countries = countries_data(index=1)
         utc_now = utc_input()
-        transfers_db = session.query(Tranfers).filter(Tranfers.deadline >= utc_now).all()
-        session.query(Tranfers).filter(Tranfers.deadline < utc_now).delete()
+        transfers_db = session.query(Transfers).filter(Transfers.deadline >= utc_now).all()
+        session.query(Transfers).filter(Transfers.deadline < utc_now).delete()
         players_db = []
         for transfer_db in transfers_db:
             players_db.append(transfer_db.playerid)
@@ -283,11 +277,11 @@ def job_transfers():
                         continue
                     player_name = header.find(class_="player_name").text
                     del player
-                    player = session.query(Player).filter_by(id=player_id).first()
+                    player = session.query(Players).filter_by(id=player_id).first()
                     if not player:
                         message = "Add player: " + str(player_id) + " " + player_name
                         logging.info(message)
-                        player = Player()
+                        player = Players()
                         player.id = player_id
                         player.country = 0
                         player.teamid = 0
@@ -394,7 +388,7 @@ def job_transfers():
                     strongs = float_right[0].find_all("strong")
                     if add_player:
                         session.add(player)
-                    transfer = Tranfers()
+                    transfer = Transfers()
                     transfer.playerid = player.id
                     transfer.deadline = date_input(strongs[1].text, 0, time_zone)
                     transfer.askingprice = int(only_numerics(strongs[2].text))
@@ -450,11 +444,11 @@ def job_transfers():
                 add_training = False
                 if player.traininginfo == 1:
                     player_training = (
-                        session.query(PlayerTraining).filter_by(id=player.id).first()
+                        session.query(PlayersTraining).filter_by(id=player.id).first()
                     )
                     if not player_training:
                         add_training = True
-                        player_training = PlayerTraining()
+                        player_training = PlayersTraining()
                         player_training.id = player.id
                     player_training.trainingdate = utc_input()
                     url = (
@@ -573,7 +567,7 @@ def job_teams():
 
     logging.info("Starting the script")
 
-    users = session.query(User).all()
+    users = session.query(Users).all()
 
     for user in users:
         logging.info(f"Processing user: {user.mzuser}")
@@ -595,7 +589,7 @@ def job_teams():
             text = sb.get_text('//*[@id="infoAboutTeam"]/dd[1]/span[3]')
             teamid = int(only_numerics(text))
 
-            players = session.query(Player).filter_by(teamid=teamid)
+            players = session.query(Players).filter_by(teamid=teamid)
 
             for player in players:
                 player.teamid = 0
@@ -614,9 +608,9 @@ def job_teams():
             for player_soup in players_soup:
                 header = player_soup.h2
                 player_id = int(header.find(class_="player_id_span").text)
-                player = session.query(Player).filter_by(id=player_id).first()
+                player = session.query(Players).filter_by(id=player_id).first()
                 if not player:
-                    player = Player()
+                    player = Players()
                     player.id = player_id
                     player.country = 0
                     player.teamid = 0
@@ -645,10 +639,10 @@ def job_teams():
                 if training_graph != None:
                     player.traininginfo = 1
                     player_training = (
-                        session.query(PlayerTraining).filter_by(id=player.id).first()
+                        session.query(PlayersTraining).filter_by(id=player.id).first()
                     )
                     if not player_training:
-                        player_training = PlayerTraining()
+                        player_training = PlayersTraining()
                         player_training.id = player.id
                         session.commit()
                         players_training.append(player_training)

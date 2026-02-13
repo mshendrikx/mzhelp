@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
 from flask_apscheduler import APScheduler
-from apscheduler.triggers.cron import CronTrigger
 
 # from .jobs import job_control
 
@@ -32,8 +31,6 @@ def create_app():
     mariadb_port = os.environ.get("MZDBPORT")
     mariadb_database = os.environ.get("MZDBNAME")
 
-    app = Flask(__name__)
-
     app.config["SCHEDULER_API_ENABLED"] = False
     app.config["SCHEDULER_TIMEZONE"] = "UTC"
     app.config["SECRET_KEY"] = os.urandom(24).hex()
@@ -47,6 +44,16 @@ def create_app():
         + "/"
         + mariadb_database
     )
+
+    app.config["SCHEDULER_API_ENABLED"] = True
+    app.config["SCHEDULER_TIMEZONE"] = "America/Sao_Paulo"
+    app.config["SCHEDULER_JOBSTORES"] = {
+        "default": {
+            "type": "sqlalchemy",
+            "url": app.config["SQLALCHEMY_DATABASE_URI"],
+        }
+    }
+
     
     try:
         conn = mysql.connector.connect(
@@ -85,14 +92,13 @@ def create_app():
 
         # Create tables
         from .models import (
-            User,
-            Player,
-            PlayerTraining,
+            Users,
+            Players,
+            PlayersTraining,
             Mzcontrol,
             Countries,
-            Tranfers,
+            Transfers,
             Bids,
-            Jobs,
         )
 
         db.create_all()
@@ -110,9 +116,9 @@ def create_app():
             db.session.commit()
 
         # add admin user to the database
-        user = User.query.filter_by(id=1).first()
+        user = Users.query.filter_by(id=1).first()
         if not user:
-            new_user = User(
+            new_user = Users(
                 id = 1,
                 email=os.environ.get("ADMEMAIL"),
                 name=os.environ.get("ADMNAME"),
@@ -128,49 +134,67 @@ def create_app():
     
         from project.jobs import job_control, job_teams, job_transfers, job_nations
 
-        jobs = Jobs.query.all()
+        jobs = scheduler.get_jobs()  # Load jobs from the database
+        
         if not jobs:
-            job_control_entry = Jobs(id='job_control', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
-            job_teams_entry = Jobs(id='job_teams', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
-            job_transfers_entry = Jobs(id='job_transfers', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
-            job_nations_entry = Jobs(id='job_nations', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
-            db.session.add(job_control_entry)
-            db.session.add(job_teams_entry)
-            db.session.add(job_transfers_entry)
-            db.session.add(job_nations_entry)
-            db.session.commit()
-        else:
-            for job in jobs:
-                if job.enabled == 1:
-                    job_func = None
-                    if job.id == 'job_control':
-                        job_func = job_control
-                    if job.id == 'job_teams':
-                        job_func = job_teams
-                    if job.id == 'job_nations':
-                        job_func = job_nations
-                    if job.id == 'job_transfers':
-                        job_func = job_transfers
-                    if job_func:
-                        scheduler.add_job(
-                            id=job.id,
-                            func=job_func,
-                            trigger=CronTrigger(
-                                minute=job.minute,
-                                hour=job.hour,
-                                day=job.day,
-                                month=job.month,
-                                day_of_week=job.weekday,
-                            ),
-                            max_instances=1,
-                        )
-                    else:
-                        logger.warning(f"Job function for {job.id} not found")
+            # Control Job
+            job_func = job_control
+            scheduler.add_job(
+                id='job_control',
+                func=job_func,
+                trigger='cron',
+                minute='0',
+                hour='0',
+                day='*',
+                month='*',
+                day_of_week='*',                
+                max_instances=1,
+            )
+            
+            job_func = job_teams
+            scheduler.add_job(
+                id='job_teams',
+                func=job_func,
+                trigger='cron',
+                minute='0',
+                hour='2',
+                day='*',
+                month='*',
+                day_of_week='*',                            
+                max_instances=1,
+            )
+            
+            job_func = job_transfers
+            scheduler.add_job(
+                id='job_transfers',
+                func=job_func,
+                trigger='cron',
+                minute='0',
+                hour='4,16',
+                day='*',
+                month='*',
+                day_of_week='*',                            
+                max_instances=1,
+            )
+            
+            job_func = job_nations
+            scheduler.add_job(
+                id='job_nations',
+                func=job_func,
+                trigger='cron',
+                minute='30',
+                hour='0',
+                day='*',
+                month='*',
+                day_of_week='*',                            
+                max_instances=1,
+            )
 
+        
     @login_manager.user_loader
     def load_user(userid):
         # since the user_id is just the primary key of our user table, use it in the query for the user
-        return User.query.get(userid)
+        return Users.query.get(userid)
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

@@ -2,11 +2,21 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
+
 from . import db
 from . import scheduler
 
 from .common import utc_input, countries_data
-from .models import Tranfers, Player, Jobs
+from .models import Transfers, Players
+
+class Jobs:
+    id = ''
+    minute = ''
+    hour = ''
+    day = ''
+    month = ''
+    weekday = ''
+    enabled = 0
 
 main = Blueprint("main", __name__)
 
@@ -58,17 +68,53 @@ def profile_post():
 @login_required
 def configuration():
     
-    jobs = Jobs.query.all()
+    jobs = scheduler.get_jobs()
     
     for job in jobs:
-        if job.id == 'job_control':
-            job_control = job
-        if job.id == 'job_teams':
-            job_teams = job
-        if job.id == 'job_transfers':
-            job_transfers = job
-        if job.id == 'job_nations':
-            job_nations = job
+        if job and hasattr(job.trigger, 'fields'):
+            f = {field.name: str(field) for field in job.trigger.fields}
+            minute = f.get('minute')
+            hour = f.get('hour')
+            day = f.get('day')
+            month = f.get('month')
+            day_of_week = f.get('day_of_week')
+            enabled = job.next_run_time
+            if job.id == 'job_control':
+                job_control = Jobs()
+                job_control.id = job.id
+                job_control.minute = minute
+                job_control.hour = hour
+                job_control.day = day
+                job_control.month = month
+                job_control.weekday = day_of_week
+                job_control.enabled = 1 if enabled else 0
+            if job.id == 'job_teams':
+                job_teams = Jobs()
+                job_teams.id = job.id
+                job_teams.minute = minute
+                job_teams.hour = hour
+                job_teams.day = day
+                job_teams.month = month
+                job_teams.weekday = day_of_week
+                job_teams.enabled = 1 if enabled else 0   
+            if job.id == 'job_transfers':
+                job_transfers = Jobs()
+                job_transfers.id = job.id
+                job_transfers.minute = minute
+                job_transfers.hour = hour
+                job_transfers.day = day
+                job_transfers.month = month
+                job_transfers.weekday = day_of_week
+                job_transfers.enabled = 1 if enabled else 0
+            if job.id == 'job_nations':
+                job_nations = Jobs()
+                job_nations.id = job.id
+                job_nations.minute = minute
+                job_nations.hour = hour
+                job_nations.day = day
+                job_nations.month = month
+                job_nations.weekday = day_of_week
+                job_nations.enabled = 1 if enabled else 0
 
     return render_template("configuration.html", current_user=current_user, job_control=job_control, job_teams=job_teams, job_transfers=job_transfers, job_nations=job_nations)
 
@@ -76,66 +122,69 @@ def configuration():
 @login_required
 def update_jobs():
 
-    jobs = Jobs.query.all()
+    # Control Job
+    scheduler.modify_job(
+        id='job_control',
+        trigger='cron',
+        minute=request.form.get(f"control_minute"),
+        hour=request.form.get(f"control_hour"),
+        day=request.form.get(f"control_day"),
+        month=request.form.get(f"control_month"),
+        day_of_week=request.form.get(f"control_weekday"),        
+        max_instances=1,
+    )
+    if request.form.get("control_enabled"):
+        scheduler.resume_job('job_control')
+    else:
+        scheduler.pause_job('job_control')
 
-    for job in jobs:
-        if job.id == 'job_control':
-            job_control = job
-            job_control.minute = request.form.get(f"control_minute")
-            job_control.hour = request.form.get(f"control_hour")
-            job_control.day = request.form.get(f"control_day")
-            job_control.month = request.form.get(f"control_month")
-            job_control.weekday = request.form.get(f"control_weekday")
-            if request.form.get("control_enabled"):
-                job_control.enabled = 1
-            else:
-                job_control.enabled = 0
-            db.session.add(job_control)
-            
-        if job.id == 'job_teams':
-            job_teams = job
-            job_teams.minute = request.form.get(f"teams_minute")
-            job_teams.hour = request.form.get(f"teams_hour")
-            job_teams.day = request.form.get(f"teams_day")
-            job_teams.month = request.form.get(f"teams_month")
-            job_teams.weekday = request.form.get(f"teams_weekday")
-            if request.form.get("teams_enabled"):
-                job_teams.enabled = 1
-            else:
-                job_teams.enabled = 0
-            db.session.add(job_teams)
-            
-        if job.id == 'job_transfers':
-            job_transfers = job
-            job_transfers.minute = request.form.get(f"transfers_minute")
-            job_transfers.hour = request.form.get(f"transfers_hour")
-            job_transfers.day = request.form.get(f"transfers_day")
-            job_transfers.month = request.form.get(f"transfers_month")
-            job_transfers.weekday = request.form.get(f"transfers_weekday")
-            if request.form.get("transfers_enabled"):
-                job_transfers.enabled = 1
-            else:
-                job_transfers.enabled = 0
-            db.session.add(job_transfers)
+    # Teams Job
+    scheduler.modify_job(
+        id='job_teams',
+        trigger='cron',
+        minute=request.form.get(f"teams_minute"),
+        hour=request.form.get(f"teams_hour"),
+        day=request.form.get(f"teams_day"),
+        month=request.form.get(f"teams_month"),
+        day_of_week=request.form.get(f"teams_weekday"),
+        max_instances=1,
+    )
+    if request.form.get("teams_enabled"):
+        scheduler.resume_job('job_teams')
+    else:
+        scheduler.pause_job('job_teams')
 
-        if job.id == 'job_nations':
-            job_nations = job
-            job_nations.minute = request.form.get(f"nations_minute")
-            job_nations.hour = request.form.get(f"nations_hour")
-            job_nations.day = request.form.get(f"nations_day")
-            job_nations.month = request.form.get(f"nations_month")
-            job_nations.weekday = request.form.get(f"nations_weekday")
-            if request.form.get("nations_enabled"):
-                job_nations.enabled = 1
-            else:
-                job_nations.enabled = 0
-            db.session.add(job_nations)
-    
-    
-    
-    
+    # Transfers Job
+    scheduler.modify_job(
+        id='job_transfers',
+        trigger='cron',
+        minute=request.form.get(f"transfers_minute"),
+        hour=request.form.get(f"transfers_hour"),
+        day=request.form.get(f"transfers_day"),
+        month=request.form.get(f"transfers_month"),
+        day_of_week=request.form.get(f"transfers_weekday"),        
+        max_instances=1,
+    )
+    if request.form.get("transfers_enabled"):
+        scheduler.resume_job('job_transfers')
+    else:
+        scheduler.pause_job('job_transfers')
 
-    db.session.commit()
+    # Nations Job
+    scheduler.modify_job(
+        id='job_nations',
+        trigger='cron',
+        minute=request.form.get(f"nations_minute"),
+        hour=request.form.get(f"nations_hour"),
+        day=request.form.get(f"nations_day"),
+        month=request.form.get(f"nations_month"),
+        day_of_week=request.form.get(f"nations_weekday"),
+        max_instances=1,
+    )
+    if request.form.get("nations_enabled"):
+        scheduler.resume_job('job_nations')
+    else:
+        scheduler.pause_job('job_nations')
 
     return redirect(url_for("main.configuration"))
 
@@ -146,10 +195,10 @@ def transfers():
     utc_now = utc_input()
     countries = countries_data(index=0)
     transfers = []    
-    db_transfers = Tranfers.query.filter(Tranfers.deadline >= utc_now, Tranfers.active == 1).order_by(Tranfers.deadline).all()
+    db_transfers = Transfers.query.filter(Transfers.deadline >= utc_now, Transfers.active == 1).order_by(Transfers.deadline).all()
     count = 0
     for db_transfer in db_transfers:
-        player = Player.query.filter_by(id=db_transfer.playerid).first()
+        player = Players.query.filter_by(id=db_transfer.playerid).first()
         if player:
             transfer = []
             transfer.append(db_transfer)
