@@ -18,6 +18,10 @@ scheduler = APScheduler()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 
+# Add logging to debug
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 
 def create_app():
 
@@ -115,44 +119,53 @@ def create_app():
                 password=generate_password_hash(
                     os.environ.get("ADMPASS"), method="pbkdf2:sha256"
                 ),
-                admin="X",
+                admin=1,
                 mzuser=os.environ.get("MZUSER"),
                 mzpass=os.environ.get("MZPASS"),
             )
             db.session.add(new_user)
             db.session.commit()
     
-        from project.jobs import job_control, job_teams, job_transfers
-
-        # Add logging to debug
-        logging.basicConfig(level=logging.INFO)
-        logger = logging.getLogger(__name__)
+        from project.jobs import job_control, job_teams, job_transfers, job_nations
 
         jobs = Jobs.query.all()
-        for job in jobs:
-            if job.enabled == 1:
-                job_func = None
-                if job.id == 'job_control':
-                    job_func = job_control
-                if job.id == 'job_teams':
-                    job_func = job_teams
-                if job.id == 'job_transfers':
-                    job_func = job_transfers
-                if job_func:
-                    scheduler.add_job(
-                        id=job.id,
-                        func=job_func,
-                        trigger=CronTrigger(
-                            minute=job.minute,
-                            hour=job.hour,
-                            day=job.day,
-                            month=job.month,
-                            day_of_week=job.weekday,
-                        ),
-                        max_instances=1,
-                    )
-                else:
-                    logger.warning(f"Job function for {job.id} not found")
+        if not jobs:
+            job_control_entry = Jobs(id='job_control', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
+            job_teams_entry = Jobs(id='job_teams', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
+            job_transfers_entry = Jobs(id='job_transfers', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
+            job_nations_entry = Jobs(id='job_nations', enabled=0, minute='*', hour='*', day='*', month='*', weekday='*')
+            db.session.add(job_control_entry)
+            db.session.add(job_teams_entry)
+            db.session.add(job_transfers_entry)
+            db.session.add(job_nations_entry)
+            db.session.commit()
+        else:
+            for job in jobs:
+                if job.enabled == 1:
+                    job_func = None
+                    if job.id == 'job_control':
+                        job_func = job_control
+                    if job.id == 'job_teams':
+                        job_func = job_teams
+                    if job.id == 'job_nations':
+                        job_func = job_nations
+                    if job.id == 'job_transfers':
+                        job_func = job_transfers
+                    if job_func:
+                        scheduler.add_job(
+                            id=job.id,
+                            func=job_func,
+                            trigger=CronTrigger(
+                                minute=job.minute,
+                                hour=job.hour,
+                                day=job.day,
+                                month=job.month,
+                                day_of_week=job.weekday,
+                            ),
+                            max_instances=1,
+                        )
+                    else:
+                        logger.warning(f"Job function for {job.id} not found")
 
     @login_manager.user_loader
     def load_user(userid):

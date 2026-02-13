@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash
 from . import db
 
 from .common import utc_input, countries_data
-from .models import Tranfers, Player
+from .models import Tranfers, Player, Jobs
 
 main = Blueprint("main", __name__)
 
@@ -56,8 +56,26 @@ def profile_post():
 @main.route("/configuration")
 @login_required
 def configuration():
+    
+    jobs = Jobs.query.all()
+    
+    for job in jobs:
+        if job.id == 'job_control':
+            job_control = job
+        if job.id == 'job_teams':
+            job_teams = job
+        if job.id == 'job_transfers':
+            job_transfers = job
+        if job.id == 'job_nations':
+            job_nations = job
 
-    return render_template("configuration.html", current_user=current_user)
+    return render_template("configuration.html", current_user=current_user, job_control=job_control, job_teams=job_teams, job_transfers=job_transfers, job_nations=job_nations)
+
+@main.route("/update_jobs", methods=["POST"])
+@login_required
+def update_jobs():
+
+    return redirect(url_for("main.configuration"))
 
 @main.route("/transfers")
 @login_required

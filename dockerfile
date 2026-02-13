@@ -1,14 +1,16 @@
 # Use Debian bullseye-slim base image
-FROM debian:stable-slim
+FROM python:slim-bullseye
 
 # Install necessary dependencies
 RUN apt-get update && \
     apt-get install -y \
     wget \
     curl \
+    build-essential \
+    python3-dev \
 #    gnupg \
-    python3 \
-    python3-pip \
+#    python3 \
+#    python3-pip \
 #   curl \
     nano \
     cron \
@@ -21,6 +23,10 @@ RUN apt-get update && \
     libxslt-dev \
 #    xdg-utils \
     && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --upgrade pip
+
+RUN python3 -m pip config set global.break-system-packages true
 
 #RUN install -d -m 0755 /etc/apt/keyrings
 
@@ -47,7 +53,7 @@ COPY requirements.txt .
 #RUN pip3 install -r requirements.txt --break-system-packages
 RUN pip3 install -r requirements.txt
 
-RUN cp /usr/bin/chromedriver /usr/local/lib/python3.11/dist-packages/seleniumbase/drivers 
+#RUN cp /usr/bin/chromedriver /usr/local/lib/python3.11/dist-packages/seleniumbase/drivers 
 #    && mv geckodriver /usr/local/lib/python3.11/dist-packages/seleniumbase/drivers \
 #    && rm geckodriver-v0.35.0-linux-aarch64.tar.gz
 

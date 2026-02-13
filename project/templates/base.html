@@ -35,7 +35,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.transfers') }}">Transfers</a>
                     </li>
-                    {% if current_user.admin == 'X' %}
+                    {% if current_user.admin == 1 %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.configuration') }}">Configuration</a>
                     </li>
