@@ -90,6 +90,8 @@ def update_jobs():
                 job_control.enabled = 1
             else:
                 job_control.enabled = 0
+            db.session.add(job_control)
+            
         if job.id == 'job_teams':
             job_teams = job
             job_teams.minute = request.form.get(f"teams_minute")
@@ -101,6 +103,8 @@ def update_jobs():
                 job_teams.enabled = 1
             else:
                 job_teams.enabled = 0
+            db.session.add(job_teams)
+            
         if job.id == 'job_transfers':
             job_transfers = job
             job_transfers.minute = request.form.get(f"transfers_minute")
@@ -109,9 +113,10 @@ def update_jobs():
             job_transfers.month = request.form.get(f"transfers_month")
             job_transfers.weekday = request.form.get(f"transfers_weekday")
             if request.form.get("transfers_enabled"):
-                job_teams.enabled = 1
+                job_transfers.enabled = 1
             else:
-                job_teams.enabled = 0
+                job_transfers.enabled = 0
+            db.session.add(job_transfers)
 
         if job.id == 'job_nations':
             job_nations = job
@@ -124,11 +129,11 @@ def update_jobs():
                 job_nations.enabled = 1
             else:
                 job_nations.enabled = 0
-
-    db.session.add(job_control)
-    db.session.add(job_teams)
-    db.session.add(job_transfers)
-    db.session.add(job_nations)
+            db.session.add(job_nations)
+    
+    
+    
+    
 
     db.session.commit()
 
