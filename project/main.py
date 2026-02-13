@@ -75,6 +75,62 @@ def configuration():
 @login_required
 def update_jobs():
 
+    jobs = Jobs.query.all()
+
+    for job in jobs:
+        if job.id == 'job_control':
+            job_control = job
+            job_control.minute = request.form.get(f"control_minute")
+            job_control.hour = request.form.get(f"control_hour")
+            job_control.day = request.form.get(f"control_day")
+            job_control.month = request.form.get(f"control_month")
+            job_control.weekday = request.form.get(f"control_weekday")
+            if request.form.get("control_enabled"):
+                job_control.enabled = 1
+            else:
+                job_control.enabled = 0
+        if job.id == 'job_teams':
+            job_teams = job
+            job_teams.minute = request.form.get(f"teams_minute")
+            job_teams.hour = request.form.get(f"teams_hour")
+            job_teams.day = request.form.get(f"teams_day")
+            job_teams.month = request.form.get(f"teams_month")
+            job_teams.weekday = request.form.get(f"teams_weekday")
+            if request.form.get("teams_enabled"):
+                job_teams.enabled = 1
+            else:
+                job_teams.enabled = 0
+        if job.id == 'job_transfers':
+            job_transfers = job
+            job_transfers.minute = request.form.get(f"transfers_minute")
+            job_transfers.hour = request.form.get(f"transfers_hour")
+            job_transfers.day = request.form.get(f"transfers_day")
+            job_transfers.month = request.form.get(f"transfers_month")
+            job_transfers.weekday = request.form.get(f"transfers_weekday")
+            if request.form.get("transfers_enabled"):
+                job_teams.enabled = 1
+            else:
+                job_teams.enabled = 0
+
+        if job.id == 'job_nations':
+            job_nations = job
+            job_nations.minute = request.form.get(f"nations_minute")
+            job_nations.hour = request.form.get(f"nations_hour")
+            job_nations.day = request.form.get(f"nations_day")
+            job_nations.month = request.form.get(f"nations_month")
+            job_nations.weekday = request.form.get(f"nations_weekday")
+            if request.form.get("nations_enabled"):
+                job_nations.enabled = 1
+            else:
+                job_nations.enabled = 0
+
+    db.session.add(job_control)
+    db.session.add(job_teams)
+    db.session.add(job_transfers)
+    db.session.add(job_nations)
+
+    db.session.commit()
+
     return redirect(url_for("main.configuration"))
 
 @main.route("/transfers")
