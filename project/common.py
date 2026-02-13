@@ -122,16 +122,7 @@ def process_training_data(trainig_page):
     index = len(json_data) - 1
     json_string = json.dumps(json_data[index]["data"])
 
-    training = json_data[index]["data"]
-    maxed_array = []
-    for row in training:
-        try:
-            if row["name"] == "Maxed":
-                maxed_array.append(int(row["y"]))
-        except:
-            continue
-
-    return json_string, maxed_array
+    return json_string
 
 
 def get_player_maxs(training_data):
