@@ -434,6 +434,8 @@ def job_transfers():
 
     count_transfer = 0
     count_training = 0
+    
+    session = get_db()
 
     countries = session.query(Countries).all()
     searches = []
@@ -469,8 +471,6 @@ def job_transfers():
         servername=os.environ.get("SELENIUM_HUB_HOST"),
         port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
-
-        session = get_db()
 
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
