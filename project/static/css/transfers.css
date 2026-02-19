@@ -1,0 +1,76 @@
+/* Make everything inside .playerContainer smaller and more compact */
+.playerContainer {
+    font-size: 0.85rem;
+}
+
+.playerContainer .mainContent {
+    padding: 4px !important;
+}
+
+.playerContainer .floatLeft {
+    width: auto !important;
+}
+
+.playerContainer .floatRight {
+    width: auto !important;
+}
+
+.playerContainer table {
+    font-size: 0.9em;
+    width: auto !important;
+}
+
+.playerContainer img {
+    max-height: 36px;
+    width: auto;
+}
+
+.playerContainer .skill img {
+    height: 10px;
+}
+
+/* Arrange player cards side-by-side and wrap to the next row at page edge */
+.players_transfer_container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: flex-start;
+    /* cards start from the left; use flex-end to align rows right */
+    align-items: flex-start;
+}
+
+.playerContainer {
+    display: inline-flex;
+    flex: 0 1 auto;
+    /* size to content, but allow shrinking on narrow screens */
+    width: auto;
+    max-width: calc(100% - 16px);
+    vertical-align: top;
+    text-align: left;
+    /* keep internal text left-aligned */
+    box-sizing: border-box;
+    align-items: flex-start;
+    padding: 6px;
+}
+
+/* Ensure inner left/right columns don't force a fixed card width */
+.playerContainer .floatLeft {
+    width: auto !important;
+}
+
+.playerContainer .floatRight {
+    width: auto !important;
+}
+
+/* Make the star icons and container larger and more visible */
+.playerContainer .star_info {
+    font-size: 1rem;
+    margin-top: 6px;
+}
+
+.playerContainer .star_info img {
+    max-height: 56px;
+    width: auto;
+    margin: 0 4px;
+    vertical-align: middle;
+}

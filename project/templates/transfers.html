@@ -1,19 +1,38 @@
-{% block content %}
-<div id="players_container" class="players_transfer_container" style="min-height: 560px;">
-    <div id="thePlayers_0" class="playerContainer">
-        <h4 class="subheader clearfix">
-            <div title="Rik Aalders (224539179)">
-                <img src="nocache-950/img/flags/15/nl.png" alt="" title="" width="15" height="15"
-                    style="vertical-align: middle">
+{% extends "base.html" %}
 
-                <a href="/?p=players&amp;pid=224539179" class="subheader nobr">
-                    <span class="player_name">Rik Aalders</span>
-                </a>
-                <span class="player_id_span">224539179</span>                
-            </div>
-        </h4>
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/transfers.css') }}">
+{% endblock %}
+{% block content %}
+<form method="get" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
+    style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;" >
+    <div class="mb-3">
+        <label for="nationality">Nationality: </label>
+        <select name="nationality" id="nationality">
+            <option value="all_nationalities">All nationalities</option>
+            <option value="all_domestic">All domestic players</option>
+            <option value="all_foreign">All foreign players</option>
+            {% for country in countries %}
+            <option value="{{ country.id }}">{{ country.name }}</option>
+            {% endfor %}
+        </select>
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+    </div>
+</form>
+<div id="players_container" class="players_transfer_container" style="min-height: 560px;">
+    <div id="thePlayers_0" class="playerContainer"
+        style="background-color: #0a350488; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
-            <a name="p224539179"></a>
+            <h6 class="subheader clearfix">
+                <div title="Rik Aalders">
+                    <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAMCAIAAAAPshHVAAAB+UlEQVR4nJxSTWgTQRR+b2Z2N93o6koVraL1J03ixsQgiEEPKkKRIkVBwYOIB6EU0UtPevMiHnIL6EH892YPgpYK5iTWg9ASs0U92JYSI/60dG2a7u+sO7TUgLc+mDnMfO97733fY7DaYNEplBQAXHlyAiAY9nY6AzlwAyhW8NW0EiIo5F/a+ys2a6XhISwGkND41Yy70e14MpymyM8bn49s+V4y5akGaaMRaUvNpYhyItZLCf9i0n9ePtF9/5xtxYASbUPjzuVnj4+/vWuywSnmcohRgRfX1pPMDjCn8+s572wiaC7sLY70be5g+wwtVJr1n+rL0a4LhbFew0qt4dMNrDXxx7AvMneeYv3J4Ebe61wXggQP3xx8MJT/PWczlNMpL2M0a/W17fFvh7MTO9SwZ1sQp/DiKRfdUoQ2GrJogFAotWBza56hQ2et+bEvVNewcEjen4qDJwASAZVFOBB6Lfpwy5T6R+TqDIn+jqa/kpgtSTHCUFFg7o9mfuTJ9vEIW53BvndyBF6ec3sPYwQnG1iuU9uBY3t+bYrZ5UqXY6muK+nrvZunHx1If7g3zm5XI4VRZVAb8rHVzyAU9Q2dD2RdPrv79WiWEt6dr/r6RLEif7KEKxSX/cT/N8EOQCbhmV3OtYxwuGTC4KTiclwyY2UTEFYbfwEAAP//Ik1TJAAAAAZJREFUAwBxTsQmYn6b6gAAAABJRU5ErkJggg=="
+                        alt="" title="" width="15" height="15" style="vertical-align: middle">
+
+                    <a href="https://www.managerzone.com/?p=transfer&sub=players&u=224539179" class="subheader nobr">
+                        <span class="player_name" style="text-align: center;">Rik Aalders</span>
+                    </a>
+                </div>
+            </h6>
             <div class="clearfix">
                 <div class="floatLeft" style="width: 300px">
                     <table cellpadding="0" cellspacing="0" width="100%" border="0">
@@ -23,39 +42,41 @@
                                     <table cellpadding="0" cellspacing="0" width="100%">
                                         <tbody>
                                             <tr>
+                                                <td>ID:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;224539179</strong></td>
+                                            </tr>
+                                            <tr>
                                                 <td>Age:</td>
-                                                <td><strong>27</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;27</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Born:</td>
-                                                <td><strong>Season 70</strong>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;Season 70</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Weight:</td>
-                                                <td><strong>103 kg</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;103 kg</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Height:</td>
-                                                <td><strong>195 cm</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;195 cm</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Foot:</td>
-                                                <td><strong>Right</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;Right</strong></td>
                                             </tr>
                                             <tr>
                                                 <td title="All skills combined except Form and Experience">
-                                                    Total
-                                                    Skill Balls:</td>
+                                                    Total Balls:</td>
                                                 <td valign="top">
-                                                    <strong>64</strong>
+                                                    <strong>&nbsp;&nbsp;&nbsp;64</strong>
                                                 </td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </td>
                             </tr>
-                            <tr style="height: 25px;"></tr>
                             <tr>
                                 <td colspan="2">
                                     <table class="player_skills player_skills_transfer">
@@ -63,9 +84,7 @@
                                             <tr>
                                                 <td><span class="skill_name"><span>Speed</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_8.gif"
-                                                            alt="Speed: 8" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -85,9 +104,7 @@
                                                 <td class="gm_scout_h gm_s3"><span
                                                         class="skill_name"><span>Stamina</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_9.gif"
-                                                            alt="Stamina: 9" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -105,12 +122,10 @@
                                                 <td class="skillval">(<span class="maxed">9</span>)</td>
                                             </tr>
                                             <tr>
-                                                <td><span class="skill_name"><span>Intelligence</span></span>
+                                                <td><span class="skill_name"><span>Play Intelligence</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_6.gif"
-                                                            alt="Play Intelligence: 6" width="126" height="10"
-                                                            class="skill" style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
@@ -128,9 +143,7 @@
                                                 <td><span class="skill_name"><span>Passing</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_8.gif"
-                                                            alt="Passing: 8" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -150,9 +163,7 @@
                                                 <td><span class="skill_name"><span>Shooting</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_8.gif"
-                                                            alt="Shooting: 8" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -172,9 +183,7 @@
                                                 <td class="gm_scout_h gm_s3"><span
                                                         class="skill_name"><span>Heading</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_3.gif"
-                                                            alt="Heading: 3" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
@@ -189,9 +198,7 @@
                                                 <td><span class="skill_name"><span>Keeping</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_0.gif"
-                                                            alt="Keeping: 0" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                         </div>
                                                     </div>
@@ -202,9 +209,7 @@
                                                 <td><span class="skill_name"><span>Ball
                                                             Control</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_7.gif"
-                                                            alt="Ball Control: 7" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -220,11 +225,10 @@
                                                 <td class="skillval">(<span class="maxed">7</span>)</td>
                                             </tr>
                                             <tr>
-                                                <td class="gm_s2"><span class="skill_name"><span>Tackling</span></span></td>
+                                                <td class="gm_s2"><span class="skill_name"><span>Tackling</span></span>
+                                                </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_7.gif"
-                                                            alt="Tackling: 7" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
@@ -243,9 +247,7 @@
                                                 <td><span class="skill_name"><span>Aerial
                                                             Passing</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_6.gif"
-                                                            alt="Aerial Passing: 6" width="126" height="10"
-                                                            class="skill" style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
@@ -264,9 +266,7 @@
                                                             Plays</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_2.gif"
-                                                            alt="Set Plays: 2" width="126" height="10" class="skill"
-                                                            style="display: none;">
+                                                    <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
                                                             <img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
@@ -280,8 +280,12 @@
                                                 <td><span class="skill_name"><span>Experience</span></span>
                                                 </td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_9.gif"
-                                                            alt="Experience: 9" width="126" height="10" class="skill">
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            <img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="skillval">(<span>9</span>)</td>
@@ -289,46 +293,56 @@
                                             <tr>
                                                 <td><span class="skill_name"><span>Form</span></span></td>
                                                 <td>
-                                                    <div id="container"><img src="nocache-950/img/soccer/wlevel_9.gif"
-                                                            alt="Form: 9" width="126" height="10" class="skill"></div>
-                                                </td>
-                                                <td class="skillval">(<span>9</span>)</td>
-                                            </tr>
-                                            <tr class="scout_report_row box_dark">
-                                                <td colspan="3">
-                                                    <div class="textCenter">
-                                                        <div class="scout_report_stars">
-                                                            <div class="high-stars"><i
-                                                                    class="fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i>
-                                                            </div>
-                                                            <div class="scout_report_name">
-                                                                <span>High</span><span class="sup">1</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="scout_report_stars">
-                                                            <div class="low-stars"><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i>
-                                                            </div>
-                                                            <div class="scout_report_name">
-                                                                <span>Low</span><span class="sup">2</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="scout_report_stars">
-                                                            <div><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i><i
-                                                                    class="fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star fa-solid fa-star scout_report_star"></i>
-                                                            </div>
-                                                            <div class="scout_report_name"><span>Tr.
-                                                                    speed</span>
-                                                            </div>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            <img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td class="skillval">(<span>9</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                <div class="star_info">
+                                                    <td colspan="3" style="text-align: center">
+                                                        <img src="static/images/star_high_4.png"><img
+                                                            src="static/images/star_low_2.png"><img
+                                                            src="static/images/star_trainning_3.png">
+                                                    </td>
+                                                </div>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 3px 3px 3px 3px;">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td>Transfer Age:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;31</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Value:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;1 000 000 R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Salary:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;44 572 R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Actual Price:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;500 000 R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Deadline:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;16/02/2026 10:09am</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Max Bid:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;2 271 754 R$</strong></td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -337,101 +351,8 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="floatRight transfer-control-area">
-                    <div style="margin-top: 3px">
-                        <div class="box_dark" style="height: 6em; padding: 3px 6px">
-                            <table width="100%" cellspacing="0" cellpadding="0">
-                                <tbody>
-                                    <tr>
-                                        <td colspan="2" valign="top">
-                                            <table cellpadding="0" cellspacing="0" width="100%">
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Value:</td>
-                                                        <td>
-                                                            <span class="bold" title="3&nbsp;571&nbsp;864 R$">
-                                                                3&nbsp;571&nbsp;864 R$ </span>
-                                                        </td>
-                                                        <td>
-                                                            Salary:
-                                                            <span class="bold" title="44&nbsp;572 R$">
-                                                                44&nbsp;572 R$ </span>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <br>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Club</td>
-                                        <td>
-                                            <strong style="max-width: 125px" class="clippable">
-                                                <a href="/?p=team&amp;tid=187338">KVC Budel</a>
-                                            </strong>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Deadline</td>
-                                        <td><strong>16/02/2026 10:09am</strong></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Asking Price</td>
-                                        <td title="650&nbsp;000 EUR">
-                                            <strong>2&nbsp;271&nbsp;754 R$</strong>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="box_dark" style="margin-top: 6px; min-height: 1em; padding: 3px 6px">
-                            <table width="100%" cellspacing="0" cellpadding="0" height="100%">
-                                <tbody>
-                                    <tr>
-                                        <td align="left" valign="top">
-                                            <table width="100%" cellpadding="0" cellspacing="0">
-                                                <tbody>
-                                                    <tr>
-                                                        <td width="80" class="clippable">Latest Bid:</td>
-                                                        <td title="0 EUR">
-                                                            <strong>
-                                                                0 R$ </strong>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="box_dark" style="margin-top: 6px; height: 150px; padding: 3px">
-                            <table width="100%" height="100%">
-                                <tbody>
-                                    <tr>
-                                        <td valign="top" style="height: 15px;">Bid history:</td>
-                                    </tr>
-                                    <tr>
-                                        <td valign="top">
-                                            <div style="height: 70px; overflow: auto">
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style="height: 15px">
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
+    </div>    
 </div>
 {% endblock %}

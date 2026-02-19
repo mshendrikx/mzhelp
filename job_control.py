@@ -47,8 +47,8 @@ with SB(
         sb.select_option_by_value('//*[@id="cid"]', country_sel.get("value"))
         sb.wait_for_element('//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img')
         country_db = session.query(Countries).filter_by(id=country_id).first()
-        if country_db:
-            continue
+#        if country_db:
+#            continue
         country = Countries()
         country.id = country_id
         country.name = country_sel.text

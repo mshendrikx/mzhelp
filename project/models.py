@@ -89,6 +89,8 @@ class Countries(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     flag = db.Column(db.String(1024))
+    code = db.Column(db.String(3))
+    shield = db.Column(db.String(1024))
     ages = db.Column(db.Integer)
 
 
