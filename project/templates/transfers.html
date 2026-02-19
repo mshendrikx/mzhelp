@@ -33,7 +33,7 @@
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
     {% for transfer in transfers %}
     <div id="thePlayers_{{ transfer[0].id }}" class="playerContainer"
-        style="background-color: #0a350488; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
+        style="border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
             <h6 class="subheader clearfix">
                 <div title="{{ transfer[1].name }}" class="floatLeft">
@@ -42,7 +42,7 @@
 
                     <a href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
                         class="subheader nobr">
-                        <span class="player_name" style="text-align: center;">Rik Aalders</span>
+                        <span class="player_name" style="text-align: center;">{{ transfer[1].name }}</span>
                     </a>
                 </div>
             </h6>
@@ -564,9 +564,9 @@
                                             <tr>
                                                 <div class="star_info">
                                                     <td colspan="3" style="text-align: center">
-                                                        <img src="static/images/star_high_4.png"><img
-                                                            src="static/images/star_low_2.png"><img
-                                                            src="static/images/star_trainning_3.png">
+                                                        <img src="static/images/star_high_{{ transfer[1].starhigh }}.png"><img
+                                                            src="static/images/star_low_{{ transfer[1].starlow }}.png"><img
+                                                            src="static/images/star_trainning_{{ transfer[1].startraining }}.png">
                                                     </td>
                                                 </div>
                                             </tr>
