@@ -426,7 +426,7 @@
                                                             style="color: blue;">Tackling</span></span></td>
                                                 {% else %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: darkgoldenrod;">Tackling</span></span></td>
+                                                            style="color: rgb(148, 107, 5);">Tackling</span></span></td>
                                                 {% endif %}
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
@@ -564,9 +564,11 @@
                                             <tr>
                                                 <div class="star_info">
                                                     <td colspan="3" style="text-align: center">
+                                                        {% if transfer[1].starhigh > 0 %}
                                                         <img src="static/images/star_high_{{ transfer[1].starhigh }}.png"><img
                                                             src="static/images/star_low_{{ transfer[1].starlow }}.png"><img
                                                             src="static/images/star_trainning_{{ transfer[1].startraining }}.png">
+                                                        {% endif %}
                                                     </td>
                                                 </div>
                                             </tr>
