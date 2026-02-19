@@ -656,9 +656,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.speedscout = player.starhigh
+                            player.speedscout = 1
                         else:
-                            player.speedscout = player.starlow
+                            player.speedscout = 2
                     except:
                         player.speedscout = 0
                     player.speed = int(only_numerics(player_skill.text.split("(")[1]))
@@ -671,9 +671,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.staminascout = player.starhigh
+                            player.staminascout = 1
                         else:
-                            player.staminascout = player.starlow
+                            player.staminascout = 2
                     except:
                         player.staminascout = 0
                     player.stamina = int(only_numerics(player_skill.text.split("(")[1]))
@@ -687,9 +687,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.intelligencescout = player.starhigh
+                            player.intelligencescout = 1
                         else:
-                            player.intelligencescout = player.starlow
+                            player.intelligencescout = 2
                     except:
                         player.intelligencescout = 0
                     player.intelligence = int(
@@ -705,9 +705,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.passingscout = player.starhigh
+                            player.passingscout = 1
                         else:
-                            player.passingscout = player.starlow
+                            player.passingscout = 2
                     except:
                         player.passingscout = 0
                     player.passing = int(only_numerics(player_skill.text.split("(")[1]))
@@ -721,9 +721,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.shootingscout = player.starhigh
+                            player.shootingscout = 1
                         else:
-                            player.shootingscout = player.starlow
+                            player.shootingscout = 2
                     except:
                         player.shootingscout = 0
                     player.shooting = int(
@@ -739,9 +739,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.headingscout = player.starhigh
+                            player.headingscout = 1
                         else:
-                            player.headingscout = player.starlow
+                            player.headingscout = 2
                     except:
                         player.headingscout = 0
                     player.heading = int(only_numerics(player_skill.text.split("(")[1]))
@@ -755,9 +755,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.keepingscout = player.starhigh
+                            player.keepingscout = 1
                         else:
-                            player.keepingscout = player.starlow
+                            player.keepingscout = 2
                     except:
                         player.keepingscout = 0
                     player.keeping = int(only_numerics(player_skill.text.split("(")[1]))
@@ -771,9 +771,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.controlscout = player.starhigh
+                            player.controlscout = 1
                         else:
-                            player.controlscout = player.starlow
+                            player.controlscout = 2
                     except:
                         player.controlscout = 0
                     player.control = int(only_numerics(player_skill.text.split("(")[1]))
@@ -787,9 +787,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.tacklingscout = player.starhigh
+                            player.tacklingscout = 1
                         else:
-                            player.tacklingscout = player.starlow
+                            player.tacklingscout = 2
                     except:
                         player.tacklingscout = 0
                     player.tackling = int(
@@ -805,9 +805,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.aerialscout = player.starhigh
+                            player.aerialscout = 1
                         else:
-                            player.aerialscout = player.starlow
+                            player.aerialscout = 2
                     except:
                         player.aerialscout = 0
                     player.aerial = int(only_numerics(player_skill.text.split("(")[1]))
@@ -821,9 +821,9 @@ def job_transfers():
                     try:
                         skill_sup = int(player_skill.find(class_="sup").text)
                         if skill_sup == 1:
-                            player.playsscout = player.starhigh
+                            player.playsscout = 1
                         else:
-                            player.playsscout = player.starlow
+                            player.playsscout = 2
                     except:
                         player.playsscout = 0
                     player.plays = int(only_numerics(player_skill.text.split("(")[1]))

@@ -19,10 +19,10 @@ parent_dir = os.path.dirname(current_dir)
 
 # Add logging to debug
 logging.basicConfig(
-    filename='/app/logs/mzhelp.log',
+#    filename='/app/logs/mzhelp.log',
+#    filemode='a' 
     level=os.environ.get("LOG_LEVEL", "INFO").upper(),
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    filemode='a' 
 )
 
 logger = logging.getLogger(__name__)
