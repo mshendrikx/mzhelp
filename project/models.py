@@ -11,6 +11,7 @@ class Users(UserMixin, db.Model):
     admin = db.Column(db.Integer)
     mzuser = db.Column(db.String(100))
     mzpass = db.Column(db.String(1000))
+    countryid = db.Column(db.Integer)
 
 
 class Players(db.Model):

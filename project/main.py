@@ -1,13 +1,14 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
-from project.common import get_db
+from sqlalchemy import inspect
 
 from . import db
 from . import scheduler
 
+from project.common import get_db
 from .common import utc_input, countries_data
-from .models import Transfers, Players, Countries
+from .models import Transfers, Players, Countries, Bids
 
 
 class Jobs:
@@ -208,12 +209,19 @@ def transfers():
 
     transfers = []
     countries = Countries.query.order_by(Countries.name).all()
+    inspector = inspect(db.engine)
+    view_names = inspector.get_view_names()
+    views = []
+    for view_name in view_names:
+        if view_name.startswith("TR_"):
+            views.append(view_name)
 
     return render_template(
         "transfers.html",
         current_user=current_user,
         countries=countries,
         transfers=transfers,
+        views=views,
     )
 
 
@@ -221,33 +229,80 @@ def transfers():
 @login_required
 def transfers_post():
 
-    session = get_db()
-    utc_now = utc_input()
-    session.query(Transfers).filter(
-        Transfers.deadline < utc_now, Transfers.active == 1
-    ).update({"active": 0})
-    session.commit()
-
-    utc_now = utc_input()
-    countries = countries_data(index=0)
     transfers = []
-    db_transfers = (
-        Transfers.query.filter(Transfers.deadline >= utc_now, Transfers.active == 1)
-        .order_by(Transfers.deadline)
-        .all()
-    )
-    count = 0
-    for db_transfer in db_transfers:
-        player = Players.query.filter_by(id=db_transfer.playerid).first()
-        if player:
-            transfer = []
-            transfer.append(db_transfer)
-            transfer.append(player)
-            transfer.append(countries[player.country])
-            transfers.append(transfer)
-            count += 1
-        if count == 5:
-            break
+    nationality = request.form.get(f"nationality")
+    view = request.form.get(f"view")
+    try:
+        max_price = int(request.form.get(f"max_price"))
+    except:
+        max_price = 0
+    active_bids = request.form.get(f"active_bids")
+    
+    if active_bids:
+        db_bids = Bids.query.filter_by(active=1, userid=current_user.id).all()
+        if not db_bids:
+            flash("No active bids found")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+
+        for db_bid in db_bids:
+            db_transfer = Transfers.query.filter_by(id=db_bid.transferid, active=1).first()
+            if db_transfer:
+                player = Players.query.filter_by(id=db_transfer.playerid).first()
+                if player:
+                    transfer = []
+                    transfer.append(db_transfer)
+                    transfer.append(player)
+                    transfer.append(db_bid)
+                    transfer.append(Countries.query.filter_by(id=player.country).first())
+                    transfers.append(transfer)
+            else:
+                flash("No active transfers found for your bids")
+                flash("alert-warning")
+                db_bid.active = 0
+                db.session.commit()
+
+        return render_template(
+            "transfers.html",
+            current_user=current_user,
+            transfers=transfers,
+        )
+    else:
+        filters = [Transfers.active == 1]
+        if max_price > 0:
+            filters.append(Transfers.actualprice <= max_price)
+            
+        db_transfers = Transfers.query.filter(*filters).all()
+        
+        if not db_transfers:
+            flash("No transfers found with the given filters")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+        
+        players_id = []
+        for db_transfer in db_transfers:
+            players_id.append(db_transfer.playerid)            
+        
+        if nationality == "all_nationalities":
+            query = f"SELECT * FROM {view} WHERE playerid IN :players_id AND country > :country"
+            country_sel = 0
+        elif nationality == "all_domestic":
+            query = f"SELECT * FROM {view} WHERE playerid IN :players_id AND country = :country"
+            country_sel = current_user.country
+        elif nationality == "all_foreign":
+            query = f"SELECT * FROM {view} WHERE playerid IN :players_id AND country != :country"
+            country_sel = current_user.country
+        else: 
+            query = f"SELECT * FROM {view} WHERE playerid IN :players_id AND country = :country"
+            country_sel = int(nationality)
+
+        result = db.session.execute(query, {"players_id": tuple(players_id), "country": country_sel})
+        
+        players_view = result.fetchall()
+        
+        for player_view in players_view:
+            transfers.append(player_view[0])
+            
     return render_template(
         "transfers.html", current_user=current_user, transfers=transfers
     )

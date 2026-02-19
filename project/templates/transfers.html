@@ -5,7 +5,7 @@
 {% endblock %}
 {% block content %}
 <form method="get" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
-    style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;" >
+    style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
     <div class="mb-3">
         <label for="nationality">Nationality: </label>
         <select name="nationality" id="nationality">
@@ -15,11 +15,23 @@
             {% for country in countries %}
             <option value="{{ country.id }}">{{ country.name }}</option>
             {% endfor %}
-        </select>
+        </select>&nbsp;&nbsp;&nbsp;
+        <label for="view">View: </label>
+        <select name="view" id="view">
+            <option value="select">Select a View</option>
+            {% for view in views %}
+            <option value="{{ view }}">{{ view }}</option>
+            {% endfor %}
+        </select>&nbsp;&nbsp;&nbsp;
+        <label for="max_price">Max Price: </label>
+        <input type="number" name="max_price" id="max_price" min="0" value="0">&nbsp;&nbsp;&nbsp;
+        <label for="active_bids">Active Bids Only: </label>
+        <input type="checkbox" name="active_bids" id="active_bids">&nbsp;&nbsp;&nbsp;
         <button class="btn btn-outline-primary" type="submit">Search</button>
     </div>
 </form>
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
+    {% for transfer in transfers %}
     <div id="thePlayers_0" class="playerContainer"
         style="background-color: #0a350488; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
@@ -353,6 +365,7 @@
                 </div>
             </div>
         </div>
-    </div>    
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}
