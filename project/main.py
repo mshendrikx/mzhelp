@@ -229,6 +229,14 @@ def transfers():
 @login_required
 def transfers_post():
 
+    countries = Countries.query.order_by(Countries.name).all()
+    inspector = inspect(db.engine)
+    view_names = inspector.get_view_names()
+    views = []
+    for view_name in view_names:
+        if view_name.startswith("TR_"):
+            views.append(view_name)
+
     countries = countries_data(index=0)
 
     utc_now = utc_input()
@@ -325,7 +333,7 @@ def transfers_post():
                         transfer.append(None)
                     transfer.append(countries[player.country])
                     transfers.append(transfer)
-            
+    
     return render_template(
-        "transfers.html", current_user=current_user, transfers=transfers
+        "transfers.html", current_user=current_user, transfers=transfers, countries=countries, views=views
     )
