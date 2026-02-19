@@ -135,8 +135,28 @@
                                                 <td class="skillval">(<span>{{ transfer[1].speed }}</span>)</td>
                                             </tr>
                                             <tr>
-                                                <td class="gm_scout_h gm_s3"><span
-                                                        class="skill_name"><span>Stamina</span></span></td>
+                                                {% if transfer[1].staminascout == 0 %}
+                                                <td><span class="skill_name"><span>Stamina</span></span></td>
+                                                {% elif transfer[1].staminascout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Stamina</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Stamina</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Stamina</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Stamina</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Stamina</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
                                                 <td>
                                                     <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
@@ -146,259 +166,456 @@
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
                                                             {% else %}
                                                             <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
                                                             {% endif %}
                                                             {% endfor %}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="skillval">(<span>{{ transfer[1].stamina }}</span>)</td>
+                                            </tr>                                            
+                                            <tr>
+                                                {% if transfer[1].intelligencescout == 0 %}
+                                                <td><span class="skill_name"><span>Play Intelligence</span></span></td>
+                                                {% elif transfer[1].intelligencescout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Play Intelligence</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Play Intelligence</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Play Intelligence</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Play Intelligence</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Play Intelligence</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].intelligence) %}
+                                                            {% if transfer[1].intelligencemax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].intelligence }}</span>)</td>
                                             </tr>
                                             <tr>
-                                                <td class="gm_scout_h gm_s3"><span
-                                                        class="skill_name"><span>Stamina</span></span></td>
+                                                {% if transfer[1].passingscout == 0 %}
+                                                <td><span class="skill_name"><span>Passing</span></span></td>
+                                                {% elif transfer[1].passingscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Passing</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Passing</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Passing</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Passing</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Passing</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
                                                 <td>
-                                                    src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                </div>
-            </div>
-            </td>
-            <td class="skillval">(<span class="maxed">9</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Play Intelligence</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>6</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Passing</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span class="maxed">8</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Shooting</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span class="maxed">8</span>)</td>
-            </tr>
-            <tr>
-                <td class="gm_scout_h gm_s3"><span class="skill_name"><span>Heading</span></span></td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>3</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Keeping</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>0</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Ball
-                            Control</span></span></td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span class="maxed">7</span>)</td>
-            </tr>
-            <tr>
-                <td class="gm_s2"><span class="skill_name"><span>Tackling</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span class="maxed">7</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Aerial
-                            Passing</span></span></td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>6</span>)</td>
-            </tr>
-            <tr>
-                <td class="gm_s2"><span class="skill_name"><span>Set
-                            Plays</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>2</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Experience</span></span>
-                </td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
-                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>9</span>)</td>
-            </tr>
-            <tr>
-                <td><span class="skill_name"><span>Form</span></span></td>
-                <td>
-                    <div id="container">
-                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                            <img
-                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
-                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                        </div>
-                    </div>
-                </td>
-                <td class="skillval">(<span>9</span>)</td>
-            </tr>
-            <tr>
-                <div class="star_info">
-                    <td colspan="3" style="text-align: center">
-                        <img src="static/images/star_high_4.png"><img src="static/images/star_low_2.png"><img
-                            src="static/images/star_trainning_3.png">
-                    </td>
-                </div>
-            </tr>
-            </tbody>
-            </table>
-            </td>
-            </tr>
-            <tr>
-                <td style="padding: 3px 3px 3px 3px;">
-                    <table cellpadding="0" cellspacing="0" width="100%">
-                        <tbody>
-                            <tr>
-                                <td>Transfer Age:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;31</strong></td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].passing) %}
+                                                            {% if transfer[1].passingmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].passing }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].shootingscout == 0 %}
+                                                <td><span class="skill_name"><span>Shooting</span></span></td>
+                                                {% elif transfer[1].shootingscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Shooting</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Shooting</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Shooting</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Shooting</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Shooting</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].shooting) %}
+                                                            {% if transfer[1].shootingmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].shooting }}</span>)</td>
+                                            </tr>
+                                             <tr>
+                                                {% if transfer[1].headingscout == 0 %}
+                                                <td><span class="skill_name"><span>Heading</span></span></td>
+                                                {% elif transfer[1].headingscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Heading</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Heading</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Heading</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Heading</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Heading</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].heading) %}
+                                                            {% if transfer[1].headingmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].heading }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].keepingscout == 0 %}
+                                                <td><span class="skill_name"><span>Keeping</span></span></td>
+                                                {% elif transfer[1].keepingscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Keeping</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Keeping</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Keeping</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Keeping</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Keeping</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].keeping) %}
+                                                            {% if transfer[1].keepingmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].keeping }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].controlscout == 0 %}
+                                                <td><span class="skill_name"><span>Ball Control</span></span></td>
+                                                {% elif transfer[1].controlscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Ball Control</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Ball Control</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Ball Control</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Ball Control</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Ball Control</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].control) %}
+                                                            {% if transfer[1].controlmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].control }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].tacklingscout == 0 %}
+                                                <td><span class="skill_name"><span>Tackling</span></span></td>
+                                                {% elif transfer[1].tacklingscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Tackling</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Tackling</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Tackling</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Tackling</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Tackling</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].tackling) %}
+                                                            {% if transfer[1].tacklingmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].tackling }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].aerialscout == 0 %}
+                                                <td><span class="skill_name"><span>Aerial Passing</span></span></td>
+                                                {% elif transfer[1].aerialscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Aerial Passing</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Aerial Passing</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Aerial Passing</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Aerial Passing</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Aerial Passing</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].aerial) %}
+                                                            {% if transfer[1].aerialmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].aerial }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                {% if transfer[1].playsscout == 0 %}
+                                                <td><span class="skill_name"><span>Set Plays</span></span></td>
+                                                {% elif transfer[1].playsscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Set Plays</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Set Plays</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Set Plays</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Set Plays</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Set Plays</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].plays) %}
+                                                            {% if transfer[1].playsmax == 1 %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].plays }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="skill_name"><span>Experience</span></span>
+                                                </td>
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                        {% for i in range(transfer[1].experience) %}
+                                                        <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                                                        {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].experience }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                <td><span class="skill_name"><span>Form</span></span></td>
+                                                <td>
+                                                    <div id="container">
+                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                        {% for i in range(transfer[1].form) %}
+                                                        <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                                                        {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="skillval">(<span>{{ transfer[1].form }}</span>)</td>
+                                            </tr>
+                                            <tr>
+                                                <div class="star_info">
+                                                    <td colspan="3" style="text-align: center">
+                                                        <img src="static/images/star_high_4.png"><img
+                                                            src="static/images/star_low_2.png"><img
+                                                            src="static/images/star_trainning_3.png">
+                                                    </td>
+                                                </div>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
                             </tr>
                             <tr>
-                                <td>Value:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;1 000 000 R$</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Salary:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;44 572 R$</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Actual Price:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;500 000 R$</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Deadline:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;16/02/2026 10:09am</strong></td>
-                            </tr>
-                            <tr>
-                                <td>Max Bid:</td>
-                                <td><strong>&nbsp;&nbsp;&nbsp;2 271 754 R$</strong></td>
+                                <td style="padding: 3px 3px 3px 3px;">
+                                    <table cellpadding="0" cellspacing="0" width="100%">
+                                        <tbody>
+                                            <tr>
+                                                <td>Transfer Age:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].transferage }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Value:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].value }} R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Salary:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].salary }} R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Actual Price:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].actualprice }} R$</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Deadline:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].deadline }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Max Bid:</td>
+                                                {% if transfer[2] == None %}
+                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong></td>
+                                                {% else %}
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[2].maxbid }} R$</strong></td>
+                                                {% endif %}
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
-                </td>
-            </tr>
-            </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-</div>
-{% endfor %}
+    {% endfor %}
 </div>
 {% endblock %}

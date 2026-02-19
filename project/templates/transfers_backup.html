@@ -32,15 +32,16 @@
 </form>
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
     {% for transfer in transfers %}
-    <div id="thePlayers_0" class="playerContainer"
+    <div id="thePlayers_{{ transfer[0].id }}" class="playerContainer"
         style="background-color: #0a350488; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
             <h6 class="subheader clearfix">
-                <div title="Rik Aalders">
-                    <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAMCAIAAAAPshHVAAAB+UlEQVR4nJxSTWgTQRR+b2Z2N93o6koVraL1J03ixsQgiEEPKkKRIkVBwYOIB6EU0UtPevMiHnIL6EH892YPgpYK5iTWg9ASs0U92JYSI/60dG2a7u+sO7TUgLc+mDnMfO97733fY7DaYNEplBQAXHlyAiAY9nY6AzlwAyhW8NW0EiIo5F/a+ys2a6XhISwGkND41Yy70e14MpymyM8bn49s+V4y5akGaaMRaUvNpYhyItZLCf9i0n9ePtF9/5xtxYASbUPjzuVnj4+/vWuywSnmcohRgRfX1pPMDjCn8+s572wiaC7sLY70be5g+wwtVJr1n+rL0a4LhbFew0qt4dMNrDXxx7AvMneeYv3J4Ebe61wXggQP3xx8MJT/PWczlNMpL2M0a/W17fFvh7MTO9SwZ1sQp/DiKRfdUoQ2GrJogFAotWBza56hQ2et+bEvVNewcEjen4qDJwASAZVFOBB6Lfpwy5T6R+TqDIn+jqa/kpgtSTHCUFFg7o9mfuTJ9vEIW53BvndyBF6ec3sPYwQnG1iuU9uBY3t+bYrZ5UqXY6muK+nrvZunHx1If7g3zm5XI4VRZVAb8rHVzyAU9Q2dD2RdPrv79WiWEt6dr/r6RLEif7KEKxSX/cT/N8EOQCbhmV3OtYxwuGTC4KTiclwyY2UTEFYbfwEAAP//Ik1TJAAAAAZJREFUAwBxTsQmYn6b6gAAAABJRU5ErkJggg=="
-                        alt="" title="" width="15" height="15" style="vertical-align: middle">
+                <div title="{{ transfer[1].name }}" class="floatLeft">
+                    <img src="data:image/gif;base64,{{ transfer[3].flag }}" alt="" title="" width="15" height="15"
+                        style="vertical-align: middle">
 
-                    <a href="https://www.managerzone.com/?p=transfer&sub=players&u=224539179" class="subheader nobr">
+                    <a href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
+                        class="subheader nobr">
                         <span class="player_name" style="text-align: center;">Rik Aalders</span>
                     </a>
                 </div>
@@ -55,34 +56,34 @@
                                         <tbody>
                                             <tr>
                                                 <td>ID:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;224539179</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].id }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Age:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;27</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].age }}</strong></td>
                                             </tr>
                                             <tr>
-                                                <td>Born:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;Season 70</strong>
+                                                <td>Season:</td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].season }}</strong>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td>Weight:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;103 kg</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].weight }} kg</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Height:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;195 cm</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].height }} cm</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Foot:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;Right</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].foot }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td title="All skills combined except Form and Experience">
                                                     Total Balls:</td>
                                                 <td valign="top">
-                                                    <strong>&nbsp;&nbsp;&nbsp;64</strong>
+                                                    <strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].total_balls }}</strong>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -94,23 +95,44 @@
                                     <table class="player_skills player_skills_transfer">
                                         <tbody>
                                             <tr>
+                                                {% if transfer[1].speedscout == 0 %}
                                                 <td><span class="skill_name"><span>Speed</span></span></td>
+                                                {% elif transfer[1].speedscout == 1 %}
+                                                {% if transfer[1].starhigh == 4 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: fuchsia;">Speed</span></span></td>
+                                                {% elif transfer[1].starhigh == 3 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: blue;">Speed</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: darkgoldenrod;">Speed</span></span></td>
+                                                {% endif %}
+                                                {% else %}
+                                                {% if transfer[1].starlow == 2 %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: rgb(219, 176, 68);">Speed</span></span></td>
+                                                {% else %}
+                                                <td><span class="skill_name"><span
+                                                            style="color: red;">Speed</span></span></td>
+                                                {% endif %}
+                                                {% endif %}
                                                 <td>
                                                     <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].speed) %}
+                                                            {% if transfer[1].speedmax == 1 %}
                                                             <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% else %}
+                                                            <img
+                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="skillval">(<span class="maxed">8</span>)</td>
+                                                <td class="skillval">(<span>{{ transfer[1].speed }}</span>)</td>
                                             </tr>
                                             <tr>
                                                 <td class="gm_scout_h gm_s3"><span
@@ -118,254 +140,265 @@
                                                 <td>
                                                     <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% for i in range(transfer[1].stamina) %}
+                                                            {% if transfer[1].staminamax == 1 %}
                                                             <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span class="maxed">9</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Play Intelligence</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                                                            {% else %}
                                                             <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>6</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Passing</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
                                                                 src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                                                            {% endif %}
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="skillval">(<span class="maxed">8</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Shooting</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span class="maxed">8</span>)</td>
+                                                <td class="skillval">(<span>{{ transfer[1].stamina }}</span>)</td>
                                             </tr>
                                             <tr>
                                                 <td class="gm_scout_h gm_s3"><span
-                                                        class="skill_name"><span>Heading</span></span></td>
+                                                        class="skill_name"><span>Stamina</span></span></td>
                                                 <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>3</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Keeping</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>0</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Ball
-                                                            Control</span></span></td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span class="maxed">7</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="gm_s2"><span class="skill_name"><span>Tackling</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span class="maxed">7</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Aerial
-                                                            Passing</span></span></td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>6</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="gm_s2"><span class="skill_name"><span>Set
-                                                            Plays</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
-                                                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>2</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Experience</span></span>
-                                                </td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
-                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>9</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <td><span class="skill_name"><span>Form</span></span></td>
-                                                <td>
-                                                    <div id="container">
-                                                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                            <img
-                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
-                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="skillval">(<span>9</span>)</td>
-                                            </tr>
-                                            <tr>
-                                                <div class="star_info">
-                                                    <td colspan="3" style="text-align: center">
-                                                        <img src="static/images/star_high_4.png"><img
-                                                            src="static/images/star_low_2.png"><img
-                                                            src="static/images/star_trainning_3.png">
-                                                    </td>
-                                                </div>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
+                                                    src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                                        src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                </div>
+            </div>
+            </td>
+            <td class="skillval">(<span class="maxed">9</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Play Intelligence</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>6</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Passing</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span class="maxed">8</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Shooting</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span class="maxed">8</span>)</td>
+            </tr>
+            <tr>
+                <td class="gm_scout_h gm_s3"><span class="skill_name"><span>Heading</span></span></td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>3</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Keeping</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>0</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Ball
+                            Control</span></span></td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span class="maxed">7</span>)</td>
+            </tr>
+            <tr>
+                <td class="gm_s2"><span class="skill_name"><span>Tackling</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP////8AAMyZmf///yH5BAEAAAMALAAAAAAMAAoAAAIk3BQZYp0CAAptxvjMgojTEVwKpl0dCQrQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span class="maxed">7</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Aerial
+                            Passing</span></span></td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>6</span>)</td>
+            </tr>
+            <tr>
+                <td class="gm_s2"><span class="skill_name"><span>Set
+                            Plays</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs="><img
+                                src="data:image/gif;base64,R0lGODlhDAAKAJEDAP///8zM/wAA/////yH5BAEAAAMALAAAAAAMAAoAAAIk3CIpYZ0BABJtxvjMgojTIVwKpl0dCQbQJX3T+jpLNDXGlDUFADs=">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>2</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Experience</span></span>
+                </td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
+                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>9</span>)</td>
+            </tr>
+            <tr>
+                <td><span class="skill_name"><span>Form</span></span></td>
+                <td>
+                    <div id="container">
+                        <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
+                            <img
+                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg=="><img
+                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                        </div>
+                    </div>
+                </td>
+                <td class="skillval">(<span>9</span>)</td>
+            </tr>
+            <tr>
+                <div class="star_info">
+                    <td colspan="3" style="text-align: center">
+                        <img src="static/images/star_high_4.png"><img src="static/images/star_low_2.png"><img
+                            src="static/images/star_trainning_3.png">
+                    </td>
+                </div>
+            </tr>
+            </tbody>
+            </table>
+            </td>
+            </tr>
+            <tr>
+                <td style="padding: 3px 3px 3px 3px;">
+                    <table cellpadding="0" cellspacing="0" width="100%">
+                        <tbody>
+                            <tr>
+                                <td>Transfer Age:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;31</strong></td>
                             </tr>
                             <tr>
-                                <td style="padding: 3px 3px 3px 3px;">
-                                    <table cellpadding="0" cellspacing="0" width="100%">
-                                        <tbody>
-                                            <tr>
-                                                <td>Transfer Age:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;31</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Value:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;1 000 000 R$</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Salary:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;44 572 R$</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Actual Price:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;500 000 R$</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Deadline:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;16/02/2026 10:09am</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Max Bid:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;2 271 754 R$</strong></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
+                                <td>Value:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;1 000 000 R$</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Salary:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;44 572 R$</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Actual Price:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;500 000 R$</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Deadline:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;16/02/2026 10:09am</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Max Bid:</td>
+                                <td><strong>&nbsp;&nbsp;&nbsp;2 271 754 R$</strong></td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
+                </td>
+            </tr>
+            </tbody>
+            </table>
         </div>
     </div>
-    {% endfor %}
+</div>
+</div>
+{% endfor %}
 </div>
 {% endblock %}
