@@ -1,3 +1,4 @@
+from json.tool import main
 import os
 import logging
 import mysql.connector
@@ -7,6 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.security import generate_password_hash
 from flask_apscheduler import APScheduler
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 # from .jobs import job_control
 
@@ -201,6 +204,14 @@ def create_app():
     def load_user(userid):
         # since the user_id is just the primary key of our user table, use it in the query for the user
         return Users.query.get(userid)
+
+    @app.template_filter('format_ts')
+    def format_ts(value):
+        # Parse the string: 202602191403 -> datetime object
+        dt = datetime.strptime(str(value), '%Y%m%d%H%M')
+        dt = dt.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/Sao_Paulo"))
+        # Return formatted string: 19/02/2026 14:03
+        return dt.strftime('%d/%m/%Y %H:%M')
 
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint

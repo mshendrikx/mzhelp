@@ -4,29 +4,29 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/transfers.css') }}">
 {% endblock %}
 {% block content %}
-<form method="post" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
+<form method="get" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
     style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
     <div class="mb-3">
         <label for="nationality">Nationality: </label>
         <select name="nationality" id="nationality">
-            <option value="all_nationalities">All nationalities</option>
-            <option value="all_domestic">All domestic players</option>
-            <option value="all_foreign">All foreign players</option>
+            <option value="all_nationalities" {% if request.args.get('nationality') == 'all_nationalities' %}selected{% endif %}>All nationalities</option>
+            <option value="all_domestic" {% if request.args.get('nationality') == 'all_domestic' %}selected{% endif %}>All domestic players</option>
+            <option value="all_foreign" {% if request.args.get('nationality') == 'all_foreign' %}selected{% endif %}>All foreign players</option>
             {% for country in countries %}
-            <option value="{{ country.id }}">{{ country.name }}</option>
+            <option value="{{ country.id }}" {% if request.args.get('nationality') == country.id|string %}selected{% endif %}>{{ country.name }}</option>
             {% endfor %}
         </select>&nbsp;&nbsp;&nbsp;
         <label for="view">View: </label>
         <select name="view" id="view">
-            <option value="select">Select a View</option>
-            {% for view in views %}
-            <option value="{{ view }}">{{ view }}</option>
+            <option value="select" {% if not request.args.get('view') or request.args.get('view') == 'select' %}selected{% endif %}>Select a View</option>
+            {% for view_option in views %}
+            <option value="{{ view_option }}" {% if request.args.get('view') == view_option %}selected{% endif %}>{{ view_option }}</option>
             {% endfor %}
         </select>&nbsp;&nbsp;&nbsp;
         <label for="max_price">Max Price: </label>
-        <input type="number" name="max_price" id="max_price" min="0" value="0">&nbsp;&nbsp;&nbsp;
+        <input type="number" name="max_price" id="max_price" min="0" value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
         <label for="active_bids">Active Bids Only: </label>
-        <input type="checkbox" name="active_bids" id="active_bids">&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{% endif %}>&nbsp;&nbsp;&nbsp;
         <button class="btn btn-outline-primary" type="submit">Search</button>
     </div>
 </form>
@@ -38,8 +38,7 @@
             <h6 class="subheader clearfix">
                 <div title="{{ transfer[1].name }}" class="floatLeft">
                     <img src="data:image/gif;base64,{{ transfer[3].flag }}" alt="" title="" width="15" height="15"
-                        style="vertical-align: middle">
-
+                        style="vertical-align: middle">&nbsp;&nbsp;&nbsp;
                     <a href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
                         class="subheader nobr" target="_blank" rel="noopener noreferrer">
                         <span class="player_name" style="text-align: center;">{{ transfer[1].name }}</span>
@@ -61,17 +60,14 @@
                                             <tr>
                                                 <td>Age:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].age }}</strong></td>
-                                            </tr>
-                                            <tr>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td>Season:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].season }}</strong>
-                                                </td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].season }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Weight:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].weight }} kg</strong></td>
-                                            </tr>
-                                            <tr>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td>Height:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].height }} cm</strong></td>
                                             </tr>
@@ -84,8 +80,7 @@
                                                 {% else %}
                                                 <td><strong>&nbsp;&nbsp;&nbsp;Both</strong></td>
                                                 {% endif %}
-                                            </tr>
-                                            <tr>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td title="All skills combined except Form and Experience">
                                                     Total Balls:</td>
                                                 <td valign="top">
@@ -179,28 +174,30 @@
                                                     </div>
                                                 </td>
                                                 <td class="skillval">(<span>{{ transfer[1].stamina }}</span>)</td>
-                                            </tr>                                            
+                                            </tr>
                                             <tr>
                                                 {% if transfer[1].intelligencescout == 0 %}
                                                 <td><span class="skill_name"><span>Play Intelligence</span></span></td>
                                                 {% elif transfer[1].intelligencescout == 1 %}
                                                 {% if transfer[1].starhigh == 4 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: fuchsia;">Play Intelligence</span></span></td>
+                                                <td><span class="skill_name"><span style="color: fuchsia;">Play
+                                                            Intelligence</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Play Intelligence</span></span></td>
+                                                            style="color: rgb(34, 120, 201);">Play
+                                                            Intelligence</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: darkgoldenrod;">Play Intelligence</span></span></td>
+                                                <td><span class="skill_name"><span style="color: darkgoldenrod;">Play
+                                                            Intelligence</span></span></td>
                                                 {% endif %}
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Play Intelligence</span></span></td>
+                                                            style="color: rgb(219, 176, 68);">Play
+                                                            Intelligence</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: red;">Play Intelligence</span></span></td>
+                                                <td><span class="skill_name"><span style="color: red;">Play
+                                                            Intelligence</span></span></td>
                                                 {% endif %}
                                                 {% endif %}
                                                 <td>
@@ -269,7 +266,8 @@
                                                             style="color: fuchsia;">Shooting</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Shooting</span></span></td>
+                                                            style="color: rgb(34, 120, 201);">Shooting</span></span>
+                                                </td>
                                                 {% else %}
                                                 <td><span class="skill_name"><span
                                                             style="color: darkgoldenrod;">Shooting</span></span></td>
@@ -277,7 +275,8 @@
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Shooting</span></span></td>
+                                                            style="color: rgb(219, 176, 68);">Shooting</span></span>
+                                                </td>
                                                 {% else %}
                                                 <td><span class="skill_name"><span
                                                             style="color: red;">Shooting</span></span></td>
@@ -300,7 +299,7 @@
                                                 </td>
                                                 <td class="skillval">(<span>{{ transfer[1].shooting }}</span>)</td>
                                             </tr>
-                                             <tr>
+                                            <tr>
                                                 {% if transfer[1].headingscout == 0 %}
                                                 <td><span class="skill_name"><span>Heading</span></span></td>
                                                 {% elif transfer[1].headingscout == 1 %}
@@ -385,22 +384,24 @@
                                                 <td><span class="skill_name"><span>Ball Control</span></span></td>
                                                 {% elif transfer[1].controlscout == 1 %}
                                                 {% if transfer[1].starhigh == 4 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: fuchsia;">Ball Control</span></span></td>
+                                                <td><span class="skill_name"><span style="color: fuchsia;">Ball
+                                                            Control</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Ball Control</span></span></td>
+                                                            style="color: rgb(34, 120, 201);">Ball Control</span></span>
+                                                </td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: darkgoldenrod;">Ball Control</span></span></td>
+                                                <td><span class="skill_name"><span style="color: darkgoldenrod;">Ball
+                                                            Control</span></span></td>
                                                 {% endif %}
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Ball Control</span></span></td>
+                                                            style="color: rgb(219, 176, 68);">Ball Control</span></span>
+                                                </td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: red;">Ball Control</span></span></td>
+                                                <td><span class="skill_name"><span style="color: red;">Ball
+                                                            Control</span></span></td>
                                                 {% endif %}
                                                 {% endif %}
                                                 <td>
@@ -429,7 +430,8 @@
                                                             style="color: fuchsia;">Tackling</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Tackling</span></span></td>
+                                                            style="color: rgb(34, 120, 201);">Tackling</span></span>
+                                                </td>
                                                 {% else %}
                                                 <td><span class="skill_name"><span
                                                             style="color: rgb(148, 107, 5);">Tackling</span></span></td>
@@ -437,7 +439,8 @@
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Tackling</span></span></td>
+                                                            style="color: rgb(219, 176, 68);">Tackling</span></span>
+                                                </td>
                                                 {% else %}
                                                 <td><span class="skill_name"><span
                                                             style="color: red;">Tackling</span></span></td>
@@ -465,22 +468,24 @@
                                                 <td><span class="skill_name"><span>Aerial Passing</span></span></td>
                                                 {% elif transfer[1].aerialscout == 1 %}
                                                 {% if transfer[1].starhigh == 4 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: fuchsia;">Aerial Passing</span></span></td>
+                                                <td><span class="skill_name"><span style="color: fuchsia;">Aerial
+                                                            Passing</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Aerial Passing</span></span></td>
+                                                            style="color: rgb(34, 120, 201);">Aerial
+                                                            Passing</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: darkgoldenrod;">Aerial Passing</span></span></td>
+                                                <td><span class="skill_name"><span style="color: darkgoldenrod;">Aerial
+                                                            Passing</span></span></td>
                                                 {% endif %}
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
                                                 <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Aerial Passing</span></span></td>
+                                                            style="color: rgb(219, 176, 68);">Aerial
+                                                            Passing</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: red;">Aerial Passing</span></span></td>
+                                                <td><span class="skill_name"><span style="color: red;">Aerial
+                                                            Passing</span></span></td>
                                                 {% endif %}
                                                 {% endif %}
                                                 <td>
@@ -505,22 +510,22 @@
                                                 <td><span class="skill_name"><span>Set Plays</span></span></td>
                                                 {% elif transfer[1].playsscout == 1 %}
                                                 {% if transfer[1].starhigh == 4 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: fuchsia;">Set Plays</span></span></td>
+                                                <td><span class="skill_name"><span style="color: fuchsia;">Set
+                                                            Plays</span></span></td>
                                                 {% elif transfer[1].starhigh == 3 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: rgb(34, 120, 201);">Set Plays</span></span></td>
+                                                <td><span class="skill_name"><span style="color: rgb(34, 120, 201);">Set
+                                                            Plays</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: darkgoldenrod;">Set Plays</span></span></td>
+                                                <td><span class="skill_name"><span style="color: darkgoldenrod;">Set
+                                                            Plays</span></span></td>
                                                 {% endif %}
                                                 {% else %}
                                                 {% if transfer[1].starlow == 2 %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: rgb(219, 176, 68);">Set Plays</span></span></td>
+                                                <td><span class="skill_name"><span style="color: rgb(219, 176, 68);">Set
+                                                            Plays</span></span></td>
                                                 {% else %}
-                                                <td><span class="skill_name"><span
-                                                            style="color: red;">Set Plays</span></span></td>
+                                                <td><span class="skill_name"><span style="color: red;">Set
+                                                            Plays</span></span></td>
                                                 {% endif %}
                                                 {% endif %}
                                                 <td>
@@ -546,9 +551,10 @@
                                                 <td>
                                                     <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                        {% for i in range(transfer[1].experience) %}
-                                                        <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                                                        {% endfor %}
+                                                            {% for i in range(transfer[1].experience) %}
+                                                            <img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </td>
@@ -559,9 +565,10 @@
                                                 <td>
                                                     <div id="container">
                                                         <div class="skill" style="font-size:0;padding: 0 0 0 4px;">
-                                                        {% for i in range(transfer[1].form) %}
-                                                        <img src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
-                                                        {% endfor %}
+                                                            {% for i in range(transfer[1].form) %}
+                                                            <img
+                                                                src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAKCAYAAACALL/6AAAAnUlEQVR4AXyQ0RmEMAiDoSvdzaQz6Ux3M2F+lIov+jWCSZpSh13Pb9tC7QMXJ/petSG+62oyWEQk6OFkJUTlXEPCJD7LcrJ69757BikiMl0++++7uXtWTkPDgwZyJNIARIlVi0cDuYGmQCJ9VfqO3MAYAIFERqHyXTw94NLG8aCL9O6eWj+NSzs736Cw6cmRZHZSJOQfcn8kT7N8dgAAAP//9H0lgwAAAAZJREFUAwD8K1YLNflIKgAAAABJRU5ErkJggg==">
+                                                            {% endfor %}
                                                         </div>
                                                     </div>
                                                 </td>
@@ -571,7 +578,8 @@
                                                 <div class="star_info">
                                                     <td colspan="3" style="text-align: center">
                                                         {% if transfer[1].starhigh > 0 %}
-                                                        <img src="static/images/star_high_{{ transfer[1].starhigh }}.png"><img
+                                                        <img
+                                                            src="static/images/star_high_{{ transfer[1].starhigh }}.png"><img
                                                             src="static/images/star_low_{{ transfer[1].starlow }}.png"><img
                                                             src="static/images/star_trainning_{{ transfer[1].startraining }}.png">
                                                         {% endif %}
@@ -588,30 +596,45 @@
                                         <tbody>
                                             <tr>
                                                 <td>Transfer Age:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].transferage }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].transferage }}</strong>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <td>Value:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ "{:,}".format(transfer[1].value).replace(",", ".") }} R$</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[1].value).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Salary:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ "{:,}".format(transfer[1].salary).replace(",", ".") }} R$</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[1].salary).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Actual Price:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ "{:,}".format(transfer[0].actualprice).replace(",", ".") }} R$</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[0].actualprice).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Deadline:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].deadline }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].deadline | format_ts }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Max Bid:</td>
-                                                {% if transfer[2] == None %}
-                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong></td>
+                                                {% if transfer[2] == None or transfer[2].maxbid == 0 %}
+                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong>&nbsp;&nbsp;<button
+                                                        class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
+                                                </td>
                                                 {% else %}
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ "{:,}".format(transfer[2].maxbid).replace(",", ".") }} R$</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[2].maxbid).replace(",", ".") }}
+                                                        R$</strong>&nbsp;&nbsp;<button
+                                                        class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
+                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
+                                                </td>
                                                 {% endif %}
                                             </tr>
                                         </tbody>
@@ -626,4 +649,41 @@
     </div>
     {% endfor %}
 </div>
+
+<!-- Update Bid Modal -->
+{% for transfer in transfers %}
+<div class="modal fade" id="updateBidModal{{ transfer[0].id }}" tabindex="-1"
+    aria-labelledby="updateBidModalLabel{{ transfer[0].id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateBidModalLabel{{ transfer[0].id }}">Update Max Bid for {{
+                    transfer[1].name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="{{ url_for('main.update_bid') }}">
+                <div class="modal-body">
+                    <input type="hidden" name="transfer_id" value="{{ transfer[0].id }}">
+                    <!-- Preserve query parameters to maintain page state -->
+                    {% for key, value in request.args.items() %}
+                    <input type="hidden" name="query_{{ key }}" value="{{ value }}">
+                    {% endfor %}
+                    <div class="mb-3">
+                        <label for="max_bid{{ transfer[0].id }}" class="form-label">Max Bid (R$)</label>
+                        <input type="number" class="form-control" id="max_bid{{ transfer[0].id }}" name="max_bid"
+                            value="{% if transfer[2] and transfer[2].maxbid > 0 %}{{ transfer[2].maxbid }}{% else %}0{% endif %}"
+                            min="0" step="1000" required>
+                        <div class="form-text">Enter the maximum amount you're willing to bid for this player.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Update Bid</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 {% endblock %}

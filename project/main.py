@@ -23,7 +23,6 @@ class Jobs:
 
 main = Blueprint("main", __name__)
 
-
 @main.route("/")
 def index():
 
@@ -207,7 +206,6 @@ def update_jobs():
 @login_required
 def transfers():
 
-    transfers = []
     countries = Countries.query.order_by(Countries.name).all()
     inspector = inspect(db.engine)
     view_names = inspector.get_view_names()
@@ -216,18 +214,114 @@ def transfers():
         if view_name.startswith("TR_"):
             views.append(view_name)
 
+    countries_indexed = countries_data(index=0)
+
+    utc_now = utc_input()
+    Transfers.query.filter(Transfers.deadline < utc_now, Transfers.active == 1).update({"active": 0})
+    transfers = []
+    nationality = request.args.get("nationality")
+    view = request.args.get("view")
+    try:
+        max_price = int(request.args.get("max_price", 0))
+    except:
+        max_price = 0
+    active_bids = request.args.get("active_bids")
+    
+    if active_bids:
+        db_bids = Bids.query.filter_by(active=1, userid=current_user.id).all()
+        if not db_bids:
+            flash("No active bids found")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+
+        for db_bid in db_bids:
+            db_transfer = Transfers.query.filter_by(id=db_bid.transferid, active=1).first()
+            if db_transfer:
+                player = Players.query.filter_by(id=db_transfer.playerid).first()
+                if player:
+                    transfer = []
+                    transfer.append(db_transfer)
+                    transfer.append(player)
+                    transfer.append(db_bid)
+                    transfer.append(countries_indexed[player.country])
+                    transfers.append(transfer)
+            else:
+                flash("No active transfers found for your bids")
+                flash("alert-warning")
+                db_bid.active = 0
+                db.session.commit()
+
+        return render_template(
+            "transfers.html",
+            current_user=current_user,
+            transfers=transfers,
+            countries=countries,
+            views=views,
+        )
+    else:
+        filters = [Transfers.active == 1]
+        if max_price > 0:
+            filters.append(Transfers.actualprice <= max_price)
+            
+        db_transfers = Transfers.query.filter(*filters).all()
+        
+        if not db_transfers:
+            flash("No transfers found with the given filters")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+        
+        players_id = []
+        for db_transfer in db_transfers:
+            players_id.append(db_transfer.playerid)            
+
+        country_sel = current_user.countryid        
+        if nationality == "all_nationalities":
+            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country > :country")
+            country_sel = 0
+        elif nationality == "all_domestic":
+            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country = :country")
+        elif nationality == "all_foreign":
+            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country != :country")
+        else: 
+            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country = :country")
+            try:
+                country_sel = int(nationality)
+            except:
+                country_sel = 0
+
+        try:
+            result = db.session.execute(query, {"players_id": tuple(players_id), "country": country_sel})
+            players_view = result.fetchall()
+        except Exception as e:
+            players_view = []
+            
+        view_ids = []
+        for player_view in players_view:
+            view_ids.append(player_view[0])
+            
+        db_transfers = Transfers.query.filter(Transfers.playerid.in_(view_ids), Transfers.active == 1).order_by(Transfers.deadline).all()
+            
+        for db_transfer in db_transfers:
+            player = Players.query.filter_by(id=db_transfer.playerid).first()
+            db_bid = Bids.query.filter_by(transferid=db_transfer.id, userid=current_user.id, active=1).first()
+            if player:
+                    transfer = []
+                    transfer.append(db_transfer)
+                    transfer.append(player)
+                    if db_bid:
+                        transfer.append(db_bid)
+                    else:
+                        transfer.append(None)
+                    transfer.append(countries_indexed[player.country])
+                    transfers.append(transfer)
+    
     return render_template(
         "transfers.html",
         current_user=current_user,
-        countries=countries,
         transfers=transfers,
+        countries=countries,
         views=views,
     )
-
-
-@main.route("/transfers", methods=["POST"])
-@login_required
-def transfers_post():
 
     countries = Countries.query.order_by(Countries.name).all()
     inspector = inspect(db.engine)
@@ -337,3 +431,99 @@ def transfers_post():
     return render_template(
         "transfers.html", current_user=current_user, transfers=transfers, countries=countries, views=views
     )
+
+
+@main.route("/update_bid", methods=["POST"])
+@login_required
+def update_bid():
+    transfer_id = request.form.get("transfer_id")
+    max_bid = request.form.get("max_bid")
+    
+    if not transfer_id or not max_bid:
+        flash("Invalid bid data")
+        flash("alert-warning")
+        # Preserve query parameters on error
+        preserved_args = {}
+        for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+            value = request.form.get(f'query_{key}')
+            if value:
+                preserved_args[key] = value
+        return redirect(url_for("main.transfers", **preserved_args))
+    
+    try:
+        transfer_id = int(transfer_id)
+        max_bid = int(max_bid)
+    except ValueError:
+        flash("Invalid bid values")
+        flash("alert-warning")
+        # Preserve query parameters on error
+        preserved_args = {}
+        for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+            value = request.form.get(f'query_{key}')
+            if value:
+                preserved_args[key] = value
+        return redirect(url_for("main.transfers", **preserved_args))
+    
+    # Check if transfer exists and is active
+    transfer = Transfers.query.filter_by(id=transfer_id, active=1).first()
+    if not transfer:
+        flash("Transfer not found or inactive")
+        flash("alert-warning")
+        # Preserve query parameters on error
+        preserved_args = {}
+        for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+            value = request.form.get(f'query_{key}')
+            if value:
+                preserved_args[key] = value
+        return redirect(url_for("main.transfers", **preserved_args))
+    
+    # Validate bid amount - must be at least 5% higher than current price
+    current_price = transfer.actualprice
+    min_bid = int(current_price * 1.05)  # 5% higher than asking price
+    
+    if max_bid < min_bid:
+        formatted_min_bid = "{:,}".format(min_bid).replace(",", ".")
+        flash(f"Bid must be at least 5% higher than current price. Minimum bid: {formatted_min_bid} R$")
+        flash("alert-warning")
+        # Preserve query parameters on validation error
+        preserved_args = {}
+        for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+            value = request.form.get(f'query_{key}')
+            if value:
+                preserved_args[key] = value
+        return redirect(url_for("main.transfers", **preserved_args))
+    
+    # Check if bid already exists for this user and transfer
+    existing_bid = Bids.query.filter_by(userid=current_user.id, transferid=transfer_id).first()
+    
+    if existing_bid:
+        # Update existing bid
+        existing_bid.maxbid = max_bid
+        existing_bid.active = 1  # Reset final value
+        db.session.commit()
+        formatted_bid = "{:,}".format(max_bid).replace(",", ".")
+        flash(f"Bid updated to {formatted_bid} R$")
+    else:
+        # Create new bid
+        new_bid = Bids(
+            userid=current_user.id,
+            transferid=transfer_id,
+            maxbid=max_bid,
+            finalvalue=0,
+            active=1
+        )
+        db.session.add(new_bid)
+        db.session.commit()
+        formatted_bid = "{:,}".format(max_bid).replace(",", ".")
+        flash(f"Bid placed: {formatted_bid} R$")
+    
+    flash("alert-success")
+    
+    # Preserve query parameters to maintain the same page state
+    preserved_args = {}
+    for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+        value = request.form.get(f'query_{key}')
+        if value:
+            preserved_args[key] = value
+    
+    return redirect(url_for("main.transfers", **preserved_args))
