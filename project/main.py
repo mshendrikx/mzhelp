@@ -246,18 +246,9 @@ def transfers():
                     transfer.append(countries_indexed[player.country])
                     transfers.append(transfer)
             else:
-                flash("No active transfers found for your bids")
-                flash("alert-warning")
                 db_bid.active = 0
                 db.session.commit()
 
-        return render_template(
-            "transfers.html",
-            current_user=current_user,
-            transfers=transfers,
-            countries=countries,
-            views=views,
-        )
     else:
         filters = [Transfers.active == 1]
         if max_price > 0:
@@ -274,7 +265,8 @@ def transfers():
         for db_transfer in db_transfers:
             players_id.append(db_transfer.playerid)            
 
-        country_sel = current_user.countryid        
+        country_sel = current_user.countryid
+                
         if nationality == "all_nationalities":
             query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country > :country")
             country_sel = 0
@@ -518,6 +510,53 @@ def update_bid():
         flash(f"Bid placed: {formatted_bid} R$")
     
     flash("alert-success")
+    
+    # Preserve query parameters to maintain the same page state
+    preserved_args = {}
+    for key in ['search', 'nationality', 'view', 'max_price', 'active_bids']:
+        value = request.form.get(f'query_{key}')
+        if value:
+            preserved_args[key] = value
+    
+    return redirect(url_for("main.transfers", **preserved_args))
+
+
+@main.route("/clear_bid", methods=["POST"])
+@login_required
+def clear_bid():
+    transfer_id = request.form.get("transfer_id")
+    
+    if not transfer_id:
+        flash("Invalid transfer ID")
+        flash("alert-warning")
+        return redirect(url_for("main.transfers"))
+    
+    try:
+        transfer_id = int(transfer_id)
+    except ValueError:
+        flash("Invalid transfer ID")
+        flash("alert-warning")
+        return redirect(url_for("main.transfers"))
+    
+    # Check if transfer exists and is active
+    transfer = Transfers.query.filter_by(id=transfer_id, active=1).first()
+    if not transfer:
+        flash("Transfer not found or inactive")
+        flash("alert-warning")
+        return redirect(url_for("main.transfers"))
+    
+    # Check if bid exists for this user and transfer
+    existing_bid = Bids.query.filter_by(userid=current_user.id, transferid=transfer_id, active=1).first()
+    
+    if existing_bid:
+        # Deactivate the bid instead of deleting it
+        existing_bid.active = 0
+        db.session.commit()
+        flash("Bid cleared successfully")
+        flash("alert-success")
+    else:
+        flash("No active bid found for this transfer")
+        flash("alert-warning")
     
     # Preserve query parameters to maintain the same page state
     preserved_args = {}

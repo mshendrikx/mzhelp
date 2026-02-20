@@ -7,6 +7,8 @@
 <form method="get" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
     style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
     <div class="mb-3">
+        <label for="active_bids">Active Bids Only: </label>
+        <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{% endif %}>&nbsp;&nbsp;&nbsp;
         <label for="nationality">Nationality: </label>
         <select name="nationality" id="nationality">
             <option value="all_nationalities" {% if request.args.get('nationality') == 'all_nationalities' %}selected{% endif %}>All nationalities</option>
@@ -25,8 +27,6 @@
         </select>&nbsp;&nbsp;&nbsp;
         <label for="max_price">Max Price: </label>
         <input type="number" name="max_price" id="max_price" min="0" value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
-        <label for="active_bids">Active Bids Only: </label>
-        <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{% endif %}>&nbsp;&nbsp;&nbsp;
         <button class="btn btn-outline-primary" type="submit">Search</button>
     </div>
 </form>
@@ -624,16 +624,17 @@
                                             <tr>
                                                 <td>Max Bid:</td>
                                                 {% if transfer[2] == None or transfer[2].maxbid == 0 %}
-                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong>&nbsp;&nbsp;<button
+                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                                                         data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
                                                 </td>
                                                 {% else %}
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{
                                                         "{:,}".format(transfer[2].maxbid).replace(",", ".") }}
-                                                        R$</strong>&nbsp;&nbsp;<button
+                                                        R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
-                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
+                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>&nbsp;&nbsp;<button
+                                                        class="btn btn-sm btn-outline-danger" onclick="clearBid({{ transfer[0].id }})">X</button>
                                                 </td>
                                                 {% endif %}
                                             </tr>
@@ -672,7 +673,7 @@
                         <label for="max_bid{{ transfer[0].id }}" class="form-label">Max Bid (R$)</label>
                         <input type="number" class="form-control" id="max_bid{{ transfer[0].id }}" name="max_bid"
                             value="{% if transfer[2] and transfer[2].maxbid > 0 %}{{ transfer[2].maxbid }}{% else %}0{% endif %}"
-                            min="0" step="1000" required>
+                            min="0" step="1" required>
                         <div class="form-text">Enter the maximum amount you're willing to bid for this player.</div>
                     </div>
                 </div>
@@ -685,5 +686,35 @@
     </div>
 </div>
 {% endfor %}
+
+<script>
+function clearBid(transferId) {
+    if (confirm('Are you sure you want to delete your bid for this transfer?')) {
+        // Create a form to submit the delete bid request
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("main.clear_bid") }}';
+        
+        // Add transfer_id
+        const transferInput = document.createElement('input');
+        transferInput.type = 'hidden';
+        transferInput.name = 'transfer_id';
+        transferInput.value = transferId;
+        form.appendChild(transferInput);
+        
+        // Add query parameters to preserve page state
+        {% for key, value in request.args.items() %}
+        const {{ key }}Input = document.createElement('input');
+        {{ key }}Input.type = 'hidden';
+        {{ key }}Input.name = 'query_{{ key }}';
+        {{ key }}Input.value = '{{ value }}';
+        form.appendChild({{ key }}Input);
+        {% endfor %}
+        
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 
 {% endblock %}
