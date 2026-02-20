@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from sqlalchemy import inspect, text
+from datetime import datetime, timedelta
 
 from . import db
 from . import scheduler
@@ -315,116 +316,6 @@ def transfers():
         views=views,
     )
 
-    countries = Countries.query.order_by(Countries.name).all()
-    inspector = inspect(db.engine)
-    view_names = inspector.get_view_names()
-    views = []
-    for view_name in view_names:
-        if view_name.startswith("TR_"):
-            views.append(view_name)
-
-    countries = countries_data(index=0)
-
-    utc_now = utc_input()
-    Transfers.query.filter(Transfers.deadline < utc_now, Transfers.active == 1).update({"active": 0})
-    transfers = []
-    nationality = request.form.get(f"nationality")
-    view = request.form.get(f"view")
-    try:
-        max_price = int(request.form.get(f"max_price"))
-    except:
-        max_price = 0
-    active_bids = request.form.get(f"active_bids")
-    
-    if active_bids:
-        db_bids = Bids.query.filter_by(active=1, userid=current_user.id).all()
-        if not db_bids:
-            flash("No active bids found")
-            flash("alert-warning")
-            return redirect(url_for("main.transfers"))
-
-        for db_bid in db_bids:
-            db_transfer = Transfers.query.filter_by(id=db_bid.transferid, active=1).first()
-            if db_transfer:
-                player = Players.query.filter_by(id=db_transfer.playerid).first()
-                if player:
-                    transfer = []
-                    transfer.append(db_transfer)
-                    transfer.append(player)
-                    transfer.append(db_bid)
-                    transfer.append(countries[player.country])
-                    transfers.append(transfer)
-            else:
-                flash("No active transfers found for your bids")
-                flash("alert-warning")
-                db_bid.active = 0
-                db.session.commit()
-
-        return render_template(
-            "transfers.html",
-            current_user=current_user,
-            transfers=transfers,
-        )
-    else:
-        filters = [Transfers.active == 1]
-        if max_price > 0:
-            filters.append(Transfers.actualprice <= max_price)
-            
-        db_transfers = Transfers.query.filter(*filters).all()
-        
-        if not db_transfers:
-            flash("No transfers found with the given filters")
-            flash("alert-warning")
-            return redirect(url_for("main.transfers"))
-        
-        players_id = []
-        for db_transfer in db_transfers:
-            players_id.append(db_transfer.playerid)            
-
-        country_sel = current_user.countryid        
-        if nationality == "all_nationalities":
-            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country > :country")
-            country_sel = 0
-        elif nationality == "all_domestic":
-            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country = :country")
-        elif nationality == "all_foreign":
-            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country != :country")
-        else: 
-            query = text(f"SELECT * FROM {view} WHERE id IN :players_id AND country = :country")
-            try:
-                country_sel = int(nationality)
-            except:
-                country_sel = 0
-
-        result = db.session.execute(query, {"players_id": tuple(players_id), "country": country_sel})
-        
-        players_view = result.fetchall()
-        
-        view_ids = []
-        for player_view in players_view:
-            view_ids.append(player_view[0])
-            
-        for view_id in view_ids:
-            db_transfer = Transfers.query.filter_by(playerid=view_id, active=1).first()
-            if db_transfer:
-                db_bid = Bids.query.filter_by(transferid=db_transfer.id, userid=current_user.id, active=1).first()
-                player = Players.query.filter_by(id=view_id).first()
-                if player:
-                    transfer = []
-                    transfer.append(db_transfer)
-                    transfer.append(player)
-                    if db_bid:
-                        transfer.append(db_bid)
-                    else:
-                        transfer.append(None)
-                    transfer.append(countries[player.country])
-                    transfers.append(transfer)
-    
-    return render_template(
-        "transfers.html", current_user=current_user, transfers=transfers, countries=countries, views=views
-    )
-
-
 @main.route("/update_bid", methods=["POST"])
 @login_required
 def update_bid():
@@ -496,12 +387,17 @@ def update_bid():
         formatted_bid = "{:,}".format(max_bid).replace(",", ".")
         flash(f"Bid updated to {formatted_bid} R$")
     else:
+        deadline_dt = datetime.strptime(str(transfer.deadline), "%Y%m%d%H%M")
+        dtstart = deadline_dt - timedelta(minutes=20) 
+        dtend = deadline_dt + timedelta(hours=23, minutes=59)
         # Create new bid
         new_bid = Bids(
             userid=current_user.id,
             transferid=transfer_id,
             maxbid=max_bid,
             finalvalue=0,
+            dtstart=int(dtstart.strftime("%Y%m%d%H%M")),
+            dtend=int(dtend.strftime("%Y%m%d%H%M")),
             active=1
         )
         db.session.add(new_bid)

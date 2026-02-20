@@ -109,4 +109,6 @@ class Bids(db.Model):
     transferid = db.Column(db.Integer, primary_key=True)
     maxbid = db.Column(db.Integer)
     finalvalue = db.Column(db.Integer)
+    dtstart = db.Column(db.BigInteger, nullable=False, index=True)
+    dtend = db.Column(db.BigInteger, nullable=False, index=True)
     active = db.Column(db.Integer)
