@@ -74,3 +74,7 @@
     margin: 0 4px;
     vertical-align: middle;
 }
+
+.playerContainer .skill {
+    width: 130px;  /* Adjust as needed */
+}

@@ -1,13 +1,18 @@
+import os
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
 from sqlalchemy import inspect, text
 from datetime import datetime, timedelta
+from seleniumbase import SB
 
 from . import db
 from . import scheduler
+from . import logger
 
 from project.common import get_db
+from project.jobs import job_bid
 from .common import utc_input, countries_data
 from .models import Transfers, Players, Countries, Bids
 
@@ -45,6 +50,8 @@ def profile_post():
     repass = request.form.get("repass")
     name = request.form.get("name")
     email = request.form.get("email")
+    mzuser = request.form.get("mzuser")
+    mzpass = request.form.get("mzpass")
 
     if password != repass:
         flash("Password está diferente")
@@ -63,6 +70,50 @@ def profile_post():
         current_user.name = name
 
     current_user.email = email
+    
+    with SB(
+        headless=True,
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+            port=os.environ.get("SELENIUM_HUB_PORT", None),
+    ) as sb:
+        try:
+            job_id = f"job_bid_{current_user.id}"  
+            job_bid = scheduler.get_job(job_id)
+            
+            sb.open("https://www.managerzone.com/")
+            sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+            sb.type('input[id="login_username"]', mzuser)
+            sb.type('input[id="login_password"]', mzpass)
+            sb.click('a[id="login"]')     
+            sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')            
+                      
+            if job_bid:
+                scheduler.resume_job(job_id)
+            else:
+                scheduler.add_job(
+                    id=job_id,
+                    func=job_bid,
+                    trigger='cron',
+                    minute='0,5,10,15,20,25,30,35,40,45,50,55',
+                    hour='*',
+                    day='*',
+                    month='*',
+                    day_of_week='*',                
+                    max_instances=1,
+                    args=[current_user.id]
+                )
+            current_user.mzuser = mzuser
+            current_user.mzpass = mzpass
+            
+        except Exception as e:
+            logger.error("Error logging in user with provided MZ credentials: " + str(current_user.id))
+            logger.error(e)
+            flash("Error logging in user with provided MZ credentials")
+            flash("alert-danger")
+            if job_bid:
+                scheduler.pause_job(job_id)            
+
 
     db.session.add(current_user)
     db.session.commit()

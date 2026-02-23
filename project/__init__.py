@@ -177,7 +177,7 @@ def create_app():
             db.session.add(new_user)
             db.session.commit()
     
-        from project.jobs import job_control, job_teams, job_transfers, job_nations
+        from project.jobs import job_control, job_bid, job_teams, job_transfers, job_nations
 
         jobs = scheduler.get_jobs()  # Load jobs from the database
         

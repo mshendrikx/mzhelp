@@ -45,6 +45,24 @@
                     <input type="password" class="form-control" id="repass" name="repass">
                 </div>
             </div>
+            <div class="row">
+                <div class="col-3 text-white">
+                    <label for="mzuser">MZ Username:</label>
+                </div>
+                <div class="col-9 text-white">
+                    <input type="text" class="form-control" id="mzuser" name="mzuser" value="{{ current_user.mzuser }}"
+                        required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-3 text-white">
+                    <label for="mzpass">MZ Password:</label>
+                </div>
+                <div class="col-9 text-white">
+                    <input type="password" class="form-control" id="mzpass" name="mzpass" value="{{ current_user.mzpass }}"
+                        required>
+                </div>
+            </div>
         </div>
         <br>
         <button class="btn btn-outline-primary">Save</button>

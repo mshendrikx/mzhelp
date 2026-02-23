@@ -4,7 +4,6 @@ import math
 from seleniumbase import SB
 from dotenv import load_dotenv
 from project.common import get_db, only_numerics, date_input, utc_input
-from datetime import datetime, timedelta
 
 from project.models import Bids, Transfers
 
@@ -45,17 +44,21 @@ if bids:
                             '//*[@id="lightboxContent_transfer_buy_form"]/div/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr/td/div/div/dl/dd[4]/span[2]'
                     ).split('R$')[0])) * 1.05)
                 except Exception as e:
-                    sb.wait_for_element('//*[@id="players_container"]/div/p')
-                    if sb.get_text('//*[@id="players_container"]/div/p') == "Waiting for playerlist":
-                        transfer.active = 0
-                        bid.active = 0
-                        session.commit()
+                    try:
+                        sb.wait_for_element('//*[@id="players_container"]/div/p')
+                        if sb.get_text('//*[@id="players_container"]/div/p') == "Waiting for playerlist":
+                            transfer.active = 0
+                            bid.active = 0
+                            session.commit()
+                    except:
+                        continue
                     continue
                 
                 if next_bid <= bid.maxbid:
                     try:
                         sb.wait_for_element('//*[@id="transfer_place_bid_button"]')
-                        sb.click('//*[@id="transfer_place_bid_button"]', action="accept_alert")
+                        sb.execute_script("window.confirm = function() { return true; }")
+                        sb.click('//*[@id="transfer_place_bid_button"]')
                     except:
                         continue                    
     
