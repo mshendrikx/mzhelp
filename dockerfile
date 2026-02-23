@@ -31,7 +31,7 @@ COPY . .
 
 RUN mkdir -p /logs
 
-RUN touch /app/logs/mzhelp.log
+#RUN touch /app/logs/mzhelp.log
 
 ENV DISPLAY=:0
 

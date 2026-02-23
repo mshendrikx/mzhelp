@@ -1,4 +1,3 @@
-from json.tool import main
 import os
 import logging
 import mysql.connector
@@ -10,6 +9,9 @@ from werkzeug.security import generate_password_hash
 from flask_apscheduler import APScheduler
 from datetime import datetime, timezone
 from zoneinfo import ZoneInfo
+from json.tool import main
+from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
 
 # from .jobs import job_control
 
@@ -21,16 +23,50 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 
 # Add logging to debug
-logging.basicConfig(
-    filename='/app/logs/mzhelp.log',
-    filemode='a', 
-    level=os.environ.get("LOG_LEVEL", "INFO").upper(),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#logging.basicConfig(
+#    filename='/app/logs/mzhelp.log',
+#    filemode='a', 
+#    level=os.environ.get("LOG_LEVEL", "INFO").upper(),
+#    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#)
+#logger = logging.getLogger(__name__)
+
+# 1. Define your path
+log_directory = "logs"
+log_filename = "mzhelp.log"
+log_path = Path(log_directory)
+log_path.mkdir(parents=True, exist_ok=True)
+full_log_file = log_path / f"{log_filename}.log"
+
+# 2. Create a custom logger
+logger = logging.getLogger(__name__)
+logger.setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
+
+# 3. Create Formatter
+# Includes: Timestamp, Log Level, Message, and the line number where it happened
+log_format = logging.Formatter(
+    '%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s'
 )
 
-logger = logging.getLogger(__name__)
+# 4. Setup Daily Rotating File Handler
+file_handler = TimedRotatingFileHandler(
+    str(full_log_file),
+    when="midnight",
+    interval=1,
+    backupCount=30,  # Keep logs for a month
+    encoding="utf-8"
+)
+file_handler.suffix = "%Y-%m-%d"  # Files will look like: app_log.log.2026-02-23
+file_handler.setFormatter(log_format)
 
+# 5. Setup Console Handler (to see logs in your terminal too)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_format)
 
+# 6. Add handlers to the logger
+logger.addHandler(file_handler)
+logger.addHandler(console_handler)
+    
 def create_app():
 
     app = Flask(__name__)
