@@ -9,6 +9,8 @@
     <div class="mb-3">
         <label for="active_bids">Active Bids Only: </label>
         <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{% endif %}>&nbsp;&nbsp;&nbsp;
+        <label for="playerid">Player ID: </label>
+        <input type="number" name="playerid" id="playerid" min="0" value="{{ request.args.get('playerid', '0') }}">&nbsp;&nbsp;&nbsp;
         <label for="nationality">Nationality: </label>
         <select name="nationality" id="nationality">
             <option value="all_nationalities" {% if request.args.get('nationality') == 'all_nationalities' %}selected{% endif %}>All nationalities</option>
@@ -20,7 +22,7 @@
         </select>&nbsp;&nbsp;&nbsp;
         <label for="view">View: </label>
         <select name="view" id="view">
-            <option value="select" {% if not request.args.get('view') or request.args.get('view') == 'select' %}selected{% endif %}>Select a View</option>
+            <option value="all_transfers" {% if not request.args.get('view') or request.args.get('view') == 'select' %}selected{% endif %}>All Transfers</option>
             {% for view_option in views %}
             <option value="{{ view_option }}" {% if request.args.get('view') == view_option %}selected{% endif %}>{{ view_option }}</option>
             {% endfor %}
@@ -28,6 +30,7 @@
         <label for="max_price">Max Price: </label>
         <input type="number" name="max_price" id="max_price" min="0" value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
         <button class="btn btn-outline-primary" type="submit">Search</button>
+        <button class="btn btn-outline-secondary" type="button" onclick="resetForm()">Reset</button>
     </div>
 </form>
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
@@ -709,6 +712,14 @@ function clearBid(transferId) {
         document.body.appendChild(form);
         form.submit();
     }
+}
+
+function resetForm() {
+    document.getElementById('active_bids').checked = false;
+    document.getElementById('playerid').value = '';
+    document.getElementById('nationality').value = 'all_nationalities';
+    document.getElementById('view').value = 'select';
+    document.getElementById('max_price').value = '';
 }
 </script>
 

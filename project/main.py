@@ -269,6 +269,7 @@ def transfers():
     inspector = inspect(db.engine)
     view_names = inspector.get_view_names()
     views = []
+
     for view_name in view_names:
         if view_name.startswith("TR_"):
             views.append(view_name)
@@ -287,7 +288,7 @@ def transfers():
     except:
         max_price = 0
     active_bids = request.args.get("active_bids")
-
+    playerid = int(request.args.get("playerid", 0))
     if active_bids:
         db_bids = Bids.query.filter_by(active=1, userid=current_user.id).all()
         if not db_bids:
@@ -311,7 +312,29 @@ def transfers():
             else:
                 db_bid.active = 0
                 db.session.commit()
-
+    elif playerid > 0:
+        db_transfer = Transfers.query.filter_by(playerid=playerid, active=1).first()
+        if not db_transfer:
+            flash("No active transfer found for the given player ID")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+        player = Players.query.filter_by(id=db_transfer.playerid).first()
+        if not player:
+            flash("Player not found for the given player ID")
+            flash("alert-warning")
+            return redirect(url_for("main.transfers"))
+        db_bid = Bids.query.filter_by(
+            transferid=db_transfer.id, userid=current_user.id, active=1
+        ).first()
+        transfer = []
+        transfer.append(db_transfer)
+        transfer.append(player)
+        if db_bid:
+            transfer.append(db_bid)
+        else:
+            transfer.append(None)
+        transfer.append(countries_indexed[player.country])
+        transfers.append(transfer)
     else:
         filters = [Transfers.active == 1]
         if max_price > 0:
@@ -408,7 +431,7 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -422,7 +445,7 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -435,7 +458,7 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -453,7 +476,7 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on validation error
         preserved_args = {}
-        for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -494,7 +517,7 @@ def update_bid():
 
     # Preserve query parameters to maintain the same page state
     preserved_args = {}
-    for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+    for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
         value = request.form.get(f"query_{key}")
         if value:
             preserved_args[key] = value
@@ -543,7 +566,7 @@ def clear_bid():
 
     # Preserve query parameters to maintain the same page state
     preserved_args = {}
-    for key in ["search", "nationality", "view", "max_price", "active_bids"]:
+    for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
         value = request.form.get(f"query_{key}")
         if value:
             preserved_args[key] = value
