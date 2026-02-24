@@ -29,9 +29,10 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /logs
+RUN mkdir -p /logs && chmod -R 777 /logs
 
-#RUN touch /app/logs/mzhelp.log
+RUN mkdir -p /usr/local/lib/python3.13/site-packages/seleniumbase/drivers && \
+    chmod -R 777 /usr/local/lib/python3.13/site-packages/seleniumbase/drivers 
 
 ENV DISPLAY=:0
 

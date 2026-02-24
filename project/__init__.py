@@ -22,14 +22,7 @@ scheduler = APScheduler()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 
-# Add logging to debug
-#logging.basicConfig(
-#    filename='/app/logs/mzhelp.log',
-#    filemode='a', 
-#    level=os.environ.get("LOG_LEVEL", "INFO").upper(),
-#    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#)
-#logger = logging.getLogger(__name__)
+
 
 # 1. Define your path
 log_directory = "logs"
@@ -173,6 +166,7 @@ def create_app():
                 admin=1,
                 mzuser=os.environ.get("MZUSER"),
                 mzpass=os.environ.get("MZPASS"),
+                theme='light',
             )
             db.session.add(new_user)
             db.session.commit()

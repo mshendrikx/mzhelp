@@ -70,47 +70,6 @@ def countries_data(index=0):
     return countries_list
 
 
-def set_player_scout(scout_page, player):
-
-    soup = BeautifulSoup(scout_page, "lxml")
-    scouts_dd = soup.find_all("dd")
-    count = 0
-    for scout_dd in scouts_dd:
-        stars = len(scout_dd.find_all(class_="fa fa-star fa-2x lit"))
-        if count != 2:
-            if count == 0:
-                player.starhigh = stars
-            else:
-                player.starlow = stars
-            if "Speed" in scout_dd.text:
-                player.speedscout = stars
-            if "Stamina" in scout_dd.text:
-                player.staminascout = stars
-            if "Intelligence" in scout_dd.text:
-                player.intelligencescout = stars
-            if "Passing" in scout_dd.text:
-                player.passingscout = stars
-            if "Shooting" in scout_dd.text:
-                player.shootingscout = stars
-            if "Heading" in scout_dd.text:
-                player.headingscout = stars
-            if "Keeping" in scout_dd.text:
-                player.keepingscout = stars
-            if "Control" in scout_dd.text:
-                player.controlscout = stars
-            if "Tackling" in scout_dd.text:
-                player.tacklingscout = stars
-            if "Aerial" in scout_dd.text:
-                player.aerialscout = stars
-            if "Plays" in scout_dd.text:
-                player.playsscout = stars
-        else:
-            player.startraining = stars
-        count += 1
-
-    return player
-
-
 def process_training_data(trainig_page):
 
     soup_data = BeautifulSoup(trainig_page, "lxml")

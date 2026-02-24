@@ -53,6 +53,7 @@ def profile_post():
     email = request.form.get("email")
     mzuser = request.form.get("mzuser")
     mzpass = request.form.get("mzpass")
+    theme = request.form.get("theme")
 
     if password != repass:
         flash("Password está diferente")
@@ -71,30 +72,57 @@ def profile_post():
         current_user.name = name
 
     current_user.email = email
+    
+    current_user.theme = theme
 
+    logger.info(f"Updating MZ data for user") 
     with SB(
+        browser="chrome",
         headless=True,
         uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST", None),
-        port=os.environ.get("SELENIUM_HUB_PORT", None),
+#        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+#        port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
+        logger.info(f"Driver initialized for user") 
         try:
             job_id = f"job_bid_{current_user.id}"
             existing_job = scheduler.get_job(job_id)
-
+            logger.info(f"Open Managerzone") 
             sb.open("https://www.managerzone.com/")
+            logger.info(f"Confirm cookies") 
             sb.click(
                 'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
             )
+            logger.info(f"Insert login data") 
             sb.type('input[id="login_username"]', mzuser)
             sb.type('input[id="login_password"]', mzpass)
+            logger.info(f"Button login click") 
             sb.click('a[id="login"]')
+            logger.info(f"Wait for start page load") 
             sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
-
+            logger.info(f"MZ login successful for user") 
+            if existing_job:
+                scheduler.resume_job(job_id)
+            else:
+                scheduler.add_job(
+                    id=job_id,
+                    func=job_bid,
+                    trigger="cron",
+                    minute="0,5,10,15,20,25,30,35,40,45,50,55",
+                    hour="*",
+                    day="*",
+                    month="*",
+                    day_of_week="*",
+                    max_instances=1,
+                    args=[current_user.id],
+                )
+        
             current_user.mzuser = mzuser
             current_user.mzpass = mzpass
 
         except Exception as e:
+            current_user.mzuser = '' 
+            current_user.mzpass = ''
             logger.error(
                 "Error logging in user with provided MZ credentials: "
                 + str(current_user.id)
@@ -104,26 +132,9 @@ def profile_post():
             flash("alert-danger")
             if existing_job:
                 scheduler.pause_job(job_id)
-            return redirect(url_for("main.profile"))
 
     db.session.add(current_user)
     db.session.commit()
-
-    if existing_job:
-        scheduler.resume_job(job_id)
-    else:
-        scheduler.add_job(
-            id=job_id,
-            func=job_bid,
-            trigger="cron",
-            minute="0,5,10,15,20,25,30,35,40,45,50,55",
-            hour="*",
-            day="*",
-            month="*",
-            day_of_week="*",
-            max_instances=1,
-            args=[current_user.id],
-        )
 
     return redirect(url_for("main.profile"))
 

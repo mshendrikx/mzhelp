@@ -4,39 +4,49 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/transfers.css') }}">
 {% endblock %}
 {% block content %}
-<form method="get" action="{{ url_for('main.transfers') }}" class="d-flex mb-3 sticky-top bg-dark p-2" role="search"
-    style="top: 0; z-index: 1020; border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
+<form method="get" action="{{ url_for('main.transfers') }}"
+    class="d-flex mb-3 sticky-top   bg-{{ current_user.theme }} p-2" role="search"
+    style="top: 0; z-index: 1020; border: 1px solid; border-radius: 5px; margin-bottom: 10px;">
     <div class="mb-3">
         <label for="active_bids">Active Bids Only: </label>
-        <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{% endif %}>&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" name="active_bids" id="active_bids" {% if request.args.get('active_bids') %}checked{%
+            endif %}>&nbsp;&nbsp;&nbsp;
         <label for="playerid">Player ID: </label>
-        <input type="number" name="playerid" id="playerid" min="0" value="{{ request.args.get('playerid', '0') }}">&nbsp;&nbsp;&nbsp;
+        <input type="number" name="playerid" id="playerid" min="0"
+            value="{{ request.args.get('playerid', '0') }}">&nbsp;&nbsp;&nbsp;
         <label for="nationality">Nationality: </label>
         <select name="nationality" id="nationality">
-            <option value="all_nationalities" {% if request.args.get('nationality') == 'all_nationalities' %}selected{% endif %}>All nationalities</option>
-            <option value="all_domestic" {% if request.args.get('nationality') == 'all_domestic' %}selected{% endif %}>All domestic players</option>
-            <option value="all_foreign" {% if request.args.get('nationality') == 'all_foreign' %}selected{% endif %}>All foreign players</option>
+            <option value="all_nationalities" {% if request.args.get('nationality')=='all_nationalities' %}selected{%
+                endif %}>All nationalities</option>
+            <option value="all_domestic" {% if request.args.get('nationality')=='all_domestic' %}selected{% endif %}>All
+                domestic players</option>
+            <option value="all_foreign" {% if request.args.get('nationality')=='all_foreign' %}selected{% endif %}>All
+                foreign players</option>
             {% for country in countries %}
-            <option value="{{ country.id }}" {% if request.args.get('nationality') == country.id|string %}selected{% endif %}>{{ country.name }}</option>
+            <option value="{{ country.id }}" {% if request.args.get('nationality')==country.id|string %}selected{% endif
+                %}>{{ country.name }}</option>
             {% endfor %}
         </select>&nbsp;&nbsp;&nbsp;
         <label for="view">View: </label>
         <select name="view" id="view">
-            <option value="all_transfers" {% if not request.args.get('view') or request.args.get('view') == 'select' %}selected{% endif %}>All Transfers</option>
+            <option value="all_transfers" {% if not request.args.get('view') or request.args.get('view')=='select'
+                %}selected{% endif %}>All Transfers</option>
             {% for view_option in views %}
-            <option value="{{ view_option }}" {% if request.args.get('view') == view_option %}selected{% endif %}>{{ view_option }}</option>
+            <option value="{{ view_option }}" {% if request.args.get('view')==view_option %}selected{% endif %}>{{
+                view_option }}</option>
             {% endfor %}
         </select>&nbsp;&nbsp;&nbsp;
         <label for="max_price">Max Price: </label>
-        <input type="number" name="max_price" id="max_price" min="0" value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
-        <button class="btn btn-outline-primary" type="submit">Search</button>
-        <button class="btn btn-outline-secondary" type="button" onclick="resetForm()">Reset</button>
+        <input type="number" name="max_price" id="max_price" min="0"
+            value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
+        <button type="submit" class="btn btn-primary">Search</button>
+        <button type="button" onclick="resetForm()" class="btn btn-secondary ms-2">Reset</button>
     </div>
 </form>
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
     {% for transfer in transfers %}
     <div id="thePlayers_{{ transfer[0].id }}" class="playerContainer"
-        style="border: 1px solid #ffffff; border-radius: 5px; margin-bottom: 10px;">
+        style="border: 1px solid; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
             <h6 class="subheader clearfix">
                 <div title="{{ transfer[1].name }}" class="floatLeft">
@@ -617,12 +627,14 @@
                                             </tr>
                                             <tr>
                                                 <td>Deadline:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].deadline | format_ts }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[0].deadline | format_ts
+                                                        }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Max Bid:</td>
                                                 {% if transfer[2] == None or transfer[2].maxbid == 0 %}
-                                                <td><strong>&nbsp;&nbsp;&nbsp;0 R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
+                                                <td><strong>&nbsp;&nbsp;&nbsp;0
+                                                        R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                                                         data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
                                                 </td>
@@ -631,8 +643,9 @@
                                                         "{:,}".format(transfer[2].maxbid).replace(",", ".") }}
                                                         R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
-                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>&nbsp;&nbsp;<button
-                                                        class="btn btn-sm btn-outline-danger" onclick="clearBid({{ transfer[0].id }})">X</button>
+                                                        data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>&nbsp;&nbsp;
+                                                    <button class="btn btn-sm btn-outline-danger"
+                                                        onclick="clearBid({{ transfer[0].id }})">X</button>
                                                 </td>
                                                 {% endif %}
                                             </tr>
@@ -686,41 +699,63 @@
 {% endfor %}
 
 <script>
-function clearBid(transferId) {
-    if (confirm('Are you sure you want to delete your bid for this transfer?')) {
-        // Create a form to submit the delete bid request
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ url_for("main.clear_bid") }}';
-        
-        // Add transfer_id
-        const transferInput = document.createElement('input');
-        transferInput.type = 'hidden';
-        transferInput.name = 'transfer_id';
-        transferInput.value = transferId;
-        form.appendChild(transferInput);
-        
-        // Add query parameters to preserve page state
-        {% for key, value in request.args.items() %}
-        const {{ key }}Input = document.createElement('input');
-        {{ key }}Input.type = 'hidden';
-        {{ key }}Input.name = 'query_{{ key }}';
-        {{ key }}Input.value = '{{ value }}';
-        form.appendChild({{ key }}Input);
-        {% endfor %}
-        
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
+    function clearBid(transferId) {
+        try {
+            if (confirm('Are you sure you want to delete your bid for this transfer?')) {
+                // Create a form to submit the delete bid request
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ url_for("main.clear_bid") }}';
 
-function resetForm() {
-    document.getElementById('active_bids').checked = false;
-    document.getElementById('playerid').value = '';
-    document.getElementById('nationality').value = 'all_nationalities';
-    document.getElementById('view').value = 'select';
-    document.getElementById('max_price').value = '';
-}
+                // Add transfer_id
+                const transferInput = document.createElement('input');
+                if (transferInput) {
+                    transferInput.type = 'hidden';
+                    transferInput.name = 'transfer_id';
+                    transferInput.value = transferId;
+                    form.appendChild(transferInput);
+
+                    // Add query parameters to preserve page state
+                    const inputElement = document.createElement('input');
+                    {% for key, value in request.args.items() %}                    
+                    if (inputElement) {
+                        inputElement.type = 'hidden';
+                        inputElement.name = 'query_{{ key }}';
+                        inputElement.value = '{{ value }}';
+                        form.appendChild(inputElement);
+                    }
+                    {% endfor %}
+
+                    if (document.body) {
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function resetForm() {
+        try {
+            const activeBids = document.getElementById('active_bids');
+            const playerId = document.getElementById('playerid');
+            const nationality = document.getElementById('nationality');
+            const view = document.getElementById('view');
+            const maxPrice = document.getElementById('max_price');
+
+            if (activeBids && playerId && nationality && view && maxPrice) {
+                activeBids.checked = false;
+                playerId.value = '0';
+                nationality.value = 'all_nationalities';
+                view.value = 'all_transfers';
+                maxPrice.value = '0';
+            }
+        } catch (error) {
+            console.error('Error in resetForm: ', error);
+        }
+    }
 </script>
 
 {% endblock %}

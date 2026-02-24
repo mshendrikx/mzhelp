@@ -1,6 +1,7 @@
 import os
 import math
 import time
+import random
 import asyncio
 
 from requests import session
@@ -24,7 +25,6 @@ from project.common import (
     countries_data,
     get_utc_string,
     process_training_data,
-    set_player_scout,
     utc_input,
     date_input,
 )
@@ -38,11 +38,11 @@ def job_nations():
     session = get_db()
 
     with SB(
+        browser="chrome",
         headless=True,
-        # browser="firefox",
-        uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST"),
-        port=os.environ.get("SELENIUM_HUB_PORT"),
+        #uc=True,
+        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        #port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
 
         sb.open("https://www.managerzone.com/")
@@ -80,11 +80,11 @@ def job_nations():
 def job_control():
 
     with SB(
+        browser="chrome",
         headless=True,
-        # browser="firefox",
-        uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST", None),
-        port=os.environ.get("SELENIUM_HUB_PORT", None),
+        #uc=True,
+        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        #port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
 
         session = get_db()
@@ -194,18 +194,25 @@ def job_transfers():
         logger.warning("No searches to process")
         return
 
+    logger.info(f"Start Seleniumbase")
     with SB(
+        browser="chrome",
         headless=True,
-        uc=True,
-        servername=os.environ.get("SELENIUM_HUB_HOST"),
-        port=os.environ.get("SELENIUM_HUB_PORT"),
+        #uc=True,
+        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        #port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
-
+        logger.info(f"Seleniumbase loaded")
+        logger.info(f"Open ManagerZone")
         sb.open("https://www.managerzone.com/")
+        logger.info(f"Confirm cookies")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+        logger.info(f"Enter login data")
         sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
         sb.type('input[id="login_password"]', os.environ.get("MZPASS"))
+        logger.info(f"Click Login button")
         sb.click('a[id="login"]')
+        logger.info(f"Wait for start page load")
         sb.wait_for_element('//*[@id="header-username"]')
         sb.open("https://www.managerzone.com/?p=profile&sub=change")
 
@@ -798,10 +805,11 @@ def job_bid(userid):
     if bids:
 
         with SB(
+            browser="chrome",
             headless=True,
-            uc=True,
-            servername=os.environ.get("SELENIUM_HUB_HOST", None),
-            port=os.environ.get("SELENIUM_HUB_PORT", None),
+            #uc=True,
+            #servername=os.environ.get("SELENIUM_HUB_HOST", None),
+            #port=os.environ.get("SELENIUM_HUB_PORT", None),
         ) as sb:
             try:
                 sb.open("https://www.managerzone.com/")
@@ -858,5 +866,6 @@ def job_bid(userid):
                         logger.error(e)
                         continue                    
 
+                time.sleep(random.randint(45, 60))
                 utc_int = utc_input()
                 bids = session.query(Bids).filter(Bids.dtstart < utc_int, Bids.active ==1).all()

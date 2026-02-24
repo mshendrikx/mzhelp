@@ -11,8 +11,13 @@
     {% block css %}{% endblock %}
 </head>
 
-<body data-bs-theme="dark">
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+{% if current_user.is_authenticated %}
+<body data-bs-theme="{{ current_user.theme }}">
+    <nav class="navbar navbar-expand-sm bg-{{ current_user.theme }} navbar-{{ current_user.theme }}">
+{% else %}
+<body data-bs-theme="light">
+    <nav class="navbar navbar-expand-sm bg-light navbar-light">
+{% endif %}
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
                 <img src="{{  url_for('static', filename='images/mzhelper.png') }}" alt="Avatar Logo"
