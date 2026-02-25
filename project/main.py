@@ -1,4 +1,5 @@
 import os
+import math
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
@@ -41,7 +42,9 @@ def index():
 @login_required
 def profile():
 
-    return render_template("profile.html", current_user=current_user, moneyconv=moneyconv)
+    return render_template(
+        "profile.html", current_user=current_user, moneyconv=moneyconv
+    )
 
 
 @main.route("/profile", methods=["POST"])
@@ -450,6 +453,7 @@ def transfers():
 @main.route("/update_bid", methods=["POST"])
 @login_required
 def update_bid():
+
     transfer_id = request.form.get("transfer_id")
     max_bid = request.form.get("max_bid")
 
@@ -473,7 +477,7 @@ def update_bid():
 
     try:
         transfer_id = int(transfer_id)
-        max_bid = int(max_bid)
+        max_bid = math.ceil(int(max_bid) * moneyconv[current_user.currency])
     except ValueError:
         flash("Invalid bid values")
         flash("alert-warning")
