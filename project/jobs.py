@@ -601,6 +601,7 @@ def job_transfers():
 
         logger.info("End basic player data")
 
+        logger.info("Start training data")
         # Training Data
         utc_now = utc_input()
         session.query(Transfers).filter(
@@ -643,6 +644,8 @@ def job_transfers():
                     e,
                 )
                 continue
+            
+        logger.info("End training data")
 
 
 def job_teams():
