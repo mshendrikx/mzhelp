@@ -1,6 +1,7 @@
 import os
 import logging
 import mysql.connector
+import math
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -18,11 +19,40 @@ from pathlib import Path
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 scheduler = APScheduler()
+moneyconv = {
+    "R$": 1.0,
+    "SEK": 2.625890,
+    "EUR": 0.286123,
+    "USD": 0.353731,
+    "GBP": 0.196659,
+    "DKK": 2.125848,
+    "NOK": 2.448496,
+    "CHF": 0.447541,
+    "CAD": 0.459957,
+    "AUD": 0.463121,
+    "ILS": 1.548923,
+    "MXN": 3.829166,
+    "ARS": 0.992982,
+    "BOB": 2.796475,
+    "PYG": 2006.028,
+    "UYU": 10.21894,
+    "RUB": 9.97944,
+    "PLN": 1.344693,
+    "ISK": 25.16908,
+    "BGN": 0.557824,
+    "ZAR": 2.122223,
+    "THB": 15.37496,
+    "SIT": 67.39964,
+    "SKK": 10.52630,
+    "JPY": 43.76483,
+    "INR": 15.44641,
+    "MZ": 2.625890,
+    "MMK": 2.625890,
+    "点": 2.625890,
+}
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
-
-
 
 # 1. Define your path
 log_directory = "logs"
@@ -38,7 +68,7 @@ logger.setLevel(os.environ.get("LOG_LEVEL", "INFO").upper())
 # 3. Create Formatter
 # Includes: Timestamp, Log Level, Message, and the line number where it happened
 log_format = logging.Formatter(
-    '%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s'
+    "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
 )
 
 # 4. Setup Daily Rotating File Handler
@@ -47,7 +77,7 @@ file_handler = TimedRotatingFileHandler(
     when="midnight",
     interval=1,
     backupCount=30,  # Keep logs for a month
-    encoding="utf-8"
+    encoding="utf-8",
 )
 file_handler.suffix = "%Y-%m-%d"  # Files will look like: app_log.log.2026-02-23
 file_handler.setFormatter(log_format)
@@ -59,7 +89,8 @@ console_handler.setFormatter(log_format)
 # 6. Add handlers to the logger
 logger.addHandler(file_handler)
 logger.addHandler(console_handler)
-    
+
+
 def create_app():
 
     app = Flask(__name__)
@@ -92,24 +123,20 @@ def create_app():
         }
     }
 
-    
     try:
         conn = mysql.connector.connect(
-            host=mariadb_host,
-            port=mariadb_port,
-            user='root',
-            password=mariadb_pass
+            host=mariadb_host, port=mariadb_port, user="root", password=mariadb_pass
         )
-        
+
         cursor = conn.cursor()
-        
+
         # Create database if it doesn't exist
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {mariadb_database}")
         print(f"Database '{mariadb_database}' created successfully (or already exists)")
-        
+
         # Switch to the database
         cursor.execute(f"USE {mariadb_database}")
-        
+
         conn.commit()
         cursor.close()
         conn.close()
@@ -117,11 +144,11 @@ def create_app():
     except mysql.connector.Error as err:
         print(f"Error: {err}")
         return False
-    
+
     db.init_app(app)
     scheduler.init_app(app)
     scheduler.start()
-    
+
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -157,7 +184,7 @@ def create_app():
         user = Users.query.filter_by(id=1).first()
         if not user:
             new_user = Users(
-                id = 1,
+                id=1,
                 email=os.environ.get("ADMEMAIL"),
                 name=os.environ.get("ADMNAME"),
                 password=generate_password_hash(
@@ -166,83 +193,99 @@ def create_app():
                 admin=1,
                 mzuser=os.environ.get("MZUSER"),
                 mzpass=os.environ.get("MZPASS"),
-                theme='light',
+                theme="light",
+                currency="R$",
             )
             db.session.add(new_user)
             db.session.commit()
-    
-        from project.jobs import job_control, job_bid, job_teams, job_transfers, job_nations
+
+        from project.jobs import (
+            job_control,
+            job_bid,
+            job_teams,
+            job_transfers,
+            job_nations,
+        )
 
         jobs = scheduler.get_jobs()  # Load jobs from the database
-        
+
         if not jobs:
             # Control Job
             job_func = job_control
             scheduler.add_job(
-                id='job_control',
+                id="job_control",
                 func=job_func,
-                trigger='cron',
-                minute='0',
-                hour='0',
-                day='*',
-                month='*',
-                day_of_week='*',                
-                max_instances=1,
-            )
-            
-            job_func = job_teams
-            scheduler.add_job(
-                id='job_teams',
-                func=job_func,
-                trigger='cron',
-                minute='0',
-                hour='2',
-                day='*',
-                month='*',
-                day_of_week='*',                            
-                max_instances=1,
-            )
-            
-            job_func = job_transfers
-            scheduler.add_job(
-                id='job_transfers',
-                func=job_func,
-                trigger='cron',
-                minute='0',
-                hour='4,16',
-                day='*',
-                month='*',
-                day_of_week='*',                            
-                max_instances=1,
-            )
-            
-            job_func = job_nations
-            scheduler.add_job(
-                id='job_nations',
-                func=job_func,
-                trigger='cron',
-                minute='30',
-                hour='0',
-                day='*',
-                month='*',
-                day_of_week='*',                            
+                trigger="cron",
+                minute="0",
+                hour="0",
+                day="*",
+                month="*",
+                day_of_week="*",
                 max_instances=1,
             )
 
-        
+            job_func = job_teams
+            scheduler.add_job(
+                id="job_teams",
+                func=job_func,
+                trigger="cron",
+                minute="0",
+                hour="2",
+                day="*",
+                month="*",
+                day_of_week="*",
+                max_instances=1,
+            )
+
+            job_func = job_transfers
+            scheduler.add_job(
+                id="job_transfers",
+                func=job_func,
+                trigger="cron",
+                minute="0",
+                hour="4,16",
+                day="*",
+                month="*",
+                day_of_week="*",
+                max_instances=1,
+            )
+
+            job_func = job_nations
+            scheduler.add_job(
+                id="job_nations",
+                func=job_func,
+                trigger="cron",
+                minute="30",
+                hour="0",
+                day="*",
+                month="*",
+                day_of_week="*",
+                max_instances=1,
+            )
+
     @login_manager.user_loader
     def load_user(userid):
         # since the user_id is just the primary key of our user table, use it in the query for the user
         return Users.query.get(userid)
 
-    @app.template_filter('format_ts')
+    @app.template_filter("format_ts")
     def format_ts(value):
         # Parse the string: 202602191403 -> datetime object
-        dt = datetime.strptime(str(value), '%Y%m%d%H%M')
-        dt = dt.replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/Sao_Paulo"))
+        dt = datetime.strptime(str(value), "%Y%m%d%H%M")
+        dt = dt.replace(tzinfo=ZoneInfo("UTC")).astimezone(
+            ZoneInfo("America/Sao_Paulo")
+        )
         # Return formatted string: 19/02/2026 14:03
-        return dt.strftime('%d/%m/%Y %H:%M')
-
+        return dt.strftime("%d/%m/%Y %H:%M")
+    
+    @app.template_filter("format_money")
+    def format_money(value, currency):
+        
+        conv_value = math.ceil(value * moneyconv[currency])
+        string_value = "{:,}".format(conv_value).replace(",", ".") + " " + currency
+        
+        return string_value
+    
     # blueprint for auth routes in our app
     from .auth import auth as auth_blueprint
 

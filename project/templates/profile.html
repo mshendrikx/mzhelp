@@ -55,7 +55,19 @@
                         <option value="dark" {% if current_user.theme == 'dark' %}selected{% endif %}>Dark</option>
                     </select>
                 </div>
-            </div>            
+            </div>
+                        <div class="row">
+                <div class="col-3">
+                    <label for="theme">Currency:</label>
+                </div>
+                <div class="col-9">
+                    <select name="currency" id="currency" class="form-control">
+                        {% for conv in moneyconv %}
+                        <option value="{{ conv }}" {% if current_user.currency == conv %}selected{% endif %}>{{ conv }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>              
             <div class="row">
                 <div class="col-3">
                     <label for="mzuser">MZ Username:</label>

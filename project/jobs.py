@@ -38,11 +38,11 @@ def job_nations():
     session = get_db()
 
     with SB(
-        browser="chrome",
+        #browser="chrome",
         headless=True,
-        #uc=True,
-        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
-        #port=os.environ.get("SELENIUM_HUB_PORT", None),
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
 
         sb.open("https://www.managerzone.com/")
@@ -80,11 +80,11 @@ def job_nations():
 def job_control():
 
     with SB(
-        browser="chrome",
+        #browser="chrome",
         headless=True,
-        #uc=True,
-        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
-        #port=os.environ.get("SELENIUM_HUB_PORT", None),
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
 
         session = get_db()
@@ -196,11 +196,11 @@ def job_transfers():
 
     logger.info(f"Start Seleniumbase")
     with SB(
-        browser="chrome",
+        #browser="chrome",
         headless=True,
-        #uc=True,
-        #servername=os.environ.get("SELENIUM_HUB_HOST", None),
-        #port=os.environ.get("SELENIUM_HUB_PORT", None),
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
         logger.info(f"Seleniumbase loaded")
         logger.info(f"Open ManagerZone")
@@ -289,16 +289,12 @@ def job_transfers():
         logger.info("End SOUP data")
 
         utc_now = utc_input()
-        transfers_db = (
-            session.query(Transfers).filter(Transfers.deadline >= utc_now).all()
-        )
+
         session.query(Transfers).filter(
             Transfers.deadline < utc_now, Transfers.active == 1
         ).update({"active": 0})
+        
         session.commit()
-        players_db = []
-        for transfer_db in transfers_db:
-            players_db.append(transfer_db.playerid)
 
         logger.info("Start basic player data")
         player = None
@@ -312,7 +308,7 @@ def job_transfers():
                     header = player_soup.h2
                     player_id = 0
                     player_id = int(header.find(class_="player_id_span").text)
-                    if player_id in players_db or player_id in players:
+                    if player_id in players:
                         continue
                     player_name = header.find(class_="player_name").text
                     del player
@@ -577,7 +573,10 @@ def job_transfers():
                     strongs = float_right[0].find_all("strong")
                     if add_player:
                         session.add(player)
-                    transfer = Transfers()
+                    
+                    transfer = session.query(Transfers).filter(Transfers.playerid == player.id, Transfers.active == 1).first()
+                    if not transfer:
+                        transfer = Transfers()
                     transfer.playerid = player.id
                     transfer.deadline = date_input(strongs[1].text, 0, time_zone)
                     transfer.askingprice = int(only_numerics(strongs[2].text))
@@ -805,11 +804,11 @@ def job_bid(userid):
     if bids:
 
         with SB(
-            browser="chrome",
+            #browser="chrome",
             headless=True,
-            #uc=True,
-            #servername=os.environ.get("SELENIUM_HUB_HOST", None),
-            #port=os.environ.get("SELENIUM_HUB_PORT", None),
+            uc=True,
+            servername=os.environ.get("SELENIUM_HUB_HOST", None),
+            port=os.environ.get("SELENIUM_HUB_PORT", None),
         ) as sb:
             try:
                 sb.open("https://www.managerzone.com/")

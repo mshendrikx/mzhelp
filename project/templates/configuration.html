@@ -2,106 +2,146 @@
 
 {% block content %}
 <div class="container border">
-    <h3 class="fa fa-align-center" aria-hidden="true">Jobs</h3>
-    <form action="{{ url_for('main.update_jobs') }}" method="POST">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Minutes</th>
-                    <th scope="col">Hours</th>
-                    <th scope="col">Days</th>
-                    <th scope="col">Months</th>
-                    <th scope="col">Weekdays</th>
-                    <th scope="col">Enabled</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Control</td>
-                    <td><input type="text" class="form-control" id="control_minute" name="control_minute"
-                            value="{{ job_control.minute }}" required></td>
-                    <td><input type="text" class="form-control" id="control_hour" name="control_hour"
-                            value="{{ job_control.hour }}" required></td>
-                    <td><input type="text" class="form-control" id="control_day" name="control_day"
-                            value="{{ job_control.day }}" required></td>
-                    <td><input type="text" class="form-control" id="control_month" name="control_month"
-                            value="{{ job_control.month }}" required></td>
-                    <td><input type="text" class="form-control" id="control_weekday" name="control_weekday"
-                            value="{{ job_control.weekday }}" required></td>
-                    <td>
-                    {% if job_control.enabled == 1 %}
-                    <input type="checkbox" class="form-check-input" id="control_enabled" name="control_enabled" checked>
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="control_enabled" name="control_enabled">
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Teams</td>
-                    <td><input type="text" class="form-control" id="teams_minute" name="teams_minute"
-                            value="{{ job_teams.minute }}" required></td>
-                    <td><input type="text" class="form-control" id="teams_hour" name="teams_hour"
-                            value="{{ job_teams.hour }}" required></td>
-                    <td><input type="text" class="form-control" id="teams_day" name="teams_day"
-                            value="{{ job_teams.day }}" required></td>
-                    <td><input type="text" class="form-control" id="teams_month" name="teams_month"
-                            value="{{ job_teams.month }}" required></td>
-                    <td><input type="text" class="form-control" id="teams_weekday" name="teams_weekday"
-                            value="{{ job_teams.weekday }}" required></td>
-                    <td>
-                    {% if job_teams.enabled == 1 %}
-                    <input type="checkbox" class="form-check-input" id="teams_enabled" name="teams_enabled" checked>
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="teams_enabled" name="teams_enabled">
-                    {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>Transfers</td>
-                    <td><input type="text" class="form-control" id="transfers_minute" name="transfers_minute"
-                            value="{{ job_transfers.minute }}" required></td>
-                    <td><input type="text" class="form-control" id="transfers_hour" name="transfers_hour"
-                            value="{{ job_transfers.hour }}" required></td>
-                    <td><input type="text" class="form-control" id="transfers_day" name="transfers_day"
-                            value="{{ job_transfers.day }}" required></td>
-                    <td><input type="text" class="form-control" id="transfers_month" name="transfers_month"
-                            value="{{ job_transfers.month }}" required></td>
-                    <td><input type="text" class="form-control" id="transfers_weekday" name="transfers_weekday"
-                            value="{{ job_transfers.weekday }}" required></td>
-                    <td>
-                    {% if job_transfers.enabled == 1 %}
-                    <input type="checkbox" class="form-check-input" id="transfers_enabled" name="transfers_enabled" checked>
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="transfers_enabled" name="transfers_enabled">
-                    {% endif %}
-                    </td>
-                </tr>            
-                <tr>
-                    <td>Nations</td>
-                    <td><input type="text" class="form-control" id="nations_minute" name="nations_minute"
-                            value="{{ job_nations.minute }}" required></td>
-                    <td><input type="text" class="form-control" id="nations_hour" name="nations_hour"
-                            value="{{ job_nations.hour }}" required></td>
-                    <td><input type="text" class="form-control" id="nations_day" name="nations_day"
-                            value="{{ job_nations.day }}" required></td>
-                    <td><input type="text" class="form-control" id="nations_month" name="nations_month"
-                            value="{{ job_nations.month }}" required></td>
-                    <td><input type="text" class="form-control" id="nations_weekday" name="nations_weekday"
-                            value="{{ job_nations.weekday }}" required></td>
-                    <td>
-                    {% if job_nations.enabled == 1 %}
-                    <input type="checkbox" class="form-check-input" id="nations_enabled" name="nations_enabled" checked>
-                    {% else %}
-                    <input type="checkbox" class="form-check-input" id="nations_enabled" name="nations_enabled">
-                    {% endif %}
-                    </td>
-                </tr>
-        </tbody>
-        </table>
+        <h3 class="fa fa-align-center" aria-hidden="true">Create User</h3>
+        <form action="{{ url_for('main.create_user') }}" method="POST">
+                <div class="row">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                </div>
+                <div class="row">
+                        <input type="text" class="form-control" id="email" name="email" placeholder="E-mail" required>
+                </div>
+                <br>
+                <button class="btn btn-outline-primary">Create</button>                
+        </form>
         <br>
-        <button class="btn btn-outline-primary">Update</button>
-        <br><br>
-    </form>
 </div>
+<br>
+<br>
+<div class="container border">
+        <h3 class="fa fa-align-center" aria-hidden="true">Update Jobs</h3>
+        <form action="{{ url_for('main.update_jobs') }}" method="POST">
+                <table class="table">
+                        <thead>
+                                <tr>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Minutes</th>
+                                        <th scope="col">Hours</th>
+                                        <th scope="col">Days</th>
+                                        <th scope="col">Months</th>
+                                        <th scope="col">Weekdays</th>
+                                        <th scope="col">Enabled</th>
+                                </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                        <td>Control</td>
+                                        <td><input type="text" class="form-control" id="control_minute"
+                                                        name="control_minute" value="{{ job_control.minute }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="control_hour"
+                                                        name="control_hour" value="{{ job_control.hour }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="control_day" name="control_day"
+                                                        value="{{ job_control.day }}" required></td>
+                                        <td><input type="text" class="form-control" id="control_month"
+                                                        name="control_month" value="{{ job_control.month }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="control_weekday"
+                                                        name="control_weekday" value="{{ job_control.weekday }}"
+                                                        required></td>
+                                        <td>
+                                                {% if job_control.enabled == 1 %}
+                                                <input type="checkbox" class="form-check-input" id="control_enabled"
+                                                        name="control_enabled" checked>
+                                                {% else %}
+                                                <input type="checkbox" class="form-check-input" id="control_enabled"
+                                                        name="control_enabled">
+                                                {% endif %}
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>Teams</td>
+                                        <td><input type="text" class="form-control" id="teams_minute"
+                                                        name="teams_minute" value="{{ job_teams.minute }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="teams_hour" name="teams_hour"
+                                                        value="{{ job_teams.hour }}" required></td>
+                                        <td><input type="text" class="form-control" id="teams_day" name="teams_day"
+                                                        value="{{ job_teams.day }}" required></td>
+                                        <td><input type="text" class="form-control" id="teams_month" name="teams_month"
+                                                        value="{{ job_teams.month }}" required></td>
+                                        <td><input type="text" class="form-control" id="teams_weekday"
+                                                        name="teams_weekday" value="{{ job_teams.weekday }}" required>
+                                        </td>
+                                        <td>
+                                                {% if job_teams.enabled == 1 %}
+                                                <input type="checkbox" class="form-check-input" id="teams_enabled"
+                                                        name="teams_enabled" checked>
+                                                {% else %}
+                                                <input type="checkbox" class="form-check-input" id="teams_enabled"
+                                                        name="teams_enabled">
+                                                {% endif %}
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>Transfers</td>
+                                        <td><input type="text" class="form-control" id="transfers_minute"
+                                                        name="transfers_minute" value="{{ job_transfers.minute }}"
+                                                        required></td>
+                                        <td><input type="text" class="form-control" id="transfers_hour"
+                                                        name="transfers_hour" value="{{ job_transfers.hour }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="transfers_day"
+                                                        name="transfers_day" value="{{ job_transfers.day }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="transfers_month"
+                                                        name="transfers_month" value="{{ job_transfers.month }}"
+                                                        required></td>
+                                        <td><input type="text" class="form-control" id="transfers_weekday"
+                                                        name="transfers_weekday" value="{{ job_transfers.weekday }}"
+                                                        required></td>
+                                        <td>
+                                                {% if job_transfers.enabled == 1 %}
+                                                <input type="checkbox" class="form-check-input" id="transfers_enabled"
+                                                        name="transfers_enabled" checked>
+                                                {% else %}
+                                                <input type="checkbox" class="form-check-input" id="transfers_enabled"
+                                                        name="transfers_enabled">
+                                                {% endif %}
+                                        </td>
+                                </tr>
+                                <tr>
+                                        <td>Nations</td>
+                                        <td><input type="text" class="form-control" id="nations_minute"
+                                                        name="nations_minute" value="{{ job_nations.minute }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="nations_hour"
+                                                        name="nations_hour" value="{{ job_nations.hour }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="nations_day" name="nations_day"
+                                                        value="{{ job_nations.day }}" required></td>
+                                        <td><input type="text" class="form-control" id="nations_month"
+                                                        name="nations_month" value="{{ job_nations.month }}" required>
+                                        </td>
+                                        <td><input type="text" class="form-control" id="nations_weekday"
+                                                        name="nations_weekday" value="{{ job_nations.weekday }}"
+                                                        required></td>
+                                        <td>
+                                                {% if job_nations.enabled == 1 %}
+                                                <input type="checkbox" class="form-check-input" id="nations_enabled"
+                                                        name="nations_enabled" checked>
+                                                {% else %}
+                                                <input type="checkbox" class="form-check-input" id="nations_enabled"
+                                                        name="nations_enabled">
+                                                {% endif %}
+                                        </td>
+                                </tr>
+                        </tbody>
+                </table>
+                <br>
+                <button class="btn btn-outline-primary">Update</button>
+                <br><br>
+        </form>
+</div>
+
 {% endblock %}

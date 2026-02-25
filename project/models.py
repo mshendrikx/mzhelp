@@ -13,6 +13,7 @@ class Users(UserMixin, db.Model):
     mzpass = db.Column(db.String(1000))
     countryid = db.Column(db.Integer)
     theme = db.Column(db.String(6))
+    currency = db.Column(db.String(3))
 
 
 class Players(db.Model):

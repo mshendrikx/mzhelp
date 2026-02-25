@@ -609,15 +609,21 @@
                                         <tbody>
                                             <tr>
                                                 <td>Value:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].value | format_money(current_user.currency) }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[1].value).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Salary:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].salary | format_money(current_user.currency) }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[1].salary).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Actual Price:</td>
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].actualprice | format_money(current_user.currency) }}</strong></td>
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[0].actualprice).replace(",", ".") }}
+                                                        R$</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Deadline:</td>
@@ -628,12 +634,14 @@
                                                 <td>Max Bid:</td>
                                                 {% if transfer[2] == None or transfer[2].maxbid == 0 %}
                                                 <td><strong>&nbsp;&nbsp;&nbsp;0
-                                                        {{ current_user.currency }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
+                                                        R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                                                         data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>
                                                 </td>
                                                 {% else %}
-                                                <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[2].maxbid | format_money(current_user.currency) }}</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
+                                                <td><strong>&nbsp;&nbsp;&nbsp;{{
+                                                        "{:,}".format(transfer[2].maxbid).replace(",", ".") }}
+                                                        R$</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button
                                                         class="btn btn-sm btn-outline-success" data-bs-toggle="modal"
                                                         data-bs-target="#updateBidModal{{ transfer[0].id }}">$</button>&nbsp;&nbsp;
                                                     <button class="btn btn-sm btn-outline-danger"

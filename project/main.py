@@ -10,11 +10,12 @@ from seleniumbase import SB
 from . import db
 from . import scheduler
 from . import logger
+from . import moneyconv
 
 from project.common import get_db
 from project.jobs import job_bid
 from .common import utc_input, countries_data
-from .models import Transfers, Players, Countries, Bids
+from .models import Transfers, Players, Countries, Bids, Users
 
 
 class Jobs:
@@ -40,7 +41,7 @@ def index():
 @login_required
 def profile():
 
-    return render_template("profile.html", current_user=current_user)
+    return render_template("profile.html", current_user=current_user, moneyconv=moneyconv)
 
 
 @main.route("/profile", methods=["POST"])
@@ -54,6 +55,7 @@ def profile_post():
     mzuser = request.form.get("mzuser")
     mzpass = request.form.get("mzpass")
     theme = request.form.get("theme")
+    currency = request.form.get("currency")
 
     if password != repass:
         flash("Password está diferente")
@@ -72,66 +74,80 @@ def profile_post():
         current_user.name = name
 
     current_user.email = email
-    
     current_user.theme = theme
+    current_user.currency = currency
 
-    logger.info(f"Updating MZ data for user") 
-    with SB(
-        browser="chrome",
-        headless=True,
-        uc=True,
-#        servername=os.environ.get("SELENIUM_HUB_HOST", None),
-#        port=os.environ.get("SELENIUM_HUB_PORT", None),
-    ) as sb:
-        logger.info(f"Driver initialized for user") 
-        try:
-            job_id = f"job_bid_{current_user.id}"
-            existing_job = scheduler.get_job(job_id)
-            logger.info(f"Open Managerzone") 
-            sb.open("https://www.managerzone.com/")
-            logger.info(f"Confirm cookies") 
-            sb.click(
-                'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
-            )
-            logger.info(f"Insert login data") 
-            sb.type('input[id="login_username"]', mzuser)
-            sb.type('input[id="login_password"]', mzpass)
-            logger.info(f"Button login click") 
-            sb.click('a[id="login"]')
-            logger.info(f"Wait for start page load") 
-            sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
-            logger.info(f"MZ login successful for user") 
-            if existing_job:
-                scheduler.resume_job(job_id)
-            else:
-                scheduler.add_job(
-                    id=job_id,
-                    func=job_bid,
-                    trigger="cron",
-                    minute="0,5,10,15,20,25,30,35,40,45,50,55",
-                    hour="*",
-                    day="*",
-                    month="*",
-                    day_of_week="*",
-                    max_instances=1,
-                    args=[current_user.id],
+    if mzuser != "" and mzpass != "":
+        logger.info(f"Updating MZ data for user")
+        with SB(
+            # browser="chrome",
+            headless=True,
+            uc=True,
+            servername=os.environ.get("SELENIUM_HUB_HOST", None),
+            port=os.environ.get("SELENIUM_HUB_PORT", None),
+        ) as sb:
+            logger.info(f"Driver initialized for user")
+            try:
+                job_id = f"job_bid_{current_user.id}"
+                existing_job = scheduler.get_job(job_id)
+                logger.info(f"Open Managerzone")
+                sb.open("https://www.managerzone.com/")
+                logger.info(f"Confirm cookies")
+                sb.click(
+                    'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
                 )
-        
-            current_user.mzuser = mzuser
-            current_user.mzpass = mzpass
+                logger.info(f"Insert login data")
+                sb.type('input[id="login_username"]', mzuser)
+                sb.type('input[id="login_password"]', mzpass)
+                logger.info(f"Button login click")
+                sb.click('a[id="login"]')
+                logger.info(f"Wait for start page load")
+                sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
+                logger.info(f"MZ login successful for user")
+                sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
+                sb.wait_for_element('//*[@id="cid"]')
+                current_user.country = int(
+                    sb.get_attribute('#cid option[selected="selected"]', "value")
+                )
 
-        except Exception as e:
-            current_user.mzuser = '' 
-            current_user.mzpass = ''
-            logger.error(
-                "Error logging in user with provided MZ credentials: "
-                + str(current_user.id)
-            )
-            logger.error(e)
-            flash("Error logging in user with provided MZ credentials")
-            flash("alert-danger")
-            if existing_job:
-                scheduler.pause_job(job_id)
+                if existing_job:
+                    scheduler.resume_job(job_id)
+                else:
+                    scheduler.add_job(
+                        id=job_id,
+                        func=job_bid,
+                        trigger="cron",
+                        minute="0,5,10,15,20,25,30,35,40,45,50,55",
+                        hour="*",
+                        day="*",
+                        month="*",
+                        day_of_week="*",
+                        max_instances=1,
+                        args=[current_user.id],
+                    )
+
+                current_user.mzuser = mzuser
+                current_user.mzpass = mzpass
+
+            except Exception as e:
+                current_user.mzuser = ""
+                current_user.mzpass = ""
+                logger.error(
+                    "Error logging in user with provided MZ credentials: "
+                    + str(current_user.id)
+                )
+                logger.error(e)
+                flash("Error logging in user with provided MZ credentials")
+                flash("alert-danger")
+                if existing_job:
+                    scheduler.pause_job(job_id)
+    else:
+        current_user.mzuser = ""
+        current_user.mzpass = ""
+        job_id = f"job_bid_{current_user.id}"
+        existing_job = scheduler.get_job(job_id)
+        if existing_job:
+            scheduler.pause_job(job_id)
 
     db.session.add(current_user)
     db.session.commit()
@@ -442,7 +458,14 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+        for key in [
+            "search",
+            "playerid",
+            "nationality",
+            "view",
+            "max_price",
+            "active_bids",
+        ]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -456,7 +479,14 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+        for key in [
+            "search",
+            "playerid",
+            "nationality",
+            "view",
+            "max_price",
+            "active_bids",
+        ]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -469,7 +499,14 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on error
         preserved_args = {}
-        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+        for key in [
+            "search",
+            "playerid",
+            "nationality",
+            "view",
+            "max_price",
+            "active_bids",
+        ]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -487,7 +524,14 @@ def update_bid():
         flash("alert-warning")
         # Preserve query parameters on validation error
         preserved_args = {}
-        for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+        for key in [
+            "search",
+            "playerid",
+            "nationality",
+            "view",
+            "max_price",
+            "active_bids",
+        ]:
             value = request.form.get(f"query_{key}")
             if value:
                 preserved_args[key] = value
@@ -528,7 +572,14 @@ def update_bid():
 
     # Preserve query parameters to maintain the same page state
     preserved_args = {}
-    for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+    for key in [
+        "search",
+        "playerid",
+        "nationality",
+        "view",
+        "max_price",
+        "active_bids",
+    ]:
         value = request.form.get(f"query_{key}")
         if value:
             preserved_args[key] = value
@@ -577,9 +628,63 @@ def clear_bid():
 
     # Preserve query parameters to maintain the same page state
     preserved_args = {}
-    for key in ["search", "playerid", "nationality", "view", "max_price", "active_bids"]:
+    for key in [
+        "search",
+        "playerid",
+        "nationality",
+        "view",
+        "max_price",
+        "active_bids",
+    ]:
         value = request.form.get(f"query_{key}")
         if value:
             preserved_args[key] = value
 
     return redirect(url_for("main.transfers", **preserved_args))
+
+
+@main.route("/create_user", methods=["POST"])
+@login_required
+def create_user():
+
+    name = request.form.get("name")
+    email = request.form.get("email")
+
+    if not name or not email:
+        flash("Name and email are required")
+        flash("alert-warning")
+        return redirect(url_for("main.configuration"))
+
+    if "@" not in email:
+        flash("Enter a valid email address")
+        flash("alert-warning")
+        return redirect(url_for("main.configuration"))
+
+    existing_user = Users.query.filter_by(email=email).first()
+    if existing_user:
+        flash("A user with this email already exists")
+        flash("alert-warning")
+        return redirect(url_for("main.configuration"))
+
+    new_user = Users(
+        name=name,
+        email=email,
+        password=generate_password_hash(
+            os.environ.get("DEFAULT_PASSWORD", "MzH3lP"), method="pbkdf2:sha256"
+        ),
+        theme="light",
+        mzuser="",
+        mzpass="",
+        country=0,
+        admin=0,
+        currency="R$",
+    )
+    db.session.add(new_user)
+    db.session.commit()
+
+    flash(
+        "User created successfully password: "
+        + os.environ.get("DEFAULT_PASSWORD", "MzH3lP")
+    )
+    flash("alert-success")
+    return redirect(url_for("main.configuration"))
