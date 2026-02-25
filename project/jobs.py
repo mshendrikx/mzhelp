@@ -29,7 +29,7 @@ from project.common import (
     date_input,
 )
 
-from . import logger 
+from . import logger
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ def job_nations():
     session = get_db()
 
     with SB(
-        #browser="chrome",
+        # browser="chrome",
         headless=True,
         uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST", None),
@@ -80,7 +80,7 @@ def job_nations():
 def job_control():
 
     with SB(
-        #browser="chrome",
+        # browser="chrome",
         headless=True,
         uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST", None),
@@ -159,10 +159,11 @@ def get_transfer_searches(countries):
 
     return searches
 
+
 def job_transfers():
 
     count_transfer = 0
-    
+
     session = get_db()
 
     countries = session.query(Countries).all()
@@ -188,14 +189,14 @@ def job_transfers():
             search.append("19")
             search.append("37")
             searches.append(search)
-            
+
     if len(searches) == 0:
         logger.warning("No searches to process")
         return
 
     logger.info(f"Start Seleniumbase")
     with SB(
-        #browser="chrome",
+        # browser="chrome",
         headless=True,
         uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST", None),
@@ -292,7 +293,7 @@ def job_transfers():
         session.query(Transfers).filter(
             Transfers.deadline < utc_now, Transfers.active == 1
         ).update({"active": 0})
-        
+
         session.commit()
 
         logger.info("Start basic player data")
@@ -572,8 +573,12 @@ def job_transfers():
                     strongs = float_right[0].find_all("strong")
                     if add_player:
                         session.add(player)
-                    
-                    transfer = session.query(Transfers).filter(Transfers.playerid == player.id, Transfers.active == 1).first()
+
+                    transfer = (
+                        session.query(Transfers)
+                        .filter(Transfers.playerid == player.id, Transfers.active == 1)
+                        .first()
+                    )
                     if not transfer:
                         transfer = Transfers()
                     transfer.playerid = player.id
@@ -598,16 +603,25 @@ def job_transfers():
 
         # Training Data
         utc_now = utc_input()
-        session.query(Transfers).filter(Transfers.deadline < utc_now, Transfers.active == 1).update({"active": 0})        
-        session.commit()            
-        transfers = session.query(Transfers).filter(Transfers.active == 1).order_by(Transfers.deadline).all()
+        session.query(Transfers).filter(
+            Transfers.deadline < utc_now, Transfers.active == 1
+        ).update({"active": 0})
+        session.commit()
+        transfers = (
+            session.query(Transfers)
+            .filter(Transfers.active == 1)
+            .order_by(Transfers.deadline)
+            .all()
+        )
 
         for transfer in transfers:
             url = (
                 "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
                 + str(transfer.playerid)
             )
-            player_training = (session.query(PlayersTraining).filter_by(id=transfer.playerid).first())
+            player_training = (
+                session.query(PlayersTraining).filter_by(id=transfer.playerid).first()
+            )
             if not player_training:
                 player_training = PlayersTraining()
                 player_training.id = transfer.playerid
@@ -618,219 +632,43 @@ def job_transfers():
             try:
                 sb.open(url)
                 sb.wait_for_element("/html/body", timeout=1)
-                player_training.trainingdata = process_training_data(sb.driver.page_source)
+                player_training.trainingdata = process_training_data(
+                    sb.driver.page_source
+                )
                 session.commit()
             except Exception as e:
-                logger.error("Error processing training data for player ID %s: %s", transfer.playerid, e)
+                logger.error(
+                    "Error processing training data for player ID %s: %s",
+                    transfer.playerid,
+                    e,
+                )
                 continue
-            
-#        message = "Start training data, players: " + str(len(reuse_players))
-#        logging.info(message)
-#
-#        for player in reuse_players:
-#            try:
-#                add_training = False
-#                if player.traininginfo == 1:
-#                    player_training = (
-#                        session.query(PlayersTraining).filter_by(id=player.id).first()
-#                    )
-#                    if not player_training:
-#                        add_training = True
-#                        player_training = PlayersTraining()
-#                        player_training.id = player.id
-#
-#                    player_training.trainingdate = utc_input()
-#
-#                    url = (
-#                        "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
-#                        + str(player_training.id)
-#                    )
-#
-#                    sb.open(url)
-#                    sb.wait_for_element("/html/body", timeout=1)
-#
-#                    player_training.trainingdata = process_training_data(
-#                        sb.driver.page_source
-#                    )
-#
-#                if add_training:
-#                    session.add(player_training)
-#
-#            except Exception as e:
-#                message = "Error training report: " + str(player.id) + " " + player.name
-#                logging.error(message)
-#                logging.error(e)
-#
-#            session.commit()
-#
-#        logging.info("End scout and training data")
-#
-#        text = (
-#            "Trainings: " + str(count_training) + " Transfers: " + str(count_transfer)
-#        )
-#        logging.info(text)
-#        logging.info("Script finished")
 
-
-# async def process_lxml(lxml_data, coutry_id=0):
-#
-#    players_soup = lxml_data.find_all(class_="playerContainer")
-#    for player_soup in players_soup:
-#        try:
-#            header = player_soup.h2
-#            player_id = 0
-#            player_id = int(header.find(class_="player_id_span").text)
-#            if player_id in players_db or player_id in players:
-#                continue
-#            player_name = header.find(class_="player_name").text
-#            del player
-#            player = session.query(Player).filter_by(id=player_id).first()
-#            if not player:
-#                message = "Add player: " + str(player_id) + " " + player_name
-#                logging.info(message)
-#                player = Player()
-#                player.id = player_id
-#                player.country = 0
-#                player.teamid = 0
-#                player.number = 0
-#                player.retiring = 0
-#                player.national = 0
-#                add_player = True
-#            else:
-#                message = "Modify player: " + str(player_id) + " " + player_name
-#                logging.info(message)
-#                add_player = False
-#            player.changedat = utc_input()
-#            player.country = coutry_id
-#            player.name = player_name
-#            float_left = player_soup.find(class_="floatLeft")
-#            float_left = float_left.table.tbody
-#            scout_report = float_left.find(class_="scout_report_row box_dark")
-#            float_left = float_left.find_all("tr")
-#            player_chars = float_left[0].find_all("tr")
-#            player_skills = float_left[8].find_all("tr")
-#            float_right = player_soup.find(
-#                class_="floatRight transfer-control-area"
-#            )
-#            float_right = float_right.find_all(class_="box_dark")
-#            training_graph = float_right[1].find(
-#                class_="fa-regular fa-chart-line-up training-graphs-icon"
-#            )
-#            player.starhigh = 0
-#            player.starlow = 0
-#            player.startraining = 0
-#            if scout_report == None:
-#                player.scoutinfo = 0
-#            else:
-#                player.scoutinfo = 1
-#            if training_graph == None:
-#                player.traininginfo = 0
-#            else:
-#                count_training += 1
-#                player.traininginfo = 1
-#            player.salary = 0
-#            for player_char in player_chars:
-#                if "Age" in player_char.text:
-#                    player.age = int(only_numerics(player_char.text))
-#                    player.transferage = player.age
-#                elif "Foot" in player_char.text:
-#                    if "Left" in player_char.text:
-#                        player.foot = 0
-#                    elif "Right" in player_char.text:
-#                        player.foot = 1
-#                    else:
-#                        player.foot = 2
-#                elif "Height" in player_char.text:
-#                    player.height = int(only_numerics(player_char.text))
-#                elif "Weight" in player_char.text:
-#                    player.weight = int(only_numerics(player_char.text))
-#                elif "Born" in player_char.text:
-#                    player.season = int(only_numerics(player_char.text))
-#                elif "Balls" in player_char.text:
-#                    player.totalskill = int(only_numerics(player_char.text))
-#            money_info = float_right[0].find_all("span")
-#            player.value = int(only_numerics(money_info[0].text))
-#            player.salary = int(only_numerics(money_info[1].text))
-#            count = 0
-#            for player_skill in player_skills:
-#                match count:
-#                    case 0:
-#                        player.speedscout = 0
-#                        player.speed = int(only_numerics(player_skill.text))
-#                    case 1:
-#                        player.staminascout = 0
-#                        player.stamina = int(only_numerics(player_skill.text))
-#                    case 2:
-#                        player.intelligencescout = 0
-#                        player.intelligence = int(only_numerics(player_skill.text))
-#                    case 3:
-#                        player.passingscout = 0
-#                        player.passing = int(only_numerics(player_skill.text))
-#                    case 4:
-#                        player.shootingscout = 0
-#                        player.shooting = int(only_numerics(player_skill.text))
-#                    case 5:
-#                        player.headingscout = 0
-#                        player.heading = int(only_numerics(player_skill.text))
-#                    case 6:
-#                        player.keepingscout = 0
-#                        player.keeping = int(only_numerics(player_skill.text))
-#                    case 7:
-#                        player.controlscout = 0
-#                        player.control = int(only_numerics(player_skill.text))
-#                    case 8:
-#                        player.tacklingscout = 0
-#                        player.tackling = int(only_numerics(player_skill.text))
-#                    case 9:
-#                        player.aerialscout = 0
-#                        player.aerial = int(only_numerics(player_skill.text))
-#                    case 10:
-#                        player.playsscout = 0
-#                        player.plays = int(only_numerics(player_skill.text))
-#                    case 11:
-#                        player.experience = int(only_numerics(player_skill.text))
-#                    case 12:
-#                        player.form = int(only_numerics(player_skill.text))
-#                count += 1
-#            strongs = float_right[0].find_all("strong")
-#            if add_player:
-#                session.add(player)
-#            transfer = Tranfers()
-#            transfer.playerid = player.id
-#            transfer.deadline = date_input(strongs[1].text, 0, time_zone)
-#            transfer.askingprice = int(only_numerics(strongs[2].text))
-#            strongs = float_right[1].find_all("strong")
-#            transfer.actualprice = int(only_numerics(strongs[0].text))
-#            if transfer.actualprice < transfer.askingprice:
-#                transfer.actualprice = transfer.askingprice
-#            transfer.active = 1
-#            session.add(transfer)
-#            count_transfer += 1
-#            players.append(player.id)
-#            reuse_players.append(player)
-#        except Exception as e:
-#            logging.error(e)
-#    session.commit()
 
 def job_teams():
-    
+
     return
+
 
 def job_bid(userid):
 
     session = get_db()
 
-    user = session.query(Users).filter_by(id=userid).first()     
+    user = session.query(Users).filter_by(id=userid).first()
     if not user:
         return
 
     utc_int = utc_input()
-    bids = session.query(Bids).filter(Bids.userid == userid, Bids.dtstart < utc_int, Bids.active == 1).all()
-    
+    bids = (
+        session.query(Bids)
+        .filter(Bids.userid == userid, Bids.dtstart < utc_int, Bids.active == 1)
+        .all()
+    )
+
     if bids:
 
         with SB(
-            #browser="chrome",
+            # browser="chrome",
             headless=True,
             uc=True,
             servername=os.environ.get("SELENIUM_HUB_HOST", None),
@@ -838,59 +676,100 @@ def job_bid(userid):
         ) as sb:
             try:
                 sb.open("https://www.managerzone.com/")
-                sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+                sb.click(
+                    'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
+                )
                 sb.type('input[id="login_username"]', user.mzuser)
                 sb.type('input[id="login_password"]', user.mzpass)
-                sb.click('a[id="login"]')     
+                sb.click('a[id="login"]')
                 sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
             except Exception as e:
                 logger.error("Error logging in user: " + str(userid))
                 logger.error(e)
                 return
-            
+
             while bids:
-            
+
                 for bid in bids:
-                    transfer = session.query(Transfers).filter_by(id=bid.transferid, active=1).first()
+                    transfer = (
+                        session.query(Transfers)
+                        .filter_by(id=bid.transferid, active=1)
+                        .first()
+                    )
                     try:
-                        sb.open(f"https://www.managerzone.com/?p=transfer&sub=players&u={transfer.playerid}")
+                        sb.open(
+                            f"https://www.managerzone.com/?p=transfer&sub=players&u={transfer.playerid}"
+                        )
                         sb.wait_for_element('//*[@id="thePlayers_0"]')
-                        sb.click('//*[@id="thePlayers_0"]/div/div/div[2]/div/div[2]/table/tbody/tr/td[2]/span[1]/a')
-                        next_bid = math.ceil(int( only_numerics(sb.get_text(
-                                '//*[@id="lightboxContent_transfer_buy_form"]/div/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr/td/div/div/dl/dd[4]/span[2]'
-                        ).split('R$')[0])) * 1.05)
+                        sb.click(
+                            '//*[@id="thePlayers_0"]/div/div/div[2]/div/div[2]/table/tbody/tr/td[2]/span[1]/a'
+                        )
+                        next_bid = math.ceil(
+                            int(
+                                only_numerics(
+                                    sb.get_text(
+                                        '//*[@id="lightboxContent_transfer_buy_form"]/div/table/tbody/tr[2]/td/table/tbody/tr/td/table/tbody/tr/td/div/div/dl/dd[4]/span[2]'
+                                    ).split("R$")[0]
+                                )
+                            )
+                            * 1.05
+                        )
                     except Exception as e:
                         try:
                             sb.wait_for_element('//*[@id="players_container"]/div/p')
-                            if sb.get_text('//*[@id="players_container"]/div/p') == "Waiting for playerlist":
+                            if (
+                                sb.get_text('//*[@id="players_container"]/div/p')
+                                == "Waiting for playerlist"
+                            ):
                                 transfer.active = 0
                                 bid.active = 0
                                 session.commit()
                         except:
                             continue
                         continue
-                    
+
                     if next_bid <= bid.maxbid:
                         try:
                             sb.wait_for_element('//*[@id="transfer_place_bid_button"]')
-                            sb.execute_script("window.confirm = function() { return true; }")
+                            sb.execute_script(
+                                "window.confirm = function() { return true; }"
+                            )
                             sb.click('//*[@id="transfer_place_bid_button"]')
                         except:
-                            continue                    
-                    
+                            continue
+
                     try:
-                        sb.open(f"https://www.managerzone.com/?p=transfer&sub=players&u={transfer.playerid}")       
-                        latest_bid = int( only_numerics(sb.get_text('//*[@id="thePlayers_0"]/div/div/div[2]/div/div[2]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[2]/strong')))
+                        sb.open(
+                            f"https://www.managerzone.com/?p=transfer&sub=players&u={transfer.playerid}"
+                        )
+                        latest_bid = int(
+                            only_numerics(
+                                sb.get_text(
+                                    '//*[@id="thePlayers_0"]/div/div/div[2]/div/div[2]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[2]/strong'
+                                )
+                            )
+                        )
                         transfer.actualprice = latest_bid
                         bid.finalvalue = latest_bid
-                        deadline_str = sb.get_text('//*[@id="thePlayers_0"]/div/div/div[2]/div/div[1]/table/tbody/tr[3]/td[2]/strong')
+                        deadline_str = sb.get_text(
+                            '//*[@id="thePlayers_0"]/div/div/div[2]/div/div[1]/table/tbody/tr[3]/td[2]/strong'
+                        )
                         transfer.deadline = date_input(date=deadline_str)
                         session.commit()
                     except Exception as e:
-                        logger.error("Error updating bid and transfer info for user: " + str(userid) + " transferid: " + str(transfer.id))
+                        logger.error(
+                            "Error updating bid and transfer info for user: "
+                            + str(userid)
+                            + " transferid: "
+                            + str(transfer.id)
+                        )
                         logger.error(e)
-                        continue                    
+                        continue
 
                 time.sleep(random.randint(45, 60))
                 utc_int = utc_input()
-                bids = session.query(Bids).filter(Bids.dtstart < utc_int, Bids.active ==1).all()
+                bids = (
+                    session.query(Bids)
+                    .filter(Bids.dtstart < utc_int, Bids.active == 1)
+                    .all()
+                )
