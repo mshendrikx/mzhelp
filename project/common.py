@@ -84,20 +84,6 @@ def process_training_data(trainig_page):
     return json_string
 
 
-def get_player_maxs(training_data):
-
-    training = json.loads(training_data)
-    maxed_array = []
-    for row in training:
-        try:
-            if row["name"] == "Maxed":
-                maxed_array.append(int(row["y"]))
-        except:
-            continue
-
-    return maxed_array
-
-
 def get_utc_string(format="%Y-%m-%d %H:%M:%S"):
 
     # Get the current UTC time

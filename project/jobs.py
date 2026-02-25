@@ -162,7 +162,6 @@ def get_transfer_searches(countries):
 def job_transfers():
 
     count_transfer = 0
-    count_training = 0
     
     session = get_db()
 
@@ -597,7 +596,34 @@ def job_transfers():
 
         logger.info("End basic player data")
 
-#        # Training Data
+        # Training Data
+        utc_now = utc_input()
+        session.query(Transfers).filter(Transfers.deadline < utc_now, Transfers.active == 1).update({"active": 0})        
+        session.commit()            
+        transfers = session.query(Transfers).filter(Transfers.active == 1).order_by(Transfers.deadline).all()
+
+        for transfer in transfers:
+            url = (
+                "https://www.managerzone.com/ajax.php?p=trainingGraph&sub=getJsonTrainingHistory&sport=soccer&player_id="
+                + str(transfer.playerid)
+            )
+            player_training = (session.query(PlayersTraining).filter_by(id=transfer.playerid).first())
+            if not player_training:
+                player_training = PlayersTraining()
+                player_training.id = transfer.playerid
+                session.add(player_training)
+
+            player_training.trainingdate = utc_input()
+
+            try:
+                sb.open(url)
+                sb.wait_for_element("/html/body", timeout=1)
+                player_training.trainingdata = process_training_data(sb.driver.page_source)
+                session.commit()
+            except Exception as e:
+                logger.error("Error processing training data for player ID %s: %s", transfer.playerid, e)
+                continue
+            
 #        message = "Start training data, players: " + str(len(reuse_players))
 #        logging.info(message)
 #
