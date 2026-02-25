@@ -476,8 +476,8 @@ def update_bid():
         return redirect(url_for("main.transfers", **preserved_args))
 
     try:
-        transfer_id = int(transfer_id)
-        max_bid = math.ceil(int(max_bid) * moneyconv[current_user.currency])
+        transfer_id = int(transfer_id)        
+        max_bid = int(max_bid)
     except ValueError:
         flash("Invalid bid values")
         flash("alert-warning")
@@ -523,7 +523,7 @@ def update_bid():
     if max_bid < min_bid:
         formatted_min_bid = "{:,}".format(min_bid).replace(",", ".")
         flash(
-            f"Bid must be at least 5% higher than current price. Minimum bid: {formatted_min_bid} R$"
+            f"Bid must be at least 5% higher than current price. Minimum bid: {formatted_min_bid} {current_user.currency}"
         )
         flash("alert-warning")
         # Preserve query parameters on validation error
@@ -570,7 +570,7 @@ def update_bid():
         db.session.add(new_bid)
         db.session.commit()
         formatted_bid = "{:,}".format(max_bid).replace(",", ".")
-        flash(f"Bid placed: {formatted_bid} R$")
+        flash(f"Bid placed: {formatted_bid} {current_user.currency}")
 
     flash("alert-success")
 
