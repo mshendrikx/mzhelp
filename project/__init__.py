@@ -282,7 +282,7 @@ def create_app():
     def format_money(value, currency):
         
         conv_value = math.ceil(value * moneyconv[currency])
-        string_value = "{:,}".format(conv_value).replace(",", ".") + " " + currency
+        string_value = "{:,}".format(conv_value).replace(",", " ") + " " + currency
         
         return string_value
     

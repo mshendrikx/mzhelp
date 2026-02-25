@@ -109,7 +109,7 @@ def profile_post():
                 logger.info(f"MZ login successful for user")
                 sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
                 sb.wait_for_element('//*[@id="cid"]')
-                current_user.country = int(
+                current_user.countryid = int(
                     sb.get_attribute('#cid option[selected="selected"]', "value")
                 )
 
