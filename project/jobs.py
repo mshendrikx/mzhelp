@@ -776,3 +776,32 @@ def job_bid(userid):
                     .filter(Bids.dtstart < utc_int, Bids.active == 1)
                     .all()
                 )
+
+def job_claim(userid):
+    
+    session = get_db()
+
+    user = session.query(Users).filter_by(id=userid).first()
+    if not user:
+        return
+
+    with SB(
+        # browser="chrome",
+        headless=True,
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
+    ) as sb:
+        try:
+            sb.open("https://www.managerzone.com/")
+            sb.click(
+                'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
+            )
+            sb.type('input[id="login_username"]', user.mzuser)
+            sb.type('input[id="login_password"]', user.mzpass)
+            sb.click('a[id="login"]')
+            sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
+        except Exception as e:
+            logger.error("Error logging in user: " + str(userid))
+            logger.error(e)
+            return
