@@ -14,6 +14,9 @@ class Users(UserMixin, db.Model):
     countryid = db.Column(db.Integer)
     theme = db.Column(db.String(6))
     currency = db.Column(db.String(3))
+    mzuserid = db.Column(db.Integer)
+    mzteamid = db.Column(db.Integer)
+    nextclaim = db.Column(db.BigInteger)
 
 
 class Players(db.Model):

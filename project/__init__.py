@@ -194,7 +194,9 @@ def create_app():
                 mzuser=os.environ.get("MZUSER"),
                 mzpass=os.environ.get("MZPASS"),
                 theme="light",
-                currency="R$",
+                currency="",
+                mzuserid=0,
+                mzteamid=0,
             )
             db.session.add(new_user)
             db.session.commit()

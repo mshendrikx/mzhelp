@@ -682,6 +682,8 @@ def create_user():
         country=0,
         admin=0,
         currency="R$",
+        mzuserid=0,
+        mzteamid=0,
     )
     db.session.add(new_user)
     db.session.commit()

@@ -644,7 +644,7 @@ def job_transfers():
                     e,
                 )
                 continue
-            
+
         logger.info("End training data")
 
 
@@ -777,8 +777,9 @@ def job_bid(userid):
                     .all()
                 )
 
+
 def job_claim(userid):
-    
+
     session = get_db()
 
     user = session.query(Users).filter_by(id=userid).first()
@@ -805,3 +806,72 @@ def job_claim(userid):
             logger.error("Error logging in user: " + str(userid))
             logger.error(e)
             return
+
+
+def job_team(userid):
+
+    session = get_db()
+
+    user = session.query(Users).filter_by(id=userid).first()
+    if not user:
+        return
+
+    with SB(
+        # browser="chrome",
+        headless=True,
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST", None),
+        port=os.environ.get("SELENIUM_HUB_PORT", None),
+    ) as sb:
+        try:
+            sb.open("https://www.managerzone.com/")
+            sb.click(
+                'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
+            )
+            sb.type('input[id="login_username"]', user.mzuser)
+            sb.type('input[id="login_password"]', user.mzpass)
+            sb.click('a[id="login"]')
+            sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
+        except Exception as e:
+            logger.error("Error logging in user: " + str(userid))
+            logger.error(e)
+            return
+
+        sb.open("https://www.managerzone.com/?p=players")
+
+        try:
+            sb.wait_for_element('//*[@id="thePlayers_0"]', timeout=10)
+            players_container = sb.find_elements("#players_container")
+            soup = BeautifulSoup(players_container.get_attribute("outerHTML"), "lxml")
+            players_soup = soup.find_all(class_="playerContainer")
+        except Exception as e:
+            logger.error("Error loading team page for user: " + str(userid))
+            logger.error(e)
+            return
+
+        
+
+        for player_soup in players_soup:
+            try:
+                header = player_soup.h2
+                player_id = 0
+                player_id = int(header.find(class_="player_id_span").text)
+                player_name = header.find(class_="player_name").text
+            except Exception as e:
+                logger.error("Error parsing player info for user: " + str(userid))
+                logger.error(e)
+                continue
+
+
+        for player in players_container:
+            try:
+                player.get_e
+                sb.wait_for_element('//*[@id="transfer_place_bid_button"]')
+                sb.execute_script("window.confirm = function() { return true; }")
+                sb.click('//*[@id="transfer_place_bid_button"]')
+            except Exception as e:
+                logger.error("Error buying player for user: " + str(userid))
+                logger.error(e)
+                return
+
+    return
