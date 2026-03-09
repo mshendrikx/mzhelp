@@ -849,8 +849,6 @@ def job_team(userid):
             logger.error(e)
             return
 
-        
-
         for player_soup in players_soup:
             try:
                 header = player_soup.h2
@@ -861,7 +859,6 @@ def job_team(userid):
                 logger.error("Error parsing player info for user: " + str(userid))
                 logger.error(e)
                 continue
-
 
         for player in players_container:
             try:
