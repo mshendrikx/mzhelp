@@ -887,7 +887,7 @@ def job_friendlies(userid):
         logger.info(f"Skipping user {user.mzuser} with countryid 0")
         return
     
-    logger.info(f"Processing user: {user.mzuser}")
+    logger.info(f"Friendly user: {user.mzuser}")
     
     with SB(
         headless=True,
@@ -943,4 +943,6 @@ def job_friendlies(userid):
                 
         except Exception as e:
             logger.error(f"An error occurred for user {user.mzuser}: {str(e)}")
+            
+    logger.info("Finishing the script")
 
