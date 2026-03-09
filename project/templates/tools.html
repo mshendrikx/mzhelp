@@ -1,0 +1,693 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container border">
+    <br>
+    <form id="friendlies" action="/friendlies" method="POST">
+        <div id="settings_table" class="flex-wrap">
+            <h1 class="text-center">Friendly Tactics</h6>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="flex-grow-1 textCenter" align="center">
+                                <h3>Monday</h3>
+                                <div>
+                                    <i title="Home" aria-hidden="true" class="fa fa-home"></i> <select id="homemon"
+                                        name="homemon">
+                                        <option title="A" value="a" {% if current_user.homemon=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.homemon=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.homemon=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.homemon=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.homemon=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.homemon=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.homemon=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.homemon=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.homemon=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.homemon=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.homemon=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.homemon=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.homemon=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.homemon=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.homemon=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.homemon=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.homemon=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.homemon=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.homemon=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.homemon=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                                <div style="margin-top: 15px">
+                                    <i title="Away" aria-hidden="true" class="fa fa-plane"></i> <select id="awaymon"
+                                        name="awaymon">
+                                        <option title="A" value="a" {% if current_user.awaymon=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.awaymon=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.awaymon=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.awaymon=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.awaymon=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.awaymon=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.awaymon=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.awaymon=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.awaymon=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.awaymon=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.awaymon=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.awaymon=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.awaymon=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.awaymon=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.awaymon=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.awaymon=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.awaymon=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.awaymon=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.awaymon=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.awaymon=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-grow-1 textCenter" align="center">
+                                <h3>Tuesday</h3>
+                                <div>
+                                    <i title="Home" aria-hidden="true" class="fa fa-home"></i> <select id="hometue"
+                                        name="hometue">
+                                        <option title="A" value="a" {% if current_user.hometue=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.hometue=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.hometue=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.hometue=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.hometue=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.hometue=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.hometue=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.hometue=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.hometue=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.hometue=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.hometue=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.hometue=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.hometue=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.hometue=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.hometue=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.hometue=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.hometue=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.hometue=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.hometue=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.hometue=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                                <div style="margin-top: 15px">
+                                    <i title="Away" aria-hidden="true" class="fa fa-plane"></i> <select
+                                        id="awaytue" name="awaytue">
+                                        <option title="A" value="a" {% if current_user.awaytue=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.awaytue=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.awaytue=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.awaytue=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.awaytue=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.awaytue=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.awaytue=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.awaytue=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.awaytue=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.awaytue=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.awaytue=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.awaytue=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.awaytue=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.awaytue=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.awaytue=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.awaytue=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.awaytue=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.awaytue=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.awaytue=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.awaytue=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-grow-1 textCenter" align="center">
+                                <h3>Thursday</h3>
+                                <div>
+                                    <i title="Home" aria-hidden="true" class="fa fa-home"></i> <select id="homethu"
+                                        name="homethu">
+                                        <option title="A" value="a" {% if current_user.homethu=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.homethu=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.homethu=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.homethu=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.homethu=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.homethu=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.homethu=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.homethu=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.homethu=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.homethu=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.homethu=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.homethu=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.homethu=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.homethu=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.homethu=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.homethu=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.homethu=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.homethu=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.homethu=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.homethu=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                                <div style="margin-top: 15px">
+                                    <i title="Away" aria-hidden="true" class="fa fa-plane"></i> <select id="awaythu"
+                                        name="awaythu">
+                                        <option title="A" value="a" {% if current_user.awaythu=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.awaythu=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.awaythu=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.awaythu=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.awaythu=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.awaythu=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.awaythu=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.awaythu=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.awaythu=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.awaythu=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.awaythu=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.awaythu=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.awaythu=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.awaythu=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.awaythu=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.awaythu=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.awaythu=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.awaythu=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.awaythu=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.awaythu=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-grow-1 textCenter" align="center">
+                                <h3>Friday</h3>
+                                <div>
+                                    <i title="Home" aria-hidden="true" class="fa fa-home"></i> <select id="homefri"
+                                        name="homefri">
+                                        <option title="A" value="a" {% if current_user.homefri=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.homefri=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.homefri=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.homefri=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.homefri=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.homefri=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.homefri=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.homefri=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.homefri=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.homefri=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.homefri=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.homefri=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.homefri=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.homefri=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.homefri=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.homefri=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.homefri=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.homefri=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.homefri=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.homefri=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                                <div style="margin-top: 15px">
+                                    <i title="Away" aria-hidden="true" class="fa fa-plane"></i> <select id="awayfri"
+                                        name="awayfri">
+                                        <option title="A" value="a" {% if current_user.awayfri=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.awayfri=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.awayfri=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.awayfri=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.awayfri=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.awayfri=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.awayfri=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.awayfri=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.awayfri=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.awayfri=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.awayfri=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.awayfri=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.awayfri=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.awayfri=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.awayfri=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.awayfri=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.awayfri=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.awayfri=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.awayfri=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.awayfri=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-grow-1 textCenter" align="center">
+                                <h3>Saturday</h3>
+                                <div>
+                                    <i title="Home" aria-hidden="true" class="fa fa-home"></i> <select id="homesat"
+                                        name="homesat">
+                                        <option title="A" value="a" {% if current_user.homesat=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.homesat=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.homesat=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.homesat=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.homesat=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.homesat=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.homesat=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.homesat=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.homesat=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.homesat=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.homesat=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.homesat=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.homesat=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.homesat=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.homesat=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.homesat=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.homesat=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.homesat=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.homesat=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.homesat=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                                <div style="margin-top: 15px">
+                                    <i title="Away" aria-hidden="true" class="fa fa-plane"></i> <select id="awaysat"
+                                        name="awaysat">
+                                        <option title="A" value="a" {% if current_user.awaysat=='a' %}
+                                            selected="selected" {% endif %}>A
+                                        </option>
+                                        <option title="B" value="b" {% if current_user.awaysat=='b' %}
+                                            selected="selected" {% endif %}>B
+                                        </option>
+                                        <option title="C" value="c" {% if current_user.awaysat=='c' %}
+                                            selected="selected" {% endif %}>C
+                                        </option>
+                                        <option title="D" value="d" {% if current_user.awaysat=='d' %}
+                                            selected="selected" {% endif %}>D
+                                        </option>
+                                        <option title="E" value="e" {% if current_user.awaysat=='e' %}
+                                            selected="selected" {% endif %}>E
+                                        </option>
+                                        <option title="F" value="f" {% if current_user.awaysat=='f' %}
+                                            selected="selected" {% endif %}>F
+                                        </option>
+                                        <option title="G" value="g" {% if current_user.awaysat=='g' %}
+                                            selected="selected" {% endif %}>G
+                                        </option>
+                                        <option title="H" value="h" {% if current_user.awaysat=='h' %}
+                                            selected="selected" {% endif %}>H
+                                        </option>
+                                        <option title="I" value="i" {% if current_user.awaysat=='i' %}
+                                            selected="selected" {% endif %}>I
+                                        </option>
+                                        <option title="J" value="j" {% if current_user.awaysat=='j' %}
+                                            selected="selected" {% endif %}>J
+                                        </option>
+                                        <option title="K" value="k" {% if current_user.awaysat=='k' %}
+                                            selected="selected" {% endif %}>K
+                                        </option>
+                                        <option title="L" value="l" {% if current_user.awaysat=='l' %}
+                                            selected="selected" {% endif %}>L
+                                        </option>
+                                        <option title="M" value="m" {% if current_user.homemon=='m' %}
+                                            selected="selected" {% endif %}>M
+                                        </option>
+                                        <option title="N" value="n" {% if current_user.awaysat=='n' %}
+                                            selected="selected" {% endif %}>N
+                                        </option>
+                                        <option title="O" value="o" {% if current_user.awaysat=='o' %}
+                                            selected="selected" {% endif %}>O
+                                        </option>
+                                        <option title="P" value="p" {% if current_user.awaysat=='p' %}
+                                            selected="selected" {% endif %}>P
+                                        </option>
+                                        <option title="Q" value="q" {% if current_user.awaysat=='q' %}
+                                            selected="selected" {% endif %}>Q
+                                        </option>
+                                        <option title="R" value="r" {% if current_user.awaysat=='r' %}
+                                            selected="selected" {% endif %}>R
+                                        </option>
+                                        <option title="S" value="s" {% if current_user.awaysat=='s' %}
+                                            selected="selected" {% endif %}>S
+                                        </option>
+                                        <option title="T" value="t" {% if current_user.awaysat=='t' %}
+                                            selected="selected" {% endif %}>T
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+            </table>
+            <button class="btn btn-outline-primary">Save</button>            
+    </form>    
+    <br>
+</div>
+{% endblock %}

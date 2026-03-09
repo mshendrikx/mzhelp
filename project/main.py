@@ -157,6 +157,48 @@ def profile_post():
 
     return redirect(url_for("main.profile"))
 
+@main.route("/tools")
+@login_required
+def tools():
+
+    return render_template(
+        "tools.html", current_user=current_user
+    )
+
+
+@main.route("/friendlies", methods=["POST"])
+@login_required
+def friendlies_post():
+    
+    home_mon = request.form.get("homemon")
+    away_mon = request.form.get("awaymon")
+    home_tue = request.form.get("hometue")
+    away_tue = request.form.get("awaytue")
+    home_thu = request.form.get("homethu")
+    away_thu = request.form.get("awaythu")
+    home_fri = request.form.get("homefri")
+    away_fri = request.form.get("awayfri")
+    home_sat = request.form.get("homesat")
+    away_sat = request.form.get("awaysat")
+
+    current_user.homemon = home_mon
+    current_user.awaymon = away_mon
+    current_user.hometue = home_tue
+    current_user.awaytue = away_tue
+    current_user.homethu = home_thu
+    current_user.awaythu = away_thu
+    current_user.homefri = home_fri
+    current_user.awayfri = away_fri
+    current_user.homesat = home_sat
+    current_user.awaysat = away_sat
+
+    db.session.add(current_user)
+    db.session.commit()
+
+    flash("Friendlies updated successfully")
+    flash("alert-success")
+
+    return redirect(url_for("main.tools"))
 
 @main.route("/configuration")
 @login_required
