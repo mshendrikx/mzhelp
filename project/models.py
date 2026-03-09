@@ -17,6 +17,16 @@ class Users(UserMixin, db.Model):
     mzuserid = db.Column(db.Integer)
     mzteamid = db.Column(db.Integer)
     nextclaim = db.Column(db.BigInteger)
+    homemon = db.Column(db.String(1))
+    awaymon = db.Column(db.String(1))
+    hometue = db.Column(db.String(1))
+    awaytue = db.Column(db.String(1))
+    homethu = db.Column(db.String(1))
+    awaythu = db.Column(db.String(1))
+    homefri = db.Column(db.String(1))
+    awayfri = db.Column(db.String(1))
+    homesat = db.Column(db.String(1))
+    awaysat = db.Column(db.String(1))
 
 
 class Players(db.Model):
