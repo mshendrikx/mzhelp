@@ -14,7 +14,7 @@ from . import logger
 from . import moneyconv
 
 from project.common import get_db
-from project.jobs import job_bid
+from project.jobs import job_bid, job_friendlies
 from .common import utc_input, countries_data
 from .models import Transfers, Players, Countries, Bids, Users
 
@@ -91,8 +91,6 @@ def profile_post():
         ) as sb:
             logger.info(f"Driver initialized for user")
             try:
-                job_id = f"job_bid_{current_user.id}"
-                existing_job = scheduler.get_job(job_id)
                 logger.info(f"Open Managerzone")
                 sb.open("https://www.managerzone.com/")
                 logger.info(f"Confirm cookies")
@@ -113,6 +111,8 @@ def profile_post():
                     sb.get_attribute('#cid option[selected="selected"]', "value")
                 )
 
+                job_id = f"job_bid_{current_user.id}"
+                existing_job = scheduler.get_job(job_id)
                 if existing_job:
                     scheduler.resume_job(job_id)
                 else:
@@ -125,6 +125,24 @@ def profile_post():
                         day="*",
                         month="*",
                         day_of_week="*",
+                        max_instances=1,
+                        args=[current_user.id],
+                    )
+
+                job_id = f"job_friendlies_{current_user.id}"
+                existing_job = scheduler.get_job(job_id)
+                if existing_job:
+                    scheduler.resume_job(job_id)
+                else:
+                    scheduler.add_job(
+                        id=job_id,
+                        func=job_friendlies,
+                        trigger="cron",
+                        minute="0",
+                        hour="7",
+                        day="*",
+                        month="*",
+                        day_of_week="0,2,3,4,6",
                         max_instances=1,
                         args=[current_user.id],
                     )

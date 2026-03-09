@@ -931,6 +931,11 @@ def job_friendlies(userid):
             elif weekday == 6:
                 home_tactic = user.homemon
                 away_tactic = user.awaymon
+                
+            if home_tactic == "None":
+                home_tactic = None
+            if away_tactic == "None":
+                away_tactic = None
 
             logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")
 
