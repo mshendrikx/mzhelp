@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import Select
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pathlib import Path
+from datetime import datetime
 from project.models import (
     Players,
     PlayersTraining,
@@ -872,3 +873,74 @@ def job_team(userid):
                 return
 
     return
+
+
+def job_friendlies(userid):
+
+    session = get_db()
+
+    user = session.query(Users).filter_by(id=userid).first()
+    if not user:
+        return
+    
+    if user.countryid == 0:
+        logger.info(f"Skipping user {user.mzuser} with countryid 0")
+        return
+    
+    logger.info(f"Processing user: {user.mzuser}")
+    
+    with SB(
+        headless=True,
+        #browser="firefox",
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST"),
+        port=os.environ.get("SELENIUM_HUB_PORT"),
+    ) as sb:       
+        try:
+        
+            logger.info("Login to ManagerZone")
+            sb.open("https://www.managerzone.com/")
+            sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+            sb.type('input[id="login_username"]', user.mzuser)
+            sb.type('input[id="login_password"]', user.mzpass)
+            sb.click('a[id="login"]')
+            sb.open("https://www.managerzone.com/?p=challenges&tab=quick")
+
+            sb.wait_for_element_visible('a[id="qc-countdown-wrapper"]', timeout=10)
+
+            weekday = datetime.now().weekday()
+
+            if weekday == 0:
+                home_tactic = user.hometue
+                away_tactic = user.awaytue
+            elif weekday == 1:
+                home_tactic = None
+                away_tactic = None
+            elif weekday == 2:
+                home_tactic = user.homethu
+                away_tactic = user.awaythu
+            elif weekday == 3:
+                home_tactic = user.homefri
+                away_tactic = user.awayfri
+            elif weekday == 4:
+                home_tactic = user.homesat
+                away_tactic = user.awaysat
+            elif weekday == 5:
+                home_tactic = None
+                away_tactic = None
+            elif weekday == 6:
+                home_tactic = user.homemon
+                away_tactic = user.awaymon
+
+            logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")
+
+            if home_tactic is not None and away_tactic is not None:
+            
+                sb.select_option_by_value("#tactic_home", home_tactic)
+                sb.select_option_by_value("#tactic_away", away_tactic)
+
+                sb.click('a[id="qc-opt-in"]')
+                
+        except Exception as e:
+            logger.error(f"An error occurred for user {user.mzuser}: {str(e)}")
+
