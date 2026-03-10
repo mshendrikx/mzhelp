@@ -932,9 +932,9 @@ def job_friendlies(userid):
                 home_tactic = user.homemon
                 away_tactic = user.awaymon
                 
-            if home_tactic == "None":
+            if home_tactic == "#":
                 home_tactic = None
-            if away_tactic == "None":
+            if away_tactic == "#":
                 away_tactic = None
 
             logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")

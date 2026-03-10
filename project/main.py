@@ -139,7 +139,7 @@ def profile_post():
                         func=job_friendlies,
                         trigger="cron",
                         minute="0",
-                        hour="7",
+                        hour="7,8,9",
                         day="*",
                         month="*",
                         day_of_week="0,2,3,4,6",
