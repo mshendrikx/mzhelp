@@ -889,6 +889,41 @@ def job_friendlies(userid):
     
     logger.info(f"Friendly user: {user.mzuser}")
     
+    weekday = datetime.now().weekday()
+    
+    if weekday == 0:
+        home_tactic = user.hometue
+        away_tactic = user.awaytue
+    elif weekday == 1:
+        home_tactic = None
+        away_tactic = None
+    elif weekday == 2:
+        home_tactic = user.homethu
+        away_tactic = user.awaythu
+    elif weekday == 3:
+        home_tactic = user.homefri
+        away_tactic = user.awayfri
+    elif weekday == 4:
+        home_tactic = user.homesat
+        away_tactic = user.awaysat
+    elif weekday == 5:
+        home_tactic = None
+        away_tactic = None
+    elif weekday == 6:
+        home_tactic = user.homemon
+        away_tactic = user.awaymon
+        
+    if home_tactic == "#":
+        home_tactic = None
+    if away_tactic == "#":
+        away_tactic = None
+        
+    if home_tactic is None or away_tactic is None:        
+        logger.info(f"No tatctics defined for user {user.mzuser}. Skipping friendly.")
+        return
+        
+    logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")
+   
     with SB(
         headless=True,
         #browser="firefox",
@@ -905,49 +940,13 @@ def job_friendlies(userid):
             sb.type('input[id="login_password"]', user.mzpass)
             sb.click('a[id="login"]')
             sb.open("https://www.managerzone.com/?p=challenges&tab=quick")
-
-            sb.wait_for_element_visible('a[id="qc-countdown-wrapper"]', timeout=10)
-
-            weekday = datetime.now().weekday()
-
-            if weekday == 0:
-                home_tactic = user.hometue
-                away_tactic = user.awaytue
-            elif weekday == 1:
-                home_tactic = None
-                away_tactic = None
-            elif weekday == 2:
-                home_tactic = user.homethu
-                away_tactic = user.awaythu
-            elif weekday == 3:
-                home_tactic = user.homefri
-                away_tactic = user.awayfri
-            elif weekday == 4:
-                home_tactic = user.homesat
-                away_tactic = user.awaysat
-            elif weekday == 5:
-                home_tactic = None
-                away_tactic = None
-            elif weekday == 6:
-                home_tactic = user.homemon
-                away_tactic = user.awaymon
-                
-            if home_tactic == "#":
-                home_tactic = None
-            if away_tactic == "#":
-                away_tactic = None
-
-            logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")
-
-            if home_tactic is not None and away_tactic is not None:
-            
-                sb.select_option_by_value("#tactic_home", home_tactic)
-                sb.select_option_by_value("#tactic_away", away_tactic)
-
-                sb.click('a[id="qc-opt-in"]')
+            sb.wait_for_element_visible('//*[@id="qc-countdown-wrapper"]', timeout=10)
+            sb.select_option_by_value("#tactic_home", home_tactic)
+            sb.select_option_by_value("#tactic_away", away_tactic)
+            sb.click('a[id="qc-opt-in"]')
                 
         except Exception as e:
             logger.error(f"An error occurred for user {user.mzuser}: {str(e)}")
             
-    logger.info("Finishing the script")
+    logger.info(f"Finishing friendly script for user {user.mzuser}")
 

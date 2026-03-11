@@ -67,7 +67,7 @@ for user in users:
             sb.click('a[id="login"]')
             sb.open("https://www.managerzone.com/?p=challenges&tab=quick")
 
-            sb.wait_for_element_visible('a[id="qc-countdown-wrapper"]', timeout=10)
+            sb.wait_for_element_visible('//*[@id="qc-countdown-wrapper"]', timeout=10)
 
             weekday = datetime.now().weekday()
 
