@@ -60,12 +60,12 @@ def profile_post():
     #currency = request.form.get("currency")
 
     if password != repass:
-        flash("Password está diferente")
+        flash("Password don't match")
         flash("alert-danger")
         return redirect(url_for("main.profile"))
 
     if "@" not in email:
-        flash("Entrar E-mail válido")
+        flash("Enter a valid E-mail")
         flash("alert-danger")
         return redirect(url_for("main.profile"))
 
