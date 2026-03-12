@@ -10,7 +10,8 @@ from selenium.webdriver.support.ui import Select
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from project.models import (
     Players,
     PlayersTraining,
@@ -950,3 +951,54 @@ def job_friendlies(userid):
             
     logger.info(f"Finishing friendly script for user {user.mzuser}")
 
+def job_event(userid):
+
+    session = get_db()
+
+    user = session.query(Users).filter_by(id=userid).first()
+    if not user:
+        return
+
+    if user.countryid == 0:
+        return
+    
+    int_utc_now = int(datetime.now().astimezone(ZoneInfo("UTC")).strftime("%Y%m%d%H%M"))
+    if user.nextclaim > int_utc_now:
+        return
+    
+    logger.info(f"Processing event user: {user.mzuser}")
+    with SB(
+        headless=True,
+        #browser="firefox",
+        uc=True,
+        servername=os.environ.get("SELENIUM_HUB_HOST"),
+        port=os.environ.get("SELENIUM_HUB_PORT"),
+    ) as sb:
+        
+        try:
+        
+            logger.info("Login to ManagerZone")
+            sb.open("https://www.managerzone.com/")
+            sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+            sb.type('input[id="login_username"]', user.mzuser)
+            sb.type('input[id="login_password"]', user.mzpass)
+            sb.click('a[id="login"]')
+            sb.open("https://www.managerzone.com/?p=event")
+            sb.wait_for_element_visible('//*[@id="claim"]', timeout=10)            
+            sb.click('a[id="claim"]')
+            sb.open("https://www.managerzone.com/?p=event")
+            sb.wait_for_element_visible('//*[@id="next-reset-clock"]', timeout=10)
+            clock_string = sb.get_text('//*[@id="next-reset-clock"]')
+            clock_parts = clock_string.split(" ")
+            hours = int(only_numerics(clock_parts[0]))
+            minutes = int(only_numerics(clock_parts[1])) + 1          
+            
+            next_claim_date = datetime.now().astimezone(ZoneInfo("UTC")) + timedelta(hours=hours, minutes=minutes)
+            
+            user.nextclaim = int(next_claim_date.strftime("%Y%m%d%H%M"))
+            session.commit()
+                
+        except Exception as e:
+            logger.error(f"An error occurred for for claim event for user {user.mzuser}: {str(e)}")
+
+    logger.info("Finishing the event script")

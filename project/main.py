@@ -13,8 +13,7 @@ from . import scheduler
 from . import logger
 from . import moneyconv
 
-from project.common import get_db
-from project.jobs import job_bid, job_friendlies
+from project.jobs import job_bid, job_friendlies, job_event
 from .common import utc_input, countries_data
 from .models import Transfers, Players, Countries, Bids, Users
 
@@ -58,7 +57,7 @@ def profile_post():
     mzuser = request.form.get("mzuser")
     mzpass = request.form.get("mzpass")
     theme = request.form.get("theme")
-    currency = request.form.get("currency")
+    #currency = request.form.get("currency")
 
     if password != repass:
         flash("Password está diferente")
@@ -78,7 +77,7 @@ def profile_post():
 
     current_user.email = email
     current_user.theme = theme
-    current_user.currency = currency
+    #current_user.currency = currency
 
     if mzuser != "" and mzpass != "":
         logger.info(f"Updating MZ data for user")
@@ -143,6 +142,24 @@ def profile_post():
                         day="*",
                         month="*",
                         day_of_week="0,2,3,4,6",
+                        max_instances=1,
+                        args=[current_user.id],
+                    )
+
+                job_id = f"job_event_{current_user.id}"
+                existing_job = scheduler.get_job(job_id)
+                if existing_job:
+                    scheduler.resume_job(job_id)
+                else:
+                    scheduler.add_job(
+                        id=job_id,
+                        func=job_event,
+                        trigger="cron",
+                        minute="*",
+                        hour="*",
+                        day="*",
+                        month="*",
+                        day_of_week="*",
                         max_instances=1,
                         args=[current_user.id],
                     )
