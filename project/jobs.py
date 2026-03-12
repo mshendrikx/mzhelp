@@ -984,10 +984,10 @@ def job_event(userid):
             sb.type('input[id="login_password"]', user.mzpass)
             sb.click('a[id="login"]')
             sb.open("https://www.managerzone.com/?p=event")
-            sb.wait_for_element_visible('//*[@id="claim"]', timeout=10)            
+            sb.wait_for_element_visible('//*[@id="claim"]', timeout=30)            
             sb.click('a[id="claim"]')
             sb.open("https://www.managerzone.com/?p=event")
-            sb.wait_for_element_visible('//*[@id="next-reset-clock"]', timeout=10)
+            sb.wait_for_element_visible('//*[@id="next-reset-clock"]', timeout=30)
             clock_string = sb.get_text('//*[@id="next-reset-clock"]')
             clock_parts = clock_string.split(" ")
             hours = int(only_numerics(clock_parts[0]))
@@ -997,6 +997,8 @@ def job_event(userid):
             
             user.nextclaim = int(next_claim_date.strftime("%Y%m%d%H%M"))
             session.commit()
+            
+            logger.info(f"Claim event for user {user.mzuser} scheduled for {next_claim_date}")
                 
         except Exception as e:
             logger.error(f"An error occurred for for claim event for user {user.mzuser}: {str(e)}")
