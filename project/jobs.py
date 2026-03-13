@@ -302,6 +302,8 @@ def job_transfers():
         player = None
         players = []
         reuse_players = []
+        added_players = 0
+        modified_players = 0
         for page_soup in pages_soup:
             players_soup = page_soup[0].find_all(class_="playerContainer")
 
@@ -316,6 +318,7 @@ def job_transfers():
                     del player
                     player = session.query(Players).filter_by(id=player_id).first()
                     if not player:
+                        added_players += 1
                         message = "Add player: " + str(player_id) + " " + player_name
                         logger.info(message)
                         player = Players()
@@ -327,6 +330,7 @@ def job_transfers():
                         player.national = 0
                         add_player = True
                     else:
+                        modified_players += 1
                         message = "Modify player: " + str(player_id) + " " + player_name
                         logger.info(message)
                         add_player = False
@@ -601,6 +605,8 @@ def job_transfers():
 
             session.commit()
 
+        logger.info(f"Basic player data processed. Added: {added_players}, Modified: {modified_players}, Total: {added_players + modified_players}")
+        
         logger.info("End basic player data")
 
         logger.info("Start training data")

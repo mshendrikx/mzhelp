@@ -104,6 +104,9 @@ def profile_post():
                 logger.info(f"Wait for start page load")
                 sb.wait_for_element('//*[@id="header-stats-wrapper"]/h5[3]')
                 logger.info(f"MZ login successful for user")
+                sb.wait_for_element('//*[@id="clubhouse-widget-economy"]/div/h4')
+                economy_text = sb.get_text('//*[@id="clubhouse-widget-economy"]/div/h4')
+                current_user.currency = economy_text.split(' ')[-1]
                 sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
                 sb.wait_for_element('//*[@id="cid"]')
                 current_user.countryid = int(
