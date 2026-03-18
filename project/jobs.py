@@ -103,8 +103,14 @@ def job_control():
         if season != None:
             control = session.query(Mzcontrol).first()
             if control:
-                control.season = season
-                session.commit()
+                if control.season != season:
+                    control.season = season
+                    players = session.query(Players).all()
+                    for player in players:
+                        player.age = season - player.season
+                    session.commit()
+            else:
+                return
 
         # Determine Countries
         sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
@@ -605,8 +611,10 @@ def job_transfers():
 
             session.commit()
 
-        logger.info(f"Basic player data processed. Added: {added_players}, Modified: {modified_players}, Total: {added_players + modified_players}")
-        
+        logger.info(
+            f"Basic player data processed. Added: {added_players}, Modified: {modified_players}, Total: {added_players + modified_players}"
+        )
+
         logger.info("End basic player data")
 
         logger.info("Start training data")
@@ -823,15 +831,15 @@ def job_friendlies(userid):
     user = session.query(Users).filter_by(id=userid).first()
     if not user:
         return
-    
+
     if user.countryid == 0:
         logger.info(f"Skipping user {user.mzuser} with countryid 0")
         return
-    
+
     logger.info(f"Friendly user: {user.mzuser}")
-    
+
     weekday = datetime.now().weekday()
-    
+
     if weekday == 0:
         home_tactic = user.hometue
         away_tactic = user.awaytue
@@ -853,30 +861,32 @@ def job_friendlies(userid):
     elif weekday == 6:
         home_tactic = user.homemon
         away_tactic = user.awaymon
-        
+
     if home_tactic == "#":
         home_tactic = None
     if away_tactic == "#":
         away_tactic = None
-        
-    if home_tactic is None or away_tactic is None:        
+
+    if home_tactic is None or away_tactic is None:
         logger.info(f"No tatctics defined for user {user.mzuser}. Skipping friendly.")
         return
-        
+
     logger.info(f"Home tactic: {home_tactic}, Away tactic: {away_tactic}")
-   
+
     with SB(
         headless=True,
-        #browser="firefox",
+        # browser="firefox",
         uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST"),
         port=os.environ.get("SELENIUM_HUB_PORT"),
-    ) as sb:       
+    ) as sb:
         try:
-        
+
             logger.info("Login to ManagerZone")
             sb.open("https://www.managerzone.com/")
-            sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+            sb.click(
+                'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
+            )
             sb.type('input[id="login_username"]', user.mzuser)
             sb.type('input[id="login_password"]', user.mzpass)
             sb.click('a[id="login"]')
@@ -885,11 +895,12 @@ def job_friendlies(userid):
             sb.select_option_by_value("#tactic_home", home_tactic)
             sb.select_option_by_value("#tactic_away", away_tactic)
             sb.click('a[id="qc-opt-in"]')
-                
+
         except Exception as e:
             logger.error(f"An error occurred for user {user.mzuser}: {str(e)}")
-            
+
     logger.info(f"Finishing friendly script for user {user.mzuser}")
+
 
 def job_event(userid):
 
@@ -901,50 +912,59 @@ def job_event(userid):
 
     if user.countryid == 0:
         return
-    
+
     int_utc_now = int(datetime.now().astimezone(ZoneInfo("UTC")).strftime("%Y%m%d%H%M"))
     if user.nextclaim > int_utc_now:
         return
-    
+
     logger.info(f"Processing event user: {user.mzuser}")
     with SB(
         headless=True,
-        #browser="firefox",
+        # browser="firefox",
         uc=True,
         servername=os.environ.get("SELENIUM_HUB_HOST"),
         port=os.environ.get("SELENIUM_HUB_PORT"),
     ) as sb:
-        
+
         try:
-        
+
             logger.info("Login to ManagerZone")
             sb.open("https://www.managerzone.com/")
-            sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
+            sb.click(
+                'button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]'
+            )
             sb.type('input[id="login_username"]', user.mzuser)
             sb.type('input[id="login_password"]', user.mzpass)
             sb.click('a[id="login"]')
             sb.open("https://www.managerzone.com/?p=event")
-            sb.wait_for_element_visible('//*[@id="claim"]', timeout=30)            
+            sb.wait_for_element_visible('//*[@id="claim"]', timeout=30)
             sb.click('a[id="claim"]')
             sb.open("https://www.managerzone.com/?p=event")
             sb.wait_for_element_visible('//*[@id="next-reset-clock"]', timeout=30)
             clock_string = sb.get_text('//*[@id="next-reset-clock"]')
             clock_parts = clock_string.split(" ")
             hours = int(only_numerics(clock_parts[0]))
-            minutes = int(only_numerics(clock_parts[1])) + 1          
-            
-            next_claim_date = datetime.now().astimezone(ZoneInfo("UTC")) + timedelta(hours=hours, minutes=minutes)
-            
+            minutes = int(only_numerics(clock_parts[1])) + 1
+
+            next_claim_date = datetime.now().astimezone(ZoneInfo("UTC")) + timedelta(
+                hours=hours, minutes=minutes
+            )
+
             user.nextclaim = int(next_claim_date.strftime("%Y%m%d%H%M"))
             session.commit()
-            
-            logger.info(f"Claim event for user {user.mzuser} scheduled for {next_claim_date}")
-                
+
+            logger.info(
+                f"Claim event for user {user.mzuser} scheduled for {next_claim_date}"
+            )
+
         except Exception as e:
-            logger.error(f"An error occurred for for claim event for user {user.mzuser}: {str(e)}")
+            logger.error(
+                f"An error occurred for for claim event for user {user.mzuser}: {str(e)}"
+            )
 
     logger.info("Finishing the event script")
-    
+
+
 def job_team(userid):
 
     session = get_db()
@@ -977,9 +997,10 @@ def job_team(userid):
         try:
             sb.open("https://www.managerzone.com/?p=players")
             sb.wait_for_element('//*[@id="thePlayers_0"]', timeout=10)
-            players_container = sb.find_elements("#players_container")
+            players_container = sb.get_element("#players_container")
             soup = BeautifulSoup(players_container.get_attribute("outerHTML"), "lxml")
             players_soup = soup.find_all(class_="playerContainer")
+            countries = countries_data(index=1)
         except Exception as e:
             logger.error("Error loading team page for user: " + str(userid))
             logger.error(e)
@@ -988,23 +1009,30 @@ def job_team(userid):
         for player_soup in players_soup:
             try:
                 header = player_soup.h2
-                player_id = 0
                 player_id = int(header.find(class_="player_id_span").text)
-                player_name = header.find(class_="player_name").text
+                player_data = session.query(Players).filter_by(id=player_id).first()
+                if not player_data:
+                    player_data = Players()
+                    player_data.id = player_id
+                    player_data.name = header.find(class_="player_name").text
+                player_info = player_soup.div.div.div.table.tbody.find_all("tr")
+                player_data.age = int(only_numerics(player_info[0].text))
+                player_body = player_info[1].find_all("strong")
+                player_data.height = int(only_numerics(player_body[0].text))
+                player_data.weight = int(only_numerics(player_body[1].text))
+                player_data.season = int(only_numerics(player_info[2].td.strong.text))
+                player_data.country = countries[player_info[3].td.span.text].id
+                player_data.value = int(only_numerics(player_info[4].td.span.text))
+                player_data.salary = int(only_numerics(player_info[5].td.span.text))
+                player_data.totalskill = int(
+                    only_numerics(player_info[6].find(class_="bold").text)
+                )
+                player_info = player_soup.div.div.div3.table.tbody.find_all("tr")
+                breakpoint
+
             except Exception as e:
                 logger.error("Error parsing player info for user: " + str(userid))
                 logger.error(e)
                 continue
-
-        for player in players_container:
-            try:
-                player.get_e
-                sb.wait_for_element('//*[@id="transfer_place_bid_button"]')
-                sb.execute_script("window.confirm = function() { return true; }")
-                sb.click('//*[@id="transfer_place_bid_button"]')
-            except Exception as e:
-                logger.error("Error buying player for user: " + str(userid))
-                logger.error(e)
-                return
 
     return
