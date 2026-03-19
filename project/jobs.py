@@ -109,6 +109,11 @@ def job_nations():
 
 def job_control():
 
+    session = get_db()
+    control = session.query(Mzcontrol).first()
+    if not control:
+        return
+
     with SB(
         # browser="chrome",
         headless=True,
@@ -117,7 +122,6 @@ def job_control():
         port=os.environ.get("SELENIUM_HUB_PORT", None),
     ) as sb:
 
-        session = get_db()
         sb.open("https://www.managerzone.com/")
         sb.click('button[id="CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll"]')
         sb.type('input[id="login_username"]', os.environ.get("MZUSER"))
@@ -129,16 +133,24 @@ def job_control():
         except Exception as e:
             season = None
         if season != None:
-            control = session.query(Mzcontrol).first()
-            if control:
-                if control.season != season:
-                    control.season = season
-                    players = session.query(Players).all()
-                    for player in players:
-                        player.age = season - player.season
-                    session.commit()
-            else:
-                return
+            if control.season != season:
+                control.season = season
+                session.commit()
+                players = session.query(Players).all()
+                for player in players:
+                    player.age = season - player.season
+                session.commit()
+
+        if utc_input() > control.eventend:
+            try:
+                sb.wait_for_element('a[href="/?p=event"]')
+                event_date = sb.get_element(
+                    '//*[@id="mainDiv"]/div[2]/div/a/span/span'
+                ).text.split("End date: ")[1]
+                control.eventend = date_input(date=event_date, format="%b %d %Y, %H:%M")
+                session.commit()
+            except Exception as e:
+                logger.warning("No running event")
 
         # Determine Countries
         sb.open("https://www.managerzone.com/?p=national_teams&type=senior")
@@ -610,7 +622,7 @@ def job_transfers():
                     session.commit()
                     del transfer
                     del player
-                    
+
                 except Exception as e:
                     logger.error(e)
 
@@ -908,6 +920,12 @@ def job_friendlies(userid):
 def job_event(userid):
 
     session = get_db()
+
+    control = session.query(Mzcontrol).first()
+
+    if control:
+        if control.eventend < utc_input():
+            return
 
     user = session.query(Users).filter_by(id=userid).first()
     if not user:

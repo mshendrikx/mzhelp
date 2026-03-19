@@ -176,6 +176,7 @@ def create_app():
                 id="MZCONTROL",
                 season=0,
                 deadline=0,
+                eventend=0,
             )
             db.session.add(new_mzcontrol)
             db.session.commit()

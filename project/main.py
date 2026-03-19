@@ -13,7 +13,7 @@ from . import scheduler
 from . import logger
 from . import moneyconv
 
-from project.jobs import job_bid, job_friendlies, job_event
+from project.jobs import job_bid, job_friendlies, job_event, job_team
 from .common import utc_input, countries_data
 from .models import Transfers, Players, Countries, Bids, Users
 
@@ -160,6 +160,24 @@ def profile_post():
                         trigger="cron",
                         minute="*",
                         hour="*",
+                        day="*",
+                        month="*",
+                        day_of_week="*",
+                        max_instances=1,
+                        args=[current_user.id],
+                    )
+
+                job_id = f"job_team_{current_user.id}"
+                existing_job = scheduler.get_job(job_id)
+                if existing_job:
+                    scheduler.resume_job(job_id)
+                else:
+                    scheduler.add_job(
+                        id=job_id,
+                        func=job_team,
+                        trigger="cron",
+                        minute="0",
+                        hour="5,17",
                         day="*",
                         month="*",
                         day_of_week="*",

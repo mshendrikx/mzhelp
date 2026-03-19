@@ -99,6 +99,7 @@ class Mzcontrol(db.Model):
     id = db.Column(db.String(100), primary_key=True)
     season = db.Column(db.Integer)
     deadline = db.Column(db.BigInteger)
+    eventend = db.Column(db.BigInteger)
 
 
 class Countries(db.Model):
