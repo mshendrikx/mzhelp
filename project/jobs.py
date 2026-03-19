@@ -809,7 +809,7 @@ def job_bid(userid):
                 )
 
 
-#def job_claim(userid):
+# def job_claim(userid):
 #
 #    session = get_db()
 #
