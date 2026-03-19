@@ -36,6 +36,34 @@ from . import logger
 load_dotenv()
 
 
+def get_transfer_searches(countries):
+
+    searches = []
+    for country in countries:
+        if country.ages > 18:
+            age = 19
+            while age <= country.ages:
+                search = []
+                search.append(str(country.id))
+                search.append(str(age))
+                search.append(str(age))
+                age += 1
+                searches.append(search)
+            search = []
+            search.append(str(country.id))
+            search.append(str(age))
+            search.append("37")
+            searches.append(search)
+        else:
+            search = []
+            search.append(str(country.id))
+            search.append("19")
+            search.append("37")
+            searches.append(search)
+
+    return searches
+
+
 def job_nations():
     session = get_db()
 
@@ -138,34 +166,6 @@ def job_control():
             country.ages = 0
             session.add(country)
             session.commit()
-
-
-def get_transfer_searches(countries):
-
-    searches = []
-    for country in countries:
-        if country.ages > 18:
-            age = 19
-            while age <= country.ages:
-                search = []
-                search.append(str(country.id))
-                search.append(str(age))
-                search.append(str(age))
-                age += 1
-                searches.append(search)
-            search = []
-            search.append(str(country.id))
-            search.append(str(age))
-            search.append("37")
-            searches.append(search)
-        else:
-            search = []
-            search.append(str(country.id))
-            search.append("19")
-            search.append("37")
-            searches.append(search)
-
-    return searches
 
 
 def job_transfers():
@@ -321,7 +321,6 @@ def job_transfers():
                     if player_id in players:
                         continue
                     player_name = header.find(class_="player_name").text
-                    del player
                     player = session.query(Players).filter_by(id=player_id).first()
                     if not player:
                         added_players += 1
@@ -586,6 +585,7 @@ def job_transfers():
                     if add_player:
                         session.add(player)
 
+                    add_transfer = False
                     transfer = (
                         session.query(Transfers)
                         .filter(Transfers.playerid == player.id, Transfers.active == 1)
@@ -593,6 +593,7 @@ def job_transfers():
                     )
                     if not transfer:
                         transfer = Transfers()
+                        add_transfer = True
                     transfer.playerid = player.id
                     transfer.deadline = date_input(strongs[1].text, 0, time_zone)
                     transfer.askingprice = int(only_numerics(strongs[2].text))
@@ -601,15 +602,17 @@ def job_transfers():
                     if transfer.actualprice < transfer.askingprice:
                         transfer.actualprice = transfer.askingprice
                     transfer.active = 1
-                    session.add(transfer)
+                    if add_transfer:
+                        session.add(transfer)
                     count_transfer += 1
                     players.append(player.id)
                     reuse_players.append(player)
-
+                    session.commit()
+                    del transfer
+                    del player
+                    
                 except Exception as e:
                     logger.error(e)
-
-            session.commit()
 
         logger.info(
             f"Basic player data processed. Added: {added_players}, Modified: {modified_players}, Total: {added_players + modified_players}"
@@ -1006,28 +1009,233 @@ def job_team(userid):
             logger.error(e)
             return
 
+        players_team = session.query(Players).filter_by(teamid=user.mzteamid).all()
+        for player in players_team:
+            player.teamid = 0
+        session.commit()
+
         for player_soup in players_soup:
             try:
                 header = player_soup.h2
                 player_id = int(header.find(class_="player_id_span").text)
                 player_data = session.query(Players).filter_by(id=player_id).first()
+                player_info = player_soup.div.div.div.table.tbody.find_all("tr")
                 if not player_data:
                     player_data = Players()
                     player_data.id = player_id
                     player_data.name = header.find(class_="player_name").text
-                player_info = player_soup.div.div.div.table.tbody.find_all("tr")
+                    player_data.national = 0
+                    string_foot = player_info[0].find_all("strong")[1].text
+                    if string_foot == "Left":
+                        player_data.foot = 0
+                    elif string_foot == "Right":
+                        player_data.foot = 1
+                    else:
+                        player_data.foot = 2
+                    add_player = True
+                else:
+                    add_player = False
+                player_data.retiring = 0
+                player_data.number = int(only_numerics(header.a.text))
+                player_data.teamid = user.mzteamid
                 player_data.age = int(only_numerics(player_info[0].text))
+                player_data.transferage = player_data.age
                 player_body = player_info[1].find_all("strong")
                 player_data.height = int(only_numerics(player_body[0].text))
                 player_data.weight = int(only_numerics(player_body[1].text))
                 player_data.season = int(only_numerics(player_info[2].td.strong.text))
                 player_data.country = countries[player_info[3].td.span.text].id
-                player_data.value = int(only_numerics(player_info[4].td.span.text))
-                player_data.salary = int(only_numerics(player_info[5].td.span.text))
-                player_data.totalskill = int(
-                    only_numerics(player_info[6].find(class_="bold").text)
+                if "Work" in player_info[4].text or "Residency" in player_info[4].text:
+                    player_data.value = int(only_numerics(player_info[5].td.span.text))
+                    player_data.salary = int(only_numerics(player_info[6].td.span.text))
+                    player_data.totalskill = int(
+                        only_numerics(player_info[7].find(class_="bold").text)
+                    )
+                else:
+                    player_data.value = int(only_numerics(player_info[4].td.span.text))
+                    if player_data.age < 19:
+                        player_data.salary = 5700
+                    else:
+                        player_data.salary = int(
+                            only_numerics(player_info[5].td.span.text)
+                        )
+                    player_data.totalskill = int(
+                        only_numerics(player_info[6].find(class_="bold").text)
+                    )
+                player_info = player_soup.div.div.find(
+                    class_="player_skills player_skills_responsive"
                 )
-                player_info = player_soup.div.div.div3.table.tbody.find_all("tr")
+                player_info = player_info.find_all("tbody")[0].find_all("tr")
+                player_data.speed = int(only_numerics(player_info[0].text))
+                player_data.stamina = int(only_numerics(player_info[1].text))
+                player_data.intelligence = int(only_numerics(player_info[2].text))
+                player_data.passing = int(only_numerics(player_info[3].text))
+                player_data.shooting = int(only_numerics(player_info[4].text))
+                player_data.heading = int(only_numerics(player_info[5].text))
+                player_data.keeping = int(only_numerics(player_info[6].text))
+                player_data.control = int(only_numerics(player_info[7].text))
+                player_data.tackling = int(only_numerics(player_info[8].text))
+                player_data.aerial = int(only_numerics(player_info[9].text))
+                player_data.plays = int(only_numerics(player_info[10].text))
+                player_data.experience = int(only_numerics(player_info[11].text))
+                player_data.form = int(only_numerics(player_info[12].text))
+
+                if player_info[0].find(class_="maxed"):
+                    player_data.speedmax = 1
+                else:
+                    player_data.speedmax = 0
+
+                if player_info[1].find(class_="maxed"):
+                    player_data.staminamax = 1
+                else:
+                    player_data.staminamax = 0
+
+                if player_info[2].find(class_="maxed"):
+                    player_data.intelligencemax = 1
+                else:
+                    player_data.intelligencemax = 0
+
+                if player_info[3].find(class_="maxed"):
+                    player_data.passingmax = 1
+                else:
+                    player_data.passingmax = 0
+
+                if player_info[4].find(class_="maxed"):
+                    player_data.shootingmax = 1
+                else:
+                    player_data.shootingmax = 0
+
+                if player_info[5].find(class_="maxed"):
+                    player_data.headingmax = 1
+                else:
+                    player_data.headingmax = 0
+
+                if player_info[6].find(class_="maxed"):
+                    player_data.keepingmax = 1
+                else:
+                    player_data.keepingmax = 0
+
+                if player_info[7].find(class_="maxed"):
+                    player_data.controlmax = 1
+                else:
+                    player_data.controlmax = 0
+
+                if player_info[8].find(class_="maxed"):
+                    player_data.tacklingmax = 1
+                else:
+                    player_data.tacklingmax = 0
+
+                if player_info[9].find(class_="maxed"):
+                    player_data.aerialmax = 1
+                else:
+                    player_data.aerialmax = 0
+
+                if player_info[10].find(class_="maxed"):
+                    player_data.playsmax = 1
+                else:
+                    player_data.playsmax = 0
+
+                player_data.traininginfo = 1
+
+                if add_player:
+
+                    link = (
+                        "https://www.managerzone.com/ajax.php?p=players&sub=scout_report&sport=soccer&pid="
+                        + str(player_data.id)
+                    )
+                    sb.open(link)
+
+                    scout_report = sb.get_element("/html/body")
+                    scout_report = BeautifulSoup(
+                        scout_report.get_attribute("outerHTML"), "lxml"
+                    )
+                    scout_report = scout_report.find_all("dd")
+
+                    player_data.starhigh = 0
+                    player_data.starlow = 0
+                    player_data.startraining = 0
+                    player_data.speedscout = 0
+                    player_data.staminascout = 0
+                    player_data.intelligencescout = 0
+                    player_data.passingscout = 0
+                    player_data.shootingscout = 0
+                    player_data.headingscout = 0
+                    player_data.keepingscout = 0
+                    player_data.controlscout = 0
+                    player_data.tacklingscout = 0
+                    player_data.aerialscout = 0
+                    player_data.playsscout = 0
+                    player_data.scoutinfo = 0
+
+                    if len(scout_report) > 0:
+
+                        player_data.scoutinfo = 1
+
+                        player_data.starhigh = len(
+                            scout_report[0].find_all(class_="fa fa-star fa-2x lit")
+                        )
+                        player_data.starlow = len(
+                            scout_report[1].find_all(class_="fa fa-star fa-2x lit")
+                        )
+                        player_data.startraining = len(
+                            scout_report[2].find_all(class_="fa fa-star fa-2x lit")
+                        )
+
+                        high_names = scout_report[0].find_all(class_="blurred")
+                        low_names = scout_report[1].find_all(class_="blurred")
+                        high_skill = [high_names[0].text, high_names[1].text]
+                        low_skill = [low_names[0].text, low_names[1].text]
+
+                        if "Speed" in high_skill:
+                            player_data.speedscout = 1
+                        if "Stamina" in high_skill:
+                            player_data.staminascout = 1
+                        if "Play Intelligence" in high_skill:
+                            player_data.intelligencescout = 1
+                        if "Passing" in high_skill:
+                            player_data.passingscout = 1
+                        if "Shooting" in high_skill:
+                            player_data.shootingscout = 1
+                        if "Heading" in high_skill:
+                            player_data.headingscout = 1
+                        if "Keeping" in high_skill:
+                            player_data.keepingscout = 1
+                        if "Ball Control" in high_skill:
+                            player_data.controlscout = 1
+                        if "Tackling" in high_skill:
+                            player_data.tacklingscout = 1
+                        if "Aerial Passing" in high_skill:
+                            player_data.aerialscout = 1
+                        if "Set Plays" in high_skill:
+                            player_data.playsscout = 1
+                        if "Speed" in low_skill:
+                            player_data.speedscout = 2
+                        if "Stamina" in low_skill:
+                            player_data.staminascout = 2
+                        if "Play Intelligence" in low_skill:
+                            player_data.intelligencescout = 2
+                        if "Passing" in low_skill:
+                            player_data.passingscout = 2
+                        if "Shooting" in low_skill:
+                            player_data.shootingscout = 2
+                        if "Heading" in low_skill:
+                            player_data.headingscout = 2
+                        if "Keeping" in low_skill:
+                            player_data.keepingscout = 2
+                        if "Ball Control" in low_skill:
+                            player_data.controlscout = 2
+                        if "Tackling" in low_skill:
+                            player_data.tacklingscout = 2
+                        if "Aerial Passing" in low_skill:
+                            player_data.aerialscout = 2
+                        if "Set Plays" in low_skill:
+                            player_data.playsscout = 2
+
+                    session.add(player_data)
+
+                player_data.changedat = utc_input()
+                session.commit()
+
                 breakpoint
 
             except Exception as e:

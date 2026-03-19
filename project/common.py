@@ -212,3 +212,4 @@ def create_message(
         message.attach(part2)
 
     return message
+
