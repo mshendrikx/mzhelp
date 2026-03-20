@@ -105,9 +105,9 @@ class Mzcontrol(db.Model):
 class Countries(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    flag = db.Column(db.String(1024))
+    flag = db.Column(LONGTEXT, nullable=True)
     code = db.Column(db.String(3))
-    shield = db.Column(db.String(1024))
+    shield = db.Column(LONGTEXT, nullable=True)
     ages = db.Column(db.Integer)
 
 
