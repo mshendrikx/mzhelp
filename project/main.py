@@ -412,6 +412,10 @@ def transfers():
     nationality = request.args.get("nationality")
     view = request.args.get("view")
     try:
+        min_balls = int(request.args.get("min_balls", 0))
+    except:
+        min_balls = 0
+    try:
         max_price = int(request.args.get("max_price", 0))
     except:
         max_price = 0
@@ -467,7 +471,7 @@ def transfers():
         filters = [Transfers.active == 1]
         if max_price > 0:
             filters.append(Transfers.actualprice <= max_price)
-
+    
         db_transfers = Transfers.query.filter(*filters).all()
 
         if not db_transfers:
@@ -525,6 +529,8 @@ def transfers():
 
         for db_transfer in db_transfers:
             player = Players.query.filter_by(id=db_transfer.playerid).first()
+            if player.totalskill < min_balls:
+                continue
             db_bid = Bids.query.filter_by(
                 transferid=db_transfer.id, userid=current_user.id, active=1
             ).first()

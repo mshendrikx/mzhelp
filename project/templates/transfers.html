@@ -39,6 +39,9 @@
         <label for="max_price">Max Price: </label>
         <input type="number" name="max_price" id="max_price" min="0"
             value="{{ request.args.get('max_price', '0') }}">&nbsp;&nbsp;&nbsp;
+        <label for="min_balls">Min Balls: </label>
+        <input type="number" name="min_balls" id="min_balls" min="0"
+            value="{{ request.args.get('min_balls', '0') }}">&nbsp;&nbsp;&nbsp;
         <button type="submit" class="btn btn-primary">Search</button>
         <button type="button" onclick="resetForm()" class="btn btn-secondary ms-2">Reset</button>
     </div>
@@ -736,13 +739,15 @@
             const nationality = document.getElementById('nationality');
             const view = document.getElementById('view');
             const maxPrice = document.getElementById('max_price');
+            const minBalls = document.getElementById('min_balls');
 
-            if (activeBids && playerId && nationality && view && maxPrice) {
+            if (activeBids && playerId && nationality && view && maxPrice && minBalls) {
                 activeBids.checked = false;
                 playerId.value = '0';
                 nationality.value = 'all_nationalities';
                 view.value = 'all_transfers';
                 maxPrice.value = '0';
+                minBalls.value = '0';
             }
         } catch (error) {
             console.error('Error in resetForm: ', error);
