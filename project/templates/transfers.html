@@ -46,7 +46,7 @@
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
     {% for transfer in transfers %}
     <div id="thePlayers_{{ transfer[0].id }}" class="playerContainer"
-        style="border: 1px solid; border-radius: 5px; margin-bottom: 10px;">
+        style="border: 1px solid; border-radius: 5px; margin-bottom: 10px;" {% if transfer[1].retiring == 1 %} style="background-color: rgb(245, 175, 175);" {% endif %}>
         <div class="mainContent" style="padding: 5px">
             <h6 class="subheader clearfix">
                 <div title="{{ transfer[1].name }}" class="floatLeft">

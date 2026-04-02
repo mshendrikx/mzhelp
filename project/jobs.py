@@ -6,7 +6,7 @@ import base64
 import requests
 import asyncio
 
-#from requests import session
+# from requests import session
 from seleniumbase import SB
 from selenium.webdriver.support.ui import Select
 from dotenv import load_dotenv
@@ -159,7 +159,7 @@ def job_control():
         cookies = sb.get_cookies()
         rsession = requests.Session()
         for cookie in cookies:
-            rsession.cookies.set(cookie['name'], cookie['value'])
+            rsession.cookies.set(cookie["name"], cookie["value"])
 
         countries_sel = sb.find_element("#cid")
         soup = BeautifulSoup(countries_sel.get_attribute("outerHTML"), "html.parser")
@@ -170,45 +170,56 @@ def job_control():
             add_country = False
             country = session.query(Countries).filter_by(id=country_id).first()
             if country:
-                if country.code and country.shield and country.ages and country.flag and country.name:
+                if (
+                    country.code
+                    and country.shield
+                    and country.ages
+                    and country.flag
+                    and country.name
+                ):
                     continue
             else:
                 country = Countries()
                 country.id = country_id
                 add_country = True
-                
+
             sb.select_option_by_value('//*[@id="cid"]', country_sel.get("value"))
             sb.wait_for_element(
                 '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img'
             )
             if not country.name:
                 country.name = country_sel.text
-            
+
             if not country.flag:
                 flag_el = sb.get(
                     '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img'
                 )
                 country.flag = flag_el.screenshot_as_base64
-            
+
             if not country.ages:
                 country.ages = 18
-            
+
             if not country.code:
                 src_url = sb.get_attribute(
-                '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img', 'src'
+                    '//*[@id="ui-tabs-1"]/table/tbody/tr/td[1]/table/tbody/tr[1]/td[1]/img',
+                    "src",
                 )
                 src_url = src_url.split("flags/s_")[1]
                 country.code = src_url.split(".")[0]
-            
+
             if not country.shield:
-                img_url = 'https://www.managerzone.com/nocache-952/img/flags/15/' + country.code + '.png'
+                img_url = (
+                    "https://www.managerzone.com/nocache-952/img/flags/15/"
+                    + country.code
+                    + ".png"
+                )
                 response = rsession.get(img_url)
                 if response.status_code == 200:
-                    country.shield = base64.b64encode(response.content).decode('utf-8')
-            
+                    country.shield = base64.b64encode(response.content).decode("utf-8")
+
             if add_country:
                 session.add(country)
-            
+
             session.commit()
 
 
@@ -386,6 +397,8 @@ def job_transfers():
                     player.changedat = utc_input()
                     player.country = page_soup[1]
                     player.name = player_name
+                    if player_soup.find(class_="dg_playerview_retire"):
+                        player.retiring = 1
                     float_left = player_soup.find(class_="floatLeft")
                     float_left = float_left.table.tbody
                     float_left = float_left.find_all("tr")
