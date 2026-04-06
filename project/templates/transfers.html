@@ -49,11 +49,11 @@
 <div id="players_container" class="players_transfer_container" style="min-height: 560px;">
     {% for transfer in transfers %}
     <div id="thePlayers_{{ transfer[0].id }}" class="playerContainer"
-        style="border: 1px solid; border-radius: 5px; margin-bottom: 10px;" {% if transfer[1].retiring == 1 %} style="background-color: rgb(245, 175, 175);" {% endif %}>
+        style="border: 1px solid; border-radius: 5px; margin-bottom: 10px;">
         <div class="mainContent" style="padding: 5px">
             <h6 class="subheader clearfix">
                 <div title="{{ transfer[1].name }}" class="floatLeft">
-                    <img src="data:image/gif;base64,{{ transfer[3].shield }}" alt="" title="" width="15" height="15" 
+                    <img src="data:image/gif;base64,{{ transfer[3].shield }}" alt="" title="{{ transfer[3].name }}" width="15" height="15" 
                         style="vertical-align: middle">&nbsp;&nbsp;&nbsp;
                     <a href="https://www.managerzone.com/?p=transfer&sub=players&u={{ transfer[1].id }}"
                         class="subheader nobr" target="_blank" rel="noopener noreferrer">
@@ -72,18 +72,22 @@
                                             <tr>
                                                 <td>ID:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].id }}</strong></td>
+                                                {% if transfer[1].retiring == 1 %}
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                <td style="background-color: red;"><strong>&nbsp;RETIRING&nbsp;</strong></td>
+                                                {% endif %}
                                             </tr>
                                             <tr>
                                                 <td>Age:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].age }}</strong></td>
-                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td>Season:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].season }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td>Weight:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].weight }} kg</strong></td>
-                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td>Height:</td>
                                                 <td><strong>&nbsp;&nbsp;&nbsp;{{ transfer[1].height }} cm</strong></td>
                                             </tr>
@@ -96,7 +100,7 @@
                                                 {% else %}
                                                 <td><strong>&nbsp;&nbsp;&nbsp;Both</strong></td>
                                                 {% endif %}
-                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                <td>|&nbsp;&nbsp;&nbsp;&nbsp;</td>
                                                 <td title="All skills combined except Form and Experience">
                                                     Total Balls:</td>
                                                 <td valign="top">
