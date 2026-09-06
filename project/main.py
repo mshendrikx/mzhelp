@@ -783,7 +783,7 @@ def create_user():
         theme="light",
         mzuser="",
         mzpass="",
-        country=0,
+        countryid=0,
         admin=0,
         currency="R$",
         mzuserid=0,
