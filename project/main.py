@@ -422,7 +422,7 @@ def transfers():
     active_bids = request.args.get("active_bids")
     playerid = int(request.args.get("playerid", 0))
     if active_bids:
-        db_bids = Bids.query.filter_by(active=1, userid=current_user.id).all()
+        db_bids = Bids.query.filter_by(active=1, userid=current_user.id).order_by(Bids.dtstart).all()
         if not db_bids:
             flash("No active bids found")
             flash("alert-warning")
